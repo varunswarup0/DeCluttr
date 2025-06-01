@@ -30,7 +30,7 @@ export function DatePicker(
 
   return (
     <View className="flex-row gap-2.5">
-      {props.mode.includes('date') && (
+      {props.mode.includes('date') ? (
         <View className={cn('relative pt-1.5', props.materialDateClassName)}>
           <Button
             variant="plain"
@@ -50,8 +50,8 @@ export function DatePicker(
             </Text>
           </View>
         </View>
-      )}
-      {props.mode.includes('time') && (
+      ) : null}
+      {props.mode.includes('time') ? (
         <View className={cn('relative pt-1.5', props.materialTimeClassName)}>
           <Button
             variant="plain"
@@ -71,7 +71,7 @@ export function DatePicker(
             </Text>
           </View>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }

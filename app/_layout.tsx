@@ -1,18 +1,20 @@
 import '../global.css';
 import 'expo-dev-client';
+import { useEffect, useState } from 'react';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
+import { useRecycleBinStore } from '~/store/store';
 import { NAV_THEME } from '~/theme';
 
 export {
@@ -23,6 +25,33 @@ export {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const { loadXP, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
+  const segments = useSegments();
+  const router = useRouter();
+
+  // Load XP from AsyncStorage on app startup
+  useEffect(() => {
+    if (!isXpLoaded) {
+      loadXP();
+    }
+  }, [loadXP, isXpLoaded]);
+
+  // Check onboarding status on startup
+  useEffect(() => {
+    checkOnboardingStatus().then((completed) => {
+      if (completed) {
+        // If onboarding is completed, navigate to the main app
+        if (segments.length < 1 || segments[0] === 'onboarding') {
+          router.replace('/(drawer)/(tabs)');
+        }
+      } else {
+        // If onboarding is NOT completed, redirect to onboarding
+        if (segments[0] !== 'onboarding') {
+          router.replace('/onboarding');
+        }
+      }
+    });
+  }, [checkOnboardingStatus]);
 
   return (
     <>
@@ -30,16 +59,16 @@ export default function RootLayout() {
         key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
-      {/* WRAP YOUR APP WITH ANY ADDITIONAL PROVIDERS HERE */}
-      {/* <ExampleProvider> */}
-
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <ActionSheetProvider>
             <NavThemeProvider value={NAV_THEME[colorScheme]}>
               <Stack screenOptions={SCREEN_OPTIONS}>
+                <Stack.Screen
+                  name="onboarding"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
                 <Stack.Screen name="(drawer)" options={DRAWER_OPTIONS} />
-                <Stack.Screen name="modal" options={MODAL_OPTIONS} />
               </Stack>
             </NavThemeProvider>
           </ActionSheetProvider>

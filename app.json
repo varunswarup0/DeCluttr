@@ -3,7 +3,6 @@
     "name": "decluttr",
     "slug": "decluttr",
     "version": "1.0.0",
-
     "scheme": "decluttr",
     "web": {
       "bundler": "metro",
@@ -17,25 +16,24 @@
         {
           "launchMode": "most-recent"
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
-
       "tsconfigPaths": true
     },
-
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "automatic",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -43,6 +41,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.jaiswarup.decluttr"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ce63dd3a-87fe-43c0-bb3a-c3c3754f209c"
       }
     }
   }

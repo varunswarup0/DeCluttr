@@ -1,14 +1,14 @@
 import { Stack } from 'expo-router';
 
 import { Container } from '~/components/Container';
-import { ScreenContent } from '~/components/ScreenContent';
+import { PhotoGallery } from '~/components/PhotoGallery';
 
 export default function Home() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
+      <Stack.Screen options={{ title: 'Declutter Photos' }} />
       <Container>
-        <ScreenContent path="app/(drawer)/(tabs)/index.tsx" title="Tab One" />
+        <PhotoGallery />
       </Container>
     </>
   );

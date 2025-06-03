@@ -86,12 +86,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-        setCurrentIndex(nextIndex);
-
-        if (nextIndex >= data.length && onDeckEmpty) {
-          onDeckEmpty();
-        }
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = prevIndex + 1;
+          if (nextIndex >= data.length && onDeckEmpty) {
+            onDeckEmpty();
+          }
+          return nextIndex;
+        });
       }, 300);
     },
     [
@@ -118,12 +119,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-        setCurrentIndex(nextIndex);
-
-        if (nextIndex >= data.length && onDeckEmpty) {
-          onDeckEmpty();
-        }
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = prevIndex + 1;
+          if (nextIndex >= data.length && onDeckEmpty) {
+            onDeckEmpty();
+          }
+          return nextIndex;
+        });
       }, 300);
     },
     [

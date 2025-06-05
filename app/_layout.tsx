@@ -1,6 +1,6 @@
 import '../global.css';
 import 'expo-dev-client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -12,7 +12,6 @@ import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { ThemeToggle } from '~/components/ThemeToggle';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
 import { NAV_THEME } from '~/theme';
@@ -51,7 +50,7 @@ export default function RootLayout() {
         }
       }
     });
-  }, [checkOnboardingStatus]);
+  }, [checkOnboardingStatus, segments, router]);
 
   return (
     <>
@@ -86,11 +85,4 @@ const SCREEN_OPTIONS = {
 
 const DRAWER_OPTIONS = {
   headerShown: false,
-} as const;
-
-const MODAL_OPTIONS = {
-  presentation: 'modal',
-  animation: 'fade_from_bottom', // for android
-  title: 'Settings',
-  headerRight: () => <ThemeToggle />,
 } as const;

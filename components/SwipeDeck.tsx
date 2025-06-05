@@ -137,14 +137,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       advanceIndex();
     },
     [
-      data.length,
       onSwipeLeft,
-      onDeckEmpty,
       scaleValues,
       translateYValues,
       opacityValues,
       maxVisibleCards,
       cardSpacing,
+      advanceIndex,
     ]
   );
   const handleSwipeRight = useCallback(
@@ -161,14 +160,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       advanceIndex();
     },
     [
-      data.length,
       onSwipeRight,
-      onDeckEmpty,
       scaleValues,
       translateYValues,
       opacityValues,
       maxVisibleCards,
       cardSpacing,
+      advanceIndex,
     ]
   ); // Initialize animation values for the stack effect
   React.useEffect(() => {

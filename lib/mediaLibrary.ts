@@ -1,5 +1,4 @@
 import * as MediaLibrary from 'expo-media-library';
-import * as DocumentPicker from 'expo-document-picker';
 import { Platform } from 'react-native';
 
 /**
@@ -38,6 +37,7 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
 export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> {
   try {
     if (Platform.OS === 'web') {
+      const DocumentPicker = await import('expo-document-picker');
       const result = await DocumentPicker.getDocumentAsync({
         type: 'image/*',
         multiple: true,

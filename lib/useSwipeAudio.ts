@@ -9,13 +9,23 @@ import { audioService } from './audioService';
 export const useSwipeAudio = () => {
   const { settings, isLoaded } = useAudioSettings();
 
-  // Initialize and sync settings when they load
+  // Initialize once after settings have loaded
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (isLoaded) {
       audioService.initialize().then(() => {
         audioService.setVolume(settings.volume);
         audioService.setEnabled(settings.enabled);
       });
+    }
+  }, [isLoaded]);
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+  // Sync volume/enabled when settings change
+  useEffect(() => {
+    if (isLoaded) {
+      audioService.setVolume(settings.volume);
+      audioService.setEnabled(settings.enabled);
     }
   }, [isLoaded, settings.enabled, settings.volume]);
 

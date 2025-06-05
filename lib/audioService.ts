@@ -6,6 +6,7 @@ export class AudioService {
   private deletePlayer: AudioPlayer | null = null;
   private keepPlayer: AudioPlayer | null = null;
   private isInitialized = false;
+  private initializing: Promise<void> | null = null;
 
   private constructor() {}
 
@@ -23,24 +24,32 @@ export class AudioService {
     if (this.isInitialized) {
       return;
     }
-
-    try {
-      // Create audio players for each sound
-      this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
-      this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
-
-      // Set initial volume
-      const audioSettings = await this.getAudioSettings();
-      this.deletePlayer.volume = audioSettings.volume;
-      this.keepPlayer.volume = audioSettings.volume;
-
-      this.isInitialized = true;
-      console.log('Audio service initialized successfully');
-    } catch (error) {
-      console.warn('Failed to initialize audio service:', error);
-      // Create mock players that fail silently if files don't exist
-      this.createMockPlayers();
+    if (this.initializing) {
+      return this.initializing;
     }
+
+    this.initializing = (async () => {
+      try {
+        // Create audio players for each sound
+        this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
+        this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
+
+        // Set initial volume
+        const audioSettings = await this.getAudioSettings();
+        this.deletePlayer.volume = audioSettings.volume;
+        this.keepPlayer.volume = audioSettings.volume;
+
+        this.isInitialized = true;
+        console.log('Audio service initialized successfully');
+      } catch (error) {
+        console.warn('Failed to initialize audio service:', error);
+        // Create mock players that fail silently if files don't exist
+        this.createMockPlayers();
+      } finally {
+        this.initializing = null;
+      }
+    })();
+    return this.initializing;
   }
 
   /**

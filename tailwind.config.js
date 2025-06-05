@@ -8,6 +8,9 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['System', 'sans-serif'],
+      },
       colors: {
         border: withOpacity('border'),
         input: withOpacity('input'),

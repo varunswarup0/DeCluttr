@@ -35,7 +35,7 @@ const textVariants = cva('text-foreground', {
   },
 });
 
-const TextClassContext = React.createContext<string | undefined>(undefined);
+const TextClassContext = React.createContext<string | undefined>('font-sans');
 
 function Text({
   className,

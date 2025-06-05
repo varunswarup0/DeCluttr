@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAsyncStorage } from './asyncStorageWrapper';
 
 export interface AudioSettings {
   enabled: boolean;
@@ -20,10 +20,15 @@ export const useAudioSettings = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const stored = await AsyncStorage.getItem(AUDIO_SETTINGS_KEY);
+        const storage = getAsyncStorage();
+        const stored = await storage.getItem(AUDIO_SETTINGS_KEY);
         if (stored) {
-          const parsedSettings = JSON.parse(stored);
-          setSettings({ ...DEFAULT_SETTINGS, ...parsedSettings });
+          try {
+            const parsedSettings = JSON.parse(stored);
+            setSettings({ ...DEFAULT_SETTINGS, ...parsedSettings });
+          } catch {
+            // ignore corrupt data
+          }
         }
       } catch (error) {
         console.warn('Failed to load audio settings:', error);
@@ -40,7 +45,8 @@ export const useAudioSettings = () => {
       const updatedSettings = { ...settings, ...newSettings };
       setSettings(updatedSettings);
 
-      await AsyncStorage.setItem(AUDIO_SETTINGS_KEY, JSON.stringify(updatedSettings));
+      const storage = getAsyncStorage();
+      await storage.setItem(AUDIO_SETTINGS_KEY, JSON.stringify(updatedSettings));
     } catch (error) {
       console.warn('Failed to save audio settings:', error);
     }

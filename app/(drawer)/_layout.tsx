@@ -1,8 +1,5 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Drawer } from 'expo-router/drawer';
-
-import { HeaderButton } from '../../components/HeaderButton';
 
 const DrawerLayout = () => (
   <Drawer>
@@ -15,26 +12,10 @@ const DrawerLayout = () => (
         headerRight: () => <></>,
       }}
     />
-    <Drawer.Screen
-      name="profile"
-      options={{
-        headerTitle: 'Profile',
-        drawerLabel: 'Profile',
-        drawerIcon: ({ size, color }) => (
-          <Ionicons name="person-outline" size={size} color={color} />
-        ),
-      }}
-    />
-    <Drawer.Screen
-      name="stats"
-      options={{
-        headerTitle: 'Statistics',
-        drawerLabel: 'Stats',
-        drawerIcon: ({ size, color }) => (
-          <MaterialIcons name="bar-chart" size={size} color={color} />
-        ),
-      }}
-    />
+    {/**
+     * Extra screens like Profile and Stats were removed to keep the game simple
+     * and reduce potential bugs. Only the main game and recycle bin remain.
+     */}
   </Drawer>
 );
 

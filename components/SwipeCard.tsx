@@ -14,7 +14,6 @@ import { useSwipeAudio } from '~/lib/useSwipeAudio';
 
 const { width: screenWidth } = Dimensions.get('window');
 const SWIPE_THRESHOLD = screenWidth * 0.3;
-const ROTATION_THRESHOLD = screenWidth * 0.2;
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -84,19 +83,12 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const rotation = interpolate(
-      translateX.value,
-      [-ROTATION_THRESHOLD, 0, ROTATION_THRESHOLD],
-      [-15, 0, 15]
-    );
-
     const opacity = interpolate(Math.abs(translateX.value), [0, SWIPE_THRESHOLD], [1, 0.8]);
 
     return {
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
-        // { rotate: `${rotation}deg` },
         { scale: scale.value },
       ],
       opacity,

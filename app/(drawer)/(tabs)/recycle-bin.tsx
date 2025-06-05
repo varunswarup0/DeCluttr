@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import { View, ScrollView, Image, Dimensions, Alert, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-import { format } from 'date-fns';
 
 import { Container } from '~/components/Container';
 import { Text } from '~/components/nativewindui/Text';

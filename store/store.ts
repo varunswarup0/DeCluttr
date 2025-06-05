@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { getAsyncStorage } from '~/lib/asyncStorageWrapper';
 export interface BearState {
   bears: number;
   increasePopulation: () => void;
@@ -54,32 +53,6 @@ export interface RecycleBinState {
   resetOnboarding: () => Promise<void>;
 }
 
-// Fallback memory storage in case AsyncStorage is not available
-const memoryStorage: Record<string, string> = {};
-
-// Fallback implementation of AsyncStorage
-const getAsyncStorage = () => {
-  // Check if AsyncStorage is properly available
-  if (AsyncStorage && typeof AsyncStorage.getItem === 'function') {
-    console.log('Using native AsyncStorage');
-    return AsyncStorage;
-  }
-
-  // Return a fallback in-memory implementation
-  console.warn('AsyncStorage not available, using in-memory fallback');
-  return {
-    getItem: async (key: string) => {
-      return memoryStorage[key] || null;
-    },
-    setItem: async (key: string, value: string) => {
-      memoryStorage[key] = value;
-    },
-    removeItem: async (key: string) => {
-      delete memoryStorage[key];
-    },
-  };
-};
-
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   deletedPhotos: [],
   xp: 0,
@@ -89,11 +62,12 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   // Load XP from AsyncStorage on app startup
   loadXP: async () => {
     try {
-      console.log('Loading XP from storage...');
       const storage = getAsyncStorage();
       const storedXP = await storage.getItem(XP_STORAGE_KEY);
-      const xp = storedXP ? parseInt(storedXP, 10) : 0;
-      console.log('Setting XP in store:', xp);
+      let xp = storedXP ? parseInt(storedXP, 10) : 0;
+      if (isNaN(xp)) {
+        xp = 0;
+      }
       set({ xp, isXpLoaded: true });
     } catch (error) {
       console.error('Error in loadXP:', error);
@@ -112,7 +86,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       // Save to storage using the fallback mechanism if needed
       const storage = getAsyncStorage();
       await storage.setItem(XP_STORAGE_KEY, newXP.toString());
-      console.log(`XP increased by ${amount}, new total: ${newXP}`);
     } catch (error) {
       console.error('Failed to add XP:', error);
     }
@@ -128,16 +101,17 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       // Save to storage using the fallback mechanism if needed
       const storage = getAsyncStorage();
       await storage.setItem(XP_STORAGE_KEY, newXP.toString());
-      console.log(`XP decreased by ${amount}, new total: ${newXP}`);
     } catch (error) {
       console.error('Failed to subtract XP:', error);
     }
   },
 
   addDeletedPhoto: (photo: DeletedPhoto) => {
-    set((state) => ({
-      deletedPhotos: [photo, ...state.deletedPhotos],
-    }));
+    const { deletedPhotos } = get();
+    if (deletedPhotos.some((p) => p.id === photo.id)) {
+      return;
+    }
+    set({ deletedPhotos: [photo, ...deletedPhotos] });
     // Add XP for deleting a photo
     get().addXP(XP_CONFIG.DELETE_PHOTO);
   },
@@ -190,8 +164,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       // Save the reset XP to storage using fallback mechanism if needed
       const storage = getAsyncStorage();
       await storage.setItem(XP_STORAGE_KEY, '0');
-
-      console.log('Gallery state has been reset, XP: 0, deletedPhotos: 0');
     } catch (error) {
       console.error('Failed to reset gallery:', error);
       // Make sure the state is reset even if storage fails
@@ -201,11 +173,9 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
 
   checkOnboardingStatus: async () => {
     try {
-      console.log('Checking onboarding status...');
       const storage = getAsyncStorage();
       const completed = await storage.getItem(ONBOARDING_STORAGE_KEY);
       const isCompleted = completed === 'true';
-      console.log('Onboarding completed:', isCompleted);
       set({ onboardingCompleted: isCompleted });
       return isCompleted;
     } catch (error) {
@@ -218,7 +188,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
 
   completeOnboarding: async () => {
     try {
-      console.log('Marking onboarding as completed');
       const storage = getAsyncStorage();
       await storage.setItem(ONBOARDING_STORAGE_KEY, 'true');
       set({ onboardingCompleted: true });
@@ -230,7 +199,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   },
   resetOnboarding: async () => {
     try {
-      console.log('Resetting onboarding as completed');
       const storage = getAsyncStorage();
       await storage.setItem(ONBOARDING_STORAGE_KEY, 'false');
       set({ onboardingCompleted: false });

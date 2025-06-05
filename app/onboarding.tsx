@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Image, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import Onboarding from 'react-native-onboarding-swiper';
 import { StatusBar } from 'expo-status-bar';
 
 import { useRecycleBinStore } from '~/store/store';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { Button } from '~/components/Button';
 
 // Screen images
 const screens = [
@@ -60,7 +59,7 @@ export default function OnboardingScreen() {
       <TouchableOpacity
         onPress={onPress}
         style={[styles.buttonContainer, { backgroundColor: '#000' }]}>
-        <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>Let's Go!</Text>
+        <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>{`Let's Go!`}</Text>
       </TouchableOpacity>
     );
   };

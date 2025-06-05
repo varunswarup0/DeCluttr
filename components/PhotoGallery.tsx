@@ -6,17 +6,27 @@ import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
 import { cn } from '~/lib/cn';
-import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
+import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 
 interface PhotoGalleryProps {
   className?: string;
 }
 
 export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
+  const isMounted = React.useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [keptPhotos, setKeptPhotos] = useState<string[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [sessionStartXp, setSessionStartXp] = useState(0);
+  const [sessionDeletedStart, setSessionDeletedStart] = useState(0);
 
   // Use RecycleBin store
   const {
@@ -24,32 +34,50 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     addDeletedPhoto,
     xp,
     resetGallery: resetRecycleBinStore,
+    isXpLoaded,
   } = useRecycleBinStore();
 
-  const loadPhotos = async () => {
+  const loadPhotos = React.useCallback(async (): Promise<boolean> => {
     try {
+      if (!isMounted.current) return false;
       setLoading(true);
+      // Capture current XP and deleted count when a new session begins
+      const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
+      setSessionStartXp(currentXp);
+      setSessionDeletedStart(currentDeleted.length);
+
       const photoUris = await fetchPhotoAssets(50); // Load first 50 photos
-      const photoItems: SwipeDeckItem[] = photoUris.map((uri, index) => ({
-        id: `photo-${index}`,
+      const photoItems: SwipeDeckItem[] = photoUris.map((uri) => ({
+        // Use the uri itself as a stable id so deleted photos aren't blocked
+        // by duplicate IDs when a new session begins
+        id: uri,
         imageUri: uri,
       }));
+
+      if (!isMounted.current) return false;
       setPhotos(photoItems);
+      setKeptPhotos([]); // reset kept list for the new session
+      // Start swiping from the beginning whenever a new set is loaded
+      setCurrentPhotoIndex(0);
+      return true;
     } catch (error) {
       console.error('Error loading photos:', error);
       Alert.alert('Error', 'Failed to load photos from your gallery');
+      return false;
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
-  };
-
-  useEffect(() => {
-    loadPhotos();
   }, []);
 
-  const handleSwipeLeft = (item: SwipeDeckItem, index: number) => {
-    console.log('Deleted photo:', item.imageUri);
+  useEffect(() => {
+    if (isXpLoaded) {
+      loadPhotos();
+    }
+  }, [isXpLoaded, loadPhotos]);
 
+  const handleSwipeLeft = (item: SwipeDeckItem, index: number) => {
     // Add photo to RecycleBin store
     const deletedPhoto: DeletedPhoto = {
       id: item.id,
@@ -68,8 +96,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
-    console.log('Kept photo:', item.imageUri);
-
     setKeptPhotos((prev) => [...prev, item.imageUri]);
 
     // Update current photo index for tracking progress
@@ -77,10 +103,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   };
 
   const handleDeckEmpty = () => {
-    const totalXpEarned = deletedPhotos.length * XP_CONFIG.DELETE_PHOTO;
+    const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
+    const totalXpEarned = xp - sessionStartXp;
     Alert.alert(
       'All Photos Reviewed!',
-      `You've reviewed all photos.\n\nDeleted: ${deletedPhotos.length}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+      `You've reviewed all photos.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
       [
         {
           text: 'Load More',
@@ -113,11 +140,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
               setKeptPhotos([]);
               setCurrentPhotoIndex(0);
 
-              // Reload photos
-              loadPhotos();
+              // Reload photos and wait until done
+              const loaded = await loadPhotos();
 
-              // Notify the user
-              Alert.alert('Gallery Reset', 'Your gallery has been reset successfully.');
+              if (loaded) {
+                // Notify the user only if photos reloaded successfully
+                Alert.alert('Gallery Reset', 'Your gallery has been reset successfully.');
+              }
             } catch (error) {
               console.error('Failed to reset gallery:', error);
               Alert.alert('Error', 'Failed to reset gallery. Please try again.');

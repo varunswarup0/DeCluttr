@@ -1,0 +1,29 @@
+--- a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
++++ b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
+@@ -63,7 +63,7 @@
+       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+         focusAcquired = false
+         players.values.forEach {
+-          it.player.pause()
++          runOnMain { it.player.pause() }
+         }
+       }
+ 
+@@ -71,7 +71,7 @@
+         focusAcquired = false
+         if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
+           players.values.forEach {
+-            it.player.volume /= 2f
++            runOnMain { it.player.volume /= 2f }
+           }
+         }
+       }
+@@ -79,7 +79,7 @@
+       AudioManager.AUDIOFOCUS_GAIN -> {
+         focusAcquired = true
+         players.values.forEach {
+-          it.setVolume(it.previousVolume)
++          runOnMain { it.setVolume(it.previousVolume) }
+         }
+       }
+     }

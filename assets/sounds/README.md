@@ -18,6 +18,7 @@ This folder should contain the following sound files:
 
 - **delete.mp3**: A subtle "whoosh" or "trash" sound
 - **keep.mp3**: A pleasant "ding", "chime", or "success" sound
+- For a retro feel, try short 8-bit samples like classic Nintendo games
 
 ## How to Add Sounds:
 

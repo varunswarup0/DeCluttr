@@ -1,4 +1,5 @@
 import * as MediaLibrary from 'expo-media-library';
+import { Platform } from 'react-native';
 
 /**
  * Request permission to access the device's media library
@@ -35,6 +36,20 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
  */
 export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> {
   try {
+    if (Platform.OS === 'web') {
+      const DocumentPicker = await import('expo-document-picker');
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'image/*',
+        multiple: true,
+        copyToCacheDirectory: false,
+        base64: false,
+      });
+      if (result.canceled || !result.assets) {
+        return [];
+      }
+      return result.assets.slice(0, first).map((asset) => asset.uri);
+    }
+
     // First check if permission is granted
     const hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {
@@ -44,14 +59,12 @@ export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> 
       }
     }
 
-    // Fetch photo assets
     const assets = await MediaLibrary.getAssetsAsync({
       first,
       mediaType: MediaLibrary.MediaType.photo,
       sortBy: MediaLibrary.SortBy.creationTime,
     });
 
-    // Extract URIs from assets
     return assets.assets.map((asset) => asset.uri);
   } catch (error) {
     console.error('Error fetching photo assets:', error);

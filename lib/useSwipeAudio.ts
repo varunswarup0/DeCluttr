@@ -1,67 +1,31 @@
-import { useAudioPlayer } from 'expo-audio';
 import { useEffect } from 'react';
 import { useAudioSettings } from './useAudioSettings';
+import { audioService } from './audioService';
 
 /**
- * Hook for managing delete sound effect
- */
-export const useDeleteAudio = () => {
-  const { settings } = useAudioSettings();
-  const player = useAudioPlayer(require('../assets/sounds/delete.mp3'));
-
-  useEffect(() => {
-    if (player) {
-      player.volume = settings.volume;
-    }
-  }, [player, settings.volume]);
-
-  const playDeleteSound = () => {
-    if (settings.enabled && player) {
-      try {
-        player.seekTo(0);
-        player.play();
-      } catch (error) {
-        console.warn('Failed to play delete sound:', error);
-      }
-    }
-  };
-
-  return { playDeleteSound };
-};
-
-/**
- * Hook for managing keep sound effect
- */
-export const useKeepAudio = () => {
-  const { settings } = useAudioSettings();
-  const player = useAudioPlayer(require('../assets/sounds/keep.mp3'));
-
-  useEffect(() => {
-    if (player) {
-      player.volume = settings.volume;
-    }
-  }, [player, settings.volume]);
-
-  const playKeepSound = () => {
-    if (settings.enabled && player) {
-      try {
-        player.seekTo(0);
-        player.play();
-      } catch (error) {
-        console.warn('Failed to play keep sound:', error);
-      }
-    }
-  };
-
-  return { playKeepSound };
-};
-
-/**
- * Combined hook for both audio effects
+ * Hook providing keep/delete swipe sounds.
+ * Ensures audioService is initialized only once per component.
  */
 export const useSwipeAudio = () => {
-  const { playDeleteSound } = useDeleteAudio();
-  const { playKeepSound } = useKeepAudio();
+  const { settings, isLoaded } = useAudioSettings();
+
+  // Initialize and sync settings when they load
+  useEffect(() => {
+    if (isLoaded) {
+      audioService.initialize().then(() => {
+        audioService.setVolume(settings.volume);
+        audioService.setEnabled(settings.enabled);
+      });
+    }
+  }, [isLoaded, settings.enabled, settings.volume]);
+
+  const playDeleteSound = () => {
+    audioService.playDeleteSound();
+  };
+
+  const playKeepSound = () => {
+    audioService.playKeepSound();
+  };
 
   return {
     playDeleteSound,

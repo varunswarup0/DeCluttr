@@ -13,9 +13,10 @@ Minimal photo clean-up game built with Expo React Native.
   ```
   This will also apply patches needed for audio playback.
 2. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
-3. For a nostalgic feel, pick short 8-bit style sounds reminiscent of retro Nintendo games.
-4. The `audioService` will load these sounds automatically and handle failures gracefully.
-5. When previewing in a browser, a simple file picker (powered by `expo-document-picker`) lets you load images from your computer.
+3. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
+4. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games.
+5. The `audioService` will load these sounds automatically and handle failures gracefully.
+6. When previewing in a browser, a simple file picker (powered by `expo-document-picker`) lets you load images from your computer.
 
 ## Running the App
 - **Web preview**

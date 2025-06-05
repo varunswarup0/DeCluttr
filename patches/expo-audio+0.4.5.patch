@@ -1,6 +1,8 @@
+diff --git a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
+index 13a3c24..cc2a423 100644
 --- a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
 +++ b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
-@@ -63,7 +63,7 @@
+@@ -63,7 +63,7 @@ class AudioModule : Module() {
        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
          focusAcquired = false
          players.values.forEach {
@@ -9,7 +11,7 @@
          }
        }
  
-@@ -71,7 +71,7 @@
+@@ -71,7 +71,7 @@ class AudioModule : Module() {
          focusAcquired = false
          if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
            players.values.forEach {
@@ -18,7 +20,7 @@
            }
          }
        }
-@@ -79,7 +79,7 @@
+@@ -79,7 +79,7 @@ class AudioModule : Module() {
        AudioManager.AUDIOFOCUS_GAIN -> {
          focusAcquired = true
          players.values.forEach {
@@ -27,3 +29,30 @@
          }
        }
      }
+@@ -150,7 +150,7 @@ class AudioModule : Module() {
+         appContext.mainQueue.launch {
+           players.values.forEach {
+             if (it.player.isPlaying) {
+-              it.player.pause()
++              runOnMain { it.player.pause() }
+             }
+             releaseAudioFocus()
+           }
+@@ -174,7 +174,7 @@ class AudioModule : Module() {
+           players.values.forEach { player ->
+             if (player.player.isPlaying) {
+               player.isPaused = true
+-              player.ref.pause()
++              runOnMain { player.ref.pause() }
+             }
+           }
+ 
+@@ -216,7 +216,7 @@ class AudioModule : Module() {
+       appContext.mainQueue.launch {
+         releaseAudioFocus()
+         players.values.forEach {
+-          it.player.stop()
++          runOnMain { it.player.stop() }
+         }
+ 
+         recorders.values.forEach {

@@ -189,19 +189,19 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       {/* Stats */}
       <View className="mb-6 flex-row space-x-6">
         <View className="items-center">
-          <Text variant="title2" className="text-green-600">
-            {keptPhotos.length}
-          </Text>
-          <Text variant="caption1" color="secondary">
-            Kept
-          </Text>
-        </View>
-        <View className="items-center">
           <Text variant="title2" className="text-red-600">
             {deletedPhotos.length}
           </Text>
           <Text variant="caption1" color="secondary">
             Deleted
+          </Text>
+        </View>
+        <View className="items-center">
+          <Text variant="title2" className="text-green-600">
+            {keptPhotos.length}
+          </Text>
+          <Text variant="caption1" color="secondary">
+            Kept
           </Text>
         </View>
       </View>

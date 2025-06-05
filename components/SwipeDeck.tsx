@@ -108,6 +108,21 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   }));
 
   const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
+  const advanceIndex = useCallback(() => {
+    const timeout = setTimeout(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex >= data.length && onDeckEmpty) {
+          onDeckEmpty();
+        }
+        return nextIndex;
+      });
+      // remove finished timeout reference
+      timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
+    }, 300);
+    timeoutsRef.current.push(timeout);
+  }, [data.length, onDeckEmpty]);
+
   const handleSwipeLeft = useCallback(
     (item: SwipeDeckItem, index: number) => {
       onSwipeLeft?.(item, index);
@@ -119,18 +134,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
         opacityValues[i].value = withSpring(1 - i * 0.1);
       }
 
-      const timeout = setTimeout(() => {
-        setCurrentIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          if (nextIndex >= data.length && onDeckEmpty) {
-            onDeckEmpty();
-          }
-          return nextIndex;
-        });
-        // remove finished timeout reference
-        timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
-      }, 300);
-      timeoutsRef.current.push(timeout);
+      advanceIndex();
     },
     [
       data.length,
@@ -154,18 +158,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
         opacityValues[i].value = withSpring(1 - i * 0.1);
       }
 
-      const timeout = setTimeout(() => {
-        setCurrentIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          if (nextIndex >= data.length && onDeckEmpty) {
-            onDeckEmpty();
-          }
-          return nextIndex;
-        });
-        // remove finished timeout reference
-        timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
-      }, 300);
-      timeoutsRef.current.push(timeout);
+      advanceIndex();
     },
     [
       data.length,

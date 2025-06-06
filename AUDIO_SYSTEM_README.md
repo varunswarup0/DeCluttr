@@ -15,10 +15,10 @@ The audio system provides audio feedback when users swipe photos:
 
 1. **Swipe Audio Hook** (`lib/useSwipeAudio.ts`)
 
-   - React hook managing swipe sound effects using expo-audio
-   - Provides separate audio players for delete and keep sounds
-   - Automatically applies volume settings from user preferences
-   - Handles error cases gracefully
+   - React hook that delegates sound playback to a central `audioService`
+   - The service uses `expo-audio` under the hood and preloads sound files
+   - Volume and enabled state are synced with user preferences
+   - Handles missing files or initialization errors gracefully
 
 2. **Audio Settings Hook** (`lib/useAudioSettings.ts`)
 
@@ -27,8 +27,9 @@ The audio system provides audio feedback when users swipe photos:
    - Provides enable/disable and volume controls
 
 3. **UI Components**
-   - `AudioSettingsSection`: Settings panel for audio controls
-   - `AudioTestSection`: Test panel to verify audio functionality
+   - Basic audio settings and test screens were removed in the minimal build.
+     Sound still plays automatically via `useSwipeAudio` with default
+     preferences.
 
 ### Integration Points
 
@@ -39,9 +40,9 @@ The audio system provides audio feedback when users swipe photos:
    - Plays sounds directly in gesture handler using `runOnJS`
    - Ensures immediate audio response to swipe gestures
 
-2. **Profile Screen** (`app/(drawer)/profile.tsx`)
-   - Provides audio settings and test interface
-   - Allows users to control audio preferences
+2. **Profile Screen**
+   - Removed to streamline the app. Audio preferences are loaded from
+     storage but no longer have a dedicated settings UI.
 
 ## File Structure
 
@@ -57,8 +58,7 @@ lib/
 └── useAudioSettings.ts    # Audio settings management
 
 components/
-├── AudioSettingsSection.tsx  # Settings UI component
-└── AudioTestSection.tsx      # Audio testing UI component
+└── SwipeCard.tsx          # Core swipe UI
 ```
 
 ## Sound File Requirements
@@ -94,18 +94,18 @@ components/
 
 ### Performance Optimization
 
-- Uses expo-audio's `useAudioPlayer` hooks for efficient audio management
-- Automatic cleanup when components unmount
-- Volume changes apply immediately through hook integration
+- The `audioService` preloads sounds once and reuses them across components
+- Automatic cleanup when the service is destroyed
+- Volume changes apply immediately when preferences change
 
 ## Usage
 
 ### For Users
 
-1. Swipe photos normally - sounds play automatically
-2. Adjust settings in Profile → Audio Settings
-3. Test sounds using the Audio Test section
-4. Disable if preferred for silent operation
+1. Swipe photos normally - sounds play automatically.
+2. Sound settings are not exposed in the minimal build, but can be
+   adjusted programmatically via `useAudioSettings`.
+3. Disable the sound hook if a silent experience is preferred.
 
 ### For Developers
 
@@ -120,17 +120,13 @@ The audio system handles several error scenarios:
 
 - Missing sound files (graceful degradation)
 - Audio permission issues (silent failure)
-- Device in silent mode (respects iOS silent switch)
+- Device muted or in Do Not Disturb mode
 - Low memory conditions (proper cleanup)
 
 ## Testing
 
-Use the Audio Test section in the Profile screen to:
-
-- Verify sound files are loading correctly
-- Test volume levels
-- Confirm audio settings are working
-- Debug audio issues
+The previous Audio Test screen was removed. Developers can verify audio
+by calling the functions returned from `useSwipeAudio` during testing.
 
 ## Future Enhancements
 
@@ -149,7 +145,7 @@ Potential improvements for future versions:
 1. Check if sound files exist in `assets/sounds/`
 2. Verify audio is enabled in app settings
 3. Check device volume level
-4. Ensure device is not in silent mode (iOS)
+4. Ensure device is not muted
 5. Check console for audio hook initialization errors
 
 ### Poor Performance
@@ -161,6 +157,6 @@ Potential improvements for future versions:
 
 ## Dependencies
 
-- `expo-audio`: Modern audio playback functionality with React hooks
+- `expo-audio`: Underlying playback library used by `audioService`
 - `@react-native-async-storage/async-storage`: Settings persistence
 - `react-native-reanimated`: Gesture integration

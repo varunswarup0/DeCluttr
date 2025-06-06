@@ -1,11 +1,12 @@
 import { createAudioPlayer, AudioPlayer } from 'expo-audio';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAsyncStorage } from './asyncStorageWrapper';
 
 export class AudioService {
   private static instance: AudioService;
   private deletePlayer: AudioPlayer | null = null;
   private keepPlayer: AudioPlayer | null = null;
   private isInitialized = false;
+  private initializing: Promise<void> | null = null;
 
   private constructor() {}
 
@@ -23,24 +24,32 @@ export class AudioService {
     if (this.isInitialized) {
       return;
     }
-
-    try {
-      // Create audio players for each sound
-      this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
-      this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
-
-      // Set initial volume
-      const audioSettings = await this.getAudioSettings();
-      this.deletePlayer.volume = audioSettings.volume;
-      this.keepPlayer.volume = audioSettings.volume;
-
-      this.isInitialized = true;
-      console.log('Audio service initialized successfully');
-    } catch (error) {
-      console.warn('Failed to initialize audio service:', error);
-      // Create mock players that fail silently if files don't exist
-      this.createMockPlayers();
+    if (this.initializing) {
+      return this.initializing;
     }
+
+    this.initializing = (async () => {
+      try {
+        // Create audio players for each sound
+        this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
+        this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
+
+        // Set initial volume
+        const audioSettings = await this.getAudioSettings();
+        this.deletePlayer.volume = audioSettings.volume;
+        this.keepPlayer.volume = audioSettings.volume;
+
+        this.isInitialized = true;
+        console.log('Audio service initialized successfully');
+      } catch (error) {
+        console.warn('Failed to initialize audio service:', error);
+        // Create mock players that fail silently if files don't exist
+        this.createMockPlayers();
+      } finally {
+        this.initializing = null;
+      }
+    })();
+    return this.initializing;
   }
 
   /**
@@ -72,10 +81,15 @@ export class AudioService {
    */
   private async getAudioSettings(): Promise<{ enabled: boolean; volume: number }> {
     try {
-      const stored = await AsyncStorage.getItem('decluttr_audio_settings');
+      const storage = getAsyncStorage();
+      const stored = await storage.getItem('decluttr_audio_settings');
       if (stored) {
-        const settings = JSON.parse(stored);
-        return { enabled: settings.enabled ?? true, volume: settings.volume ?? 0.8 };
+        try {
+          const settings = JSON.parse(stored);
+          return { enabled: settings.enabled ?? true, volume: settings.volume ?? 0.8 };
+        } catch {
+          // fall through to default if JSON is invalid
+        }
       }
     } catch (error) {
       console.warn('Failed to load audio settings:', error);
@@ -172,7 +186,8 @@ export class AudioService {
 
       // Save volume setting to AsyncStorage
       const currentSettings = await this.getAudioSettings();
-      await AsyncStorage.setItem(
+      const storage = getAsyncStorage();
+      await storage.setItem(
         'decluttr_audio_settings',
         JSON.stringify({
           ...currentSettings,
@@ -190,7 +205,8 @@ export class AudioService {
   public async setEnabled(enabled: boolean): Promise<void> {
     try {
       const currentSettings = await this.getAudioSettings();
-      await AsyncStorage.setItem(
+      const storage = getAsyncStorage();
+      await storage.setItem(
         'decluttr_audio_settings',
         JSON.stringify({
           ...currentSettings,

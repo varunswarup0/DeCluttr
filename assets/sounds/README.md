@@ -16,9 +16,15 @@ This folder should contain the following sound files:
 
 ## Sound Suggestions:
 
+<<<<<<< HEAD
 - **delete.mp3**: Short "zap" or "crunch" effect for a playful feel
 - **keep.mp3**: Bright "coin" or "chime" sound that rewards the swipe
 - For a retro vibe, keep the clips under half a second and use 8‑bit samples reminiscent of classic Nintendo games
+=======
+- **delete.mp3**: A subtle "whoosh" or "trash" sound
+- **keep.mp3**: A pleasant "ding", "chime", or "success" sound
+- For a retro feel, try short 8-bit samples like classic Nintendo games
+>>>>>>> 42a9a87 (Remove custom font loading)
 
 ## How to Add Sounds:
 

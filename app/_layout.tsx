@@ -80,7 +80,7 @@ export default function RootLayout() {
 }
 
 const SCREEN_OPTIONS = {
-  animation: 'ios_from_right', // for android
+  animation: 'default',
 } as const;
 
 const DRAWER_OPTIONS = {

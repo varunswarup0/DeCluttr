@@ -14,11 +14,7 @@ export function Picker<T>({
 }: React.ComponentPropsWithoutRef<typeof RNPicker<T>>) {
   const { colors } = useColorScheme();
   return (
-    <View
-      className={cn(
-        'ios:shadow-sm ios:shadow-black/5 rounded-md border border-background bg-background',
-        className
-      )}>
+    <View className={cn('rounded-md border border-background bg-background', className)}>
       <RNPicker
         mode={mode}
         style={

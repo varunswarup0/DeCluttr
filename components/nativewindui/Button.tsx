@@ -10,18 +10,17 @@ import { COLORS } from '~/theme/colors';
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'ios:active:opacity-80 bg-primary',
-      secondary: 'ios:border-primary ios:active:bg-primary/5 border border-foreground/40',
-      tonal:
-        'ios:bg-primary/10 dark:ios:bg-primary/10 ios:active:bg-primary/15 bg-primary/15 dark:bg-primary/30',
-      plain: 'ios:active:opacity-70',
+      primary: 'bg-primary',
+      secondary: 'border border-foreground/40',
+      tonal: 'bg-primary/15 dark:bg-primary/30',
+      plain: '',
     },
     size: {
       none: '',
       sm: 'py-1 px-2.5 rounded-full',
-      md: 'ios:rounded-lg py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
-      lg: 'py-2.5 px-5 ios:py-2 rounded-xl gap-2',
-      icon: 'ios:rounded-lg h-10 w-10 rounded-full',
+      md: 'py-2 px-5 rounded-full',
+      lg: 'py-2.5 px-5 rounded-xl gap-2',
+      icon: 'h-10 w-10 rounded-full',
     },
   },
   defaultVariants: {
@@ -49,8 +48,8 @@ const buttonTextVariants = cva('font-medium', {
   variants: {
     variant: {
       primary: 'text-white',
-      secondary: 'ios:text-primary text-foreground',
-      tonal: 'ios:text-primary text-foreground',
+      secondary: 'text-foreground',
+      tonal: 'text-foreground',
       plain: 'text-foreground',
     },
     size: {

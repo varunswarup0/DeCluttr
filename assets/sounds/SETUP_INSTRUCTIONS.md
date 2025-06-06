@@ -25,7 +25,7 @@ You can use online generators or audio software:
 
 ## Option 3: System Sounds
 
-Use built-in system sounds (iOS/Android):
+Use built-in Android system sounds:
 
 - Convert system notification sounds to MP3
 - Ensure they're brief and not jarring

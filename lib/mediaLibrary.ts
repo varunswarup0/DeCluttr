@@ -1,5 +1,4 @@
 import * as MediaLibrary from 'expo-media-library';
-import { Platform } from 'react-native';
 
 /**
  * Request permission to access the device's media library
@@ -36,20 +35,6 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
  */
 export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> {
   try {
-    if (Platform.OS === 'web') {
-      const DocumentPicker = await import('expo-document-picker');
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'image/*',
-        multiple: true,
-        copyToCacheDirectory: false,
-        base64: false,
-      });
-      if (result.canceled || !result.assets) {
-        return [];
-      }
-      return result.assets.slice(0, first).map((asset) => asset.uri);
-    }
-
     // First check if permission is granted
     const hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {

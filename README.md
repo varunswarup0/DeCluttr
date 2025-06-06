@@ -1,6 +1,7 @@
 # DeCluttr
 
 Minimal photo clean-up game built with Expo React Native.
+**Android only** – other platforms are not supported.
 
 ## Prerequisites
 - Node.js 18+
@@ -16,17 +17,11 @@ Minimal photo clean-up game built with Expo React Native.
 3. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
 4. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games.
 5. The `audioService` will load these sounds automatically and handle failures gracefully.
-6. When previewing in a browser, a simple file picker (powered by `expo-document-picker`) lets you load images from your computer.
 
-## Running the App
-- **Web preview**
-  ```bash
-  npm run web
-  ```
-- **Mobile preview** (Expo Dev Client)
-  ```bash
-  npm start
-  ```
+## Running the App on Android
+```bash
+npm start
+```
 
 XP and onboarding progress are stored using AsyncStorage. If storage is
 unavailable, an in-memory fallback ensures the app still works.

@@ -120,7 +120,7 @@ The audio system handles several error scenarios:
 
 - Missing sound files (graceful degradation)
 - Audio permission issues (silent failure)
-- Device in silent mode (respects iOS silent switch)
+- Device muted or in Do Not Disturb mode
 - Low memory conditions (proper cleanup)
 
 ## Testing
@@ -145,7 +145,7 @@ Potential improvements for future versions:
 1. Check if sound files exist in `assets/sounds/`
 2. Verify audio is enabled in app settings
 3. Check device volume level
-4. Ensure device is not in silent mode (iOS)
+4. Ensure device is not muted
 5. Check console for audio hook initialization errors
 
 ### Poor Performance

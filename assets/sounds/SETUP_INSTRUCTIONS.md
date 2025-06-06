@@ -25,7 +25,7 @@ You can use online generators or audio software:
 
 ## Option 3: System Sounds
 
-Use built-in system sounds (iOS/Android):
+Use built-in Android system sounds:
 
 - Convert system notification sounds to MP3
 - Ensure they're brief and not jarring
@@ -34,6 +34,7 @@ Use built-in system sounds (iOS/Android):
 
 - **delete.mp3**: Subtle "whoosh" or low-pitched "thud" (300-500ms)
 - **keep.mp3**: Pleasant "ding" or "chime" (200-400ms)
+- Consider using short 8-bit style blips for a retro Nintendo vibe
 - Both should be normalized to -6dB to prevent loud playback
 
 ## Quick Setup:

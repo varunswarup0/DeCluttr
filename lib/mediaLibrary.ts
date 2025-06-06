@@ -44,14 +44,12 @@ export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> 
       }
     }
 
-    // Fetch photo assets
     const assets = await MediaLibrary.getAssetsAsync({
       first,
       mediaType: MediaLibrary.MediaType.photo,
       sortBy: MediaLibrary.SortBy.creationTime,
     });
 
-    // Extract URIs from assets
     return assets.assets.map((asset) => asset.uri);
   } catch (error) {
     console.error('Error fetching photo assets:', error);

@@ -36,6 +36,15 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   className,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const timeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // Clear any pending timeouts on unmount or data reset
+  React.useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
+    };
+  }, []);
 
   // Create animation values for each card position in the stack - fixed approach
   const scale0 = useSharedValue(1);
@@ -57,6 +66,31 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     [opacity0, opacity1, opacity2]
   );
 
+  // Reset the deck when a new data array is provided
+  React.useEffect(() => {
+    setCurrentIndex(0);
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    for (let i = 0; i < Math.min(maxVisibleCards, scaleValues.length); i++) {
+      scaleValues[i].value = withSpring(1 - i * 0.05);
+      translateYValues[i].value = withSpring(i * cardSpacing);
+      opacityValues[i].value = withSpring(1 - i * 0.1);
+    }
+  }, [data, cardSpacing, maxVisibleCards, scaleValues, translateYValues, opacityValues]);
+
+  // Notify when there are no cards to show
+  const emptyNotified = React.useRef(false);
+  React.useEffect(() => {
+    if (data.length === 0) {
+      if (!emptyNotified.current) {
+        onDeckEmpty?.();
+        emptyNotified.current = true;
+      }
+    } else {
+      emptyNotified.current = false;
+    }
+  }, [data.length, onDeckEmpty]);
+
   // Create animated styles for each card position
   const animatedStyle0 = useAnimatedStyle(() => ({
     transform: [{ scale: scale0.value }, { translateY: translateY0.value }],
@@ -74,6 +108,21 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   }));
 
   const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
+  const advanceIndex = useCallback(() => {
+    const timeout = setTimeout(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex >= data.length && onDeckEmpty) {
+          onDeckEmpty();
+        }
+        return nextIndex;
+      });
+      // remove finished timeout reference
+      timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
+    }, 300);
+    timeoutsRef.current.push(timeout);
+  }, [data.length, onDeckEmpty]);
+
   const handleSwipeLeft = useCallback(
     (item: SwipeDeckItem, index: number) => {
       onSwipeLeft?.(item, index);
@@ -85,25 +134,16 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
         opacityValues[i].value = withSpring(1 - i * 0.1);
       }
 
-      setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-        setCurrentIndex(nextIndex);
-
-        if (nextIndex >= data.length && onDeckEmpty) {
-          onDeckEmpty();
-        }
-      }, 300);
+      advanceIndex();
     },
     [
-      currentIndex,
-      data.length,
       onSwipeLeft,
-      onDeckEmpty,
       scaleValues,
       translateYValues,
       opacityValues,
       maxVisibleCards,
       cardSpacing,
+      advanceIndex,
     ]
   );
   const handleSwipeRight = useCallback(
@@ -117,25 +157,16 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
         opacityValues[i].value = withSpring(1 - i * 0.1);
       }
 
-      setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-        setCurrentIndex(nextIndex);
-
-        if (nextIndex >= data.length && onDeckEmpty) {
-          onDeckEmpty();
-        }
-      }, 300);
+      advanceIndex();
     },
     [
-      currentIndex,
-      data.length,
       onSwipeRight,
-      onDeckEmpty,
       scaleValues,
       translateYValues,
       opacityValues,
       maxVisibleCards,
       cardSpacing,
+      advanceIndex,
     ]
   ); // Initialize animation values for the stack effect
   React.useEffect(() => {

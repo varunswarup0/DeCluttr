@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Text } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
@@ -53,20 +53,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,
         }}
       />
-      <Tabs.Screen
-        name="tree"
-        options={{
-          title: 'Tree',
-          tabBarIcon: ({ color, size }) => <MaterialIcons name="park" size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="gallery"
-        options={{
-          title: 'Gallery',
-          tabBarIcon: ({ color, size }) => <Ionicons name="images" size={size} color={color} />,
-        }}
-      />
+      {/**
+       * Extra tabs removed for a leaner experience. Only Home and Recycle Bin remain.
+       */}
     </Tabs>
   );
 }

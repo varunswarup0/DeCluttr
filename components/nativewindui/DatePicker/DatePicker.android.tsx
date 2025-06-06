@@ -36,7 +36,7 @@ export function DatePicker(
             variant="plain"
             androidRootClassName="rounded-none"
             onPress={show('date')}
-            className="border-foreground/30 rounded border px-2.5 py-3 active:opacity-80">
+            className="rounded border border-foreground/30 px-2.5 py-3 active:opacity-80">
             <Text className="py-px text-sm">
               {new Intl.DateTimeFormat('en-US', {
                 dateStyle: 'medium',
@@ -57,7 +57,7 @@ export function DatePicker(
             variant="plain"
             androidRootClassName="rounded-none"
             onPress={show('time')}
-            className="border-foreground/30 rounded border px-2.5 py-3 active:opacity-80">
+            className="rounded border border-foreground/30 px-2.5 py-3 active:opacity-80">
             <Text className="py-px text-sm">
               {new Intl.DateTimeFormat('en-US', {
                 timeStyle: 'short',

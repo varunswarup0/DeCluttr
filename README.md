@@ -10,9 +10,13 @@ Minimal photo clean-up game built with Expo React Native.
 ## Setup
 1. Install dependencies:
    ```bash
- npm install
-  ```
-  This will also apply patches needed for audio playback.
+   npm install
+   ```
+   This automatically applies the audio patch via `patch-package`. If you see an error about
+   `expo-audio+0.4.5.patch` failing, delete `node_modules` and run:
+   ```bash
+   npm install && npx patch-package
+   ```
 2. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 3. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
 4. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games.

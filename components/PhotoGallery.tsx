@@ -36,6 +36,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   // Use RecycleBin store
   const {
     deletedPhotos,
+    totalDeleted,
     addDeletedPhoto,
     xp,
     resetGallery: resetRecycleBinStore,
@@ -113,10 +114,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleDeckEmpty = () => {
     const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
     const totalXpEarned = xp - sessionStartXp;
+    const totalDeletedCount = totalDeleted;
     if (hasMore) {
       Alert.alert(
         'All Photos Reviewed!',
-        `You've reviewed all photos.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+        `You've reviewed all photos.\n\nDeleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
         [
           {
             text: 'Load More',
@@ -128,7 +130,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     } else {
       Alert.alert(
         'No More Photos',
-        `You've reached the end of your gallery.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+        `You've reached the end of your gallery.\n\nDeleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
         [{ text: 'OK', style: 'default' }]
       );
     }
@@ -216,6 +218,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           </Text>
           <Text variant="caption1" color="secondary">
             Kept
+          </Text>
+        </View>
+        <View className="items-center">
+          <Text variant="title2" className="text-yellow-600">
+            {totalDeleted}
+          </Text>
+          <Text variant="caption1" color="secondary">
+            Total Deleted
           </Text>
         </View>
       </View>

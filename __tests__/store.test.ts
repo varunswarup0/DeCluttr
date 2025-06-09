@@ -28,13 +28,14 @@ const createPhoto = (id: string): DeletedPhoto => ({
 
 describe('RecycleBin store', () => {
   beforeEach(() => {
-    useRecycleBinStore.setState({ deletedPhotos: [], xp: 0, isXpLoaded: true, onboardingCompleted: false });
+    useRecycleBinStore.setState({ deletedPhotos: [], totalDeleted: 0, xp: 0, isXpLoaded: true, onboardingCompleted: false });
   });
 
   it('adds and restores photos with XP updates', async () => {
-    const { addDeletedPhoto, restorePhoto, xp } = useRecycleBinStore.getState();
+    const { addDeletedPhoto, restorePhoto } = useRecycleBinStore.getState();
     addDeletedPhoto(createPhoto('1'));
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
+    expect(useRecycleBinStore.getState().totalDeleted).toBe(1);
     expect(useRecycleBinStore.getState().xp).toBe(XP_CONFIG.DELETE_PHOTO);
 
     restorePhoto('1');
@@ -67,6 +68,7 @@ describe('RecycleBin store', () => {
     await store.completeOnboarding();
     await store.resetGallery();
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
+    expect(useRecycleBinStore.getState().totalDeleted).toBe(0);
     expect(useRecycleBinStore.getState().xp).toBe(0);
     await store.resetOnboarding();
     expect(useRecycleBinStore.getState().onboardingCompleted).toBe(false);
@@ -75,11 +77,14 @@ describe('RecycleBin store', () => {
     const storage = require('../lib/asyncStorageWrapper').getAsyncStorage();
     await storage.setItem('@decluttr_xp', '15');
     await storage.setItem('@decluttr_deleted_photos', JSON.stringify([createPhoto('a')]));
+    await storage.setItem('@decluttr_total_deleted', '5');
     useRecycleBinStore.setState({ deletedPhotos: [], xp: 0, isXpLoaded: false, onboardingCompleted: false });
     await useRecycleBinStore.getState().loadXP();
     await useRecycleBinStore.getState().loadDeletedPhotos();
+    await useRecycleBinStore.getState().loadTotalDeleted();
     expect(useRecycleBinStore.getState().xp).toBe(15);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
+    expect(useRecycleBinStore.getState().totalDeleted).toBe(5);
   });
 
   it('addXP and subtractXP clamp at zero', async () => {

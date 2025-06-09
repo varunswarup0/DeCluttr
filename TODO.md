@@ -1,18 +1,20 @@
 # TODO
 
-Future improvements and feature ideas:
+Future improvements and feature ideas (highest priority first):
 
-- Improve selection workflow:
+- **Improve selection workflow**
   - Change default swipe actions to navigate between images instead of keep/delete.
   - Optionally move the image strip to the bottom for faster navigation.
   - Provide a button to open the current photo in the system gallery for favoriting.
-- Support multi-select delete of similar photos to speed up cleanup.
-- Allow marking entire months or albums and bulk delete.
+- **Multi-select delete** of similar photos to speed up cleanup.
+- **Bulk delete** by month or album.
+- **Clarify delete behaviour** – setting for trash vs permanent removal.
+- **Advanced folder selection** including WhatsApp media scanning.
+- **Running total of deleted items** ✔️
+- **Show overall deleted total in Recycle Bin** ✔️
+- Add video review support.
 - Remove "Premium" label once purchased and show "Premium user" status.
-- Clarify whether delete actions move to trash or permanently delete; add a setting.
-- Enable scanning of WhatsApp media folders and allow advanced folder selection.
 - Implement endless gallery pagination so new batches of photos load automatically. ✔️
-- Add video review support and a running total of all deleted items.
 - Additional nice-to-haves:
   - Mark as favourite.
   - Move or copy to a specific album.

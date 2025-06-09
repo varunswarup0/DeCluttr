@@ -137,17 +137,43 @@ export async function getAssetInfo(assetId: string): Promise<MediaLibrary.Asset 
  */
 export async function deletePhotoAssets(assetIds: string[]): Promise<void> {
   try {
-    const hasPermission = await checkMediaLibraryPermission();
+    let hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {
-      const permissionGranted = await requestMediaLibraryPermission();
-      if (!permissionGranted) {
-        throw new Error('Media library permission not granted');
+      hasPermission = await requestMediaLibraryPermission();
+      if (!hasPermission) {
+        console.warn('Media library permission not granted. Skipping delete.');
+        return;
       }
     }
 
-    await MediaLibrary.deleteAssetsAsync(assetIds);
-  } catch (error) {
-    console.error('Error deleting photo assets:', error);
+    // Validate that each asset exists before attempting deletion
+    const validIds: string[] = [];
+    for (const id of assetIds) {
+      try {
+        await MediaLibrary.getAssetInfoAsync(id);
+        validIds.push(id);
+      } catch {
+        console.warn(`Asset ${id} not found. Skipping.`);
+      }
+    }
+
+    if (validIds.length === 0) {
+      console.log('No photo assets to delete.');
+      return;
+    }
+
+    const success = await MediaLibrary.deleteAssetsAsync(validIds);
+    if (success) {
+      console.log(`Deleted ${validIds.length} photo asset(s).`);
+    } else {
+      console.warn('Some photo assets could not be deleted.');
+    }
+  } catch (error: any) {
+    if (error?.message?.toLowerCase().includes('permission')) {
+      console.warn('Permission denied while deleting photo assets.');
+    } else {
+      console.error('Error deleting photo assets:', error);
+    }
   }
 }
 

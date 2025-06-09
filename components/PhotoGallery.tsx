@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Dimensions } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
-import { fetchPhotoAssets } from '~/lib/mediaLibrary';
+import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
@@ -27,6 +28,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [sessionStartXp, setSessionStartXp] = useState(0);
   const [sessionDeletedStart, setSessionDeletedStart] = useState(0);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  const [hasMore, setHasMore] = useState(true);
+  const [confettiKey, setConfettiKey] = useState(0);
 
   // Use RecycleBin store
   const {
@@ -46,12 +50,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       setSessionStartXp(currentXp);
       setSessionDeletedStart(currentDeleted.length);
 
-      const assets = await fetchPhotoAssets(50); // Load first 50 photos
-      const photoItems: SwipeDeckItem[] = assets.map((asset) => ({
-        // Use the asset id as stable identifier
+      const result = await fetchPhotoAssetsWithPagination(nextCursor, 50);
+      const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
         id: asset.id,
         imageUri: asset.uri,
       }));
+      setNextCursor(result.endCursor);
+      setHasMore(result.hasNextPage);
 
       if (!isMounted.current) return false;
       setPhotos(photoItems);
@@ -87,6 +92,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
     addDeletedPhoto(deletedPhoto);
 
+    // Trigger a confetti burst for extra dopamine
+    setConfettiKey((k) => k + 1);
+
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
 
@@ -104,20 +112,25 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleDeckEmpty = () => {
     const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
     const totalXpEarned = xp - sessionStartXp;
-    Alert.alert(
-      'All Photos Reviewed!',
-      `You've reviewed all photos.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
-      [
-        {
-          text: 'Load More',
-          onPress: loadPhotos,
-        },
-        {
-          text: 'Done',
-          style: 'cancel',
-        },
-      ]
-    );
+    if (hasMore) {
+      Alert.alert(
+        'All Photos Reviewed!',
+        `You've reviewed all photos.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+        [
+          {
+            text: 'Load More',
+            onPress: loadPhotos,
+          },
+          { text: 'Done', style: 'cancel' },
+        ]
+      );
+    } else {
+      Alert.alert(
+        'No More Photos',
+        `You've reached the end of your gallery.\n\nDeleted: ${deletedThisSession}\nKept: ${keptPhotos.length}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
   };
 
   const resetGallery = async () => {
@@ -221,6 +234,16 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         maxVisibleCards={3}
         cardSpacing={12}
       />
+
+      {/* Confetti burst when deleting */}
+      {confettiKey > 0 && (
+        <ConfettiCannon
+          key={confettiKey}
+          count={30}
+          fadeOut
+          origin={{ x: Dimensions.get('window').width / 2, y: 0 }}
+        />
+      )}
 
       {/* Reset Button */}
       <View className="mt-6">

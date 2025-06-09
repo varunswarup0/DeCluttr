@@ -1,6 +1,8 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
+import { useEffect } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useRecycleBinStore } from '~/store/store';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
@@ -22,11 +24,23 @@ function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
 
 function XPDisplay() {
   const { xp } = useRecycleBinStore();
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = 1.4;
+    scale.value = withTiming(1, { duration: 300 });
+  }, [xp]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
-    <View className="flex-row items-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900">
-      <Text className="text-sm font-bold text-yellow-700 dark:text-yellow-300">⭐ {xp} XP</Text>
-    </View>
+    <Animated.View
+      style={animatedStyle}
+      className="flex-row items-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900">
+      <Text className="font-arcade text-xs text-yellow-700 dark:text-yellow-300">⭐ {xp} XP</Text>
+    </Animated.View>
   );
 }
 

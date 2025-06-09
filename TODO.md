@@ -11,6 +11,7 @@ Future improvements and feature ideas:
 - Remove "Premium" label once purchased and show "Premium user" status.
 - Clarify whether delete actions move to trash or permanently delete; add a setting.
 - Enable scanning of WhatsApp media folders and allow advanced folder selection.
+- Implement endless gallery pagination so new batches of photos load automatically. ✔️
 - Add video review support and a running total of all deleted items.
 - Additional nice-to-haves:
   - Mark as favourite.
@@ -20,4 +21,5 @@ Future improvements and feature ideas:
   - Share images as documents or without captions.
   - Compress or resize photos.
   - Basic editing tools.
-  - AI-based sorting (selfies, pets, nature, etc.).
+- AI-based sorting (selfies, pets, nature, etc.).
+- Add dopamine-inducing animations (confetti, XP pop effects). ✔️

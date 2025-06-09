@@ -14,6 +14,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
+import { useCustomFonts } from '~/lib/useCustomFonts';
+import { backgroundMusicService } from '~/lib/backgroundMusic';
 import { NAV_THEME } from '~/theme';
 
 export {
@@ -24,6 +26,7 @@ export {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const fontsLoaded = useCustomFonts();
   const { loadXP, loadDeletedPhotos, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
@@ -52,6 +55,20 @@ export default function RootLayout() {
       }
     });
   }, [checkOnboardingStatus, segments, router]);
+
+  // Start background music once fonts and storage are ready
+  useEffect(() => {
+    if (fontsLoaded && isXpLoaded) {
+      backgroundMusicService.play();
+    }
+    return () => {
+      backgroundMusicService.stop();
+    };
+  }, [fontsLoaded, isXpLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <>

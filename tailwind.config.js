@@ -9,7 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['System', 'sans-serif'],
+        sans: ['Inter', 'System', 'sans-serif'],
+        arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
       },
       colors: {
         border: withOpacity('border'),

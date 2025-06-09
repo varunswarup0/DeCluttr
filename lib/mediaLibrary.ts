@@ -11,8 +11,12 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    return status === 'granted';
+    const { status, accessPrivileges } = await MediaLibrary.requestPermissionsAsync({
+      accessPrivileges: 'all',
+    });
+    const granted = status === 'granted';
+    const hasAccess = accessPrivileges ? accessPrivileges === 'all' : true;
+    return granted && hasAccess;
   } catch (error) {
     console.error('Error requesting media library permission:', error);
     return false;
@@ -25,8 +29,10 @@ export async function requestMediaLibraryPermission(): Promise<boolean> {
  */
 export async function checkMediaLibraryPermission(): Promise<boolean> {
   try {
-    const { status } = await MediaLibrary.getPermissionsAsync();
-    return status === 'granted';
+    const { status, accessPrivileges, granted } = await MediaLibrary.getPermissionsAsync();
+    const permissionGranted = granted || status === 'granted';
+    const hasAccess = accessPrivileges ? accessPrivileges === 'all' : true;
+    return permissionGranted && hasAccess;
   } catch (error) {
     console.error('Error checking media library permission:', error);
     return false;

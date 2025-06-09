@@ -4,10 +4,12 @@ Minimal photo clean-up game built with Expo React Native.
 **Android only** – other platforms are not supported.
 
 ## Prerequisites
+
 - Node.js 18+
 - npm 9+
 
 ## Setup
+
 1. Install dependencies:
    ```bash
    npm install
@@ -17,12 +19,15 @@ Minimal photo clean-up game built with Expo React Native.
    ```bash
    npm install && npx patch-package
    ```
-2. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
-3. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
-4. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games.
-5. The `audioService` will load these sounds automatically and handle failures gracefully.
+2. The Inter font and a retro "Press Start 2P" font are bundled and load automatically on startup. Update `lib/useCustomFonts.ts` and `tailwind.config.js` if you prefer different typefaces.
+3. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
+4. (Optional) Place a music file at `assets/music/background.mp3` to enable looping background music. The app starts this track automatically.
+5. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
+6. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games. A confetti burst rewards each successful delete.
+7. The `audioService` will load these sounds automatically and handle failures gracefully.
 
 ## Running the App on Android
+
 ```bash
 npm start
 ```
@@ -39,16 +44,19 @@ unavailable, an in-memory fallback ensures the app still works.
    - A stack of recent photos is loaded.
    - Swipe **left** to delete (plays a sound and grants XP) or **right** to keep.
    - When the stack is empty an alert summarizes how many photos you deleted and XP earned.
+   - If more images are available the next batch loads automatically so the game never ends until your gallery is empty.
 3. **Recycle Bin**
    - Deleted photos move to a recycle bin tab.
-   - You can restore or permanently delete them here; permanent deletion grants bonus XP.
+   - You can restore or permanently delete them here; permanent deletion grants bonus XP. Deleted files are removed from the device using the platform MediaLibrary API.
 
 The minimal build removes additional tabs like Gallery, Tree, and Stats to keep the focus on photo cleanup.
 
 For more details on specific systems see:
+
 - `AUDIO_SYSTEM_README.md`
 - `ONBOARDING_README.md`
 - `XP_SYSTEM_README.md`
 
 ## Future Work
+
 See [TODO.md](TODO.md) for planned improvements and feature ideas.

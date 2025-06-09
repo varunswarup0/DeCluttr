@@ -8,6 +8,7 @@ import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
+import { MotivationBanner } from './MotivationBanner';
 
 interface PhotoGalleryProps {
   className?: string;
@@ -198,6 +199,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
   return (
     <View className={cn('flex-1 items-center justify-center', className)}>
+      <MotivationBanner />
       {/* Stats */}
       <View className="mb-6 flex-row space-x-6">
         <View className="items-center">

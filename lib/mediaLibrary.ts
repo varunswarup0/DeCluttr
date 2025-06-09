@@ -1,5 +1,10 @@
 import * as MediaLibrary from 'expo-media-library';
 
+export interface PhotoAsset {
+  id: string;
+  uri: string;
+}
+
 /**
  * Request permission to access the device's media library
  * @returns Promise<boolean> - true if permission is granted, false otherwise
@@ -33,7 +38,7 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
  * @param first - Number of assets to fetch (default: 1000)
  * @returns Promise<string[]> - Array of photo asset URIs
  */
-export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> {
+export async function fetchPhotoAssets(first: number = 1000): Promise<PhotoAsset[]> {
   try {
     // First check if permission is granted
     const hasPermission = await checkMediaLibraryPermission();
@@ -50,7 +55,7 @@ export async function fetchPhotoAssets(first: number = 1000): Promise<string[]> 
       sortBy: MediaLibrary.SortBy.creationTime,
     });
 
-    return assets.assets.map((asset) => asset.uri);
+    return assets.assets.map((asset) => ({ id: asset.id, uri: asset.uri }));
   } catch (error) {
     console.error('Error fetching photo assets:', error);
     return [];
@@ -67,7 +72,7 @@ export async function fetchPhotoAssetsWithPagination(
   after?: string,
   first: number = 20
 ): Promise<{
-  assets: string[];
+  assets: PhotoAsset[];
   hasNextPage: boolean;
   endCursor?: string;
 }> {
@@ -90,7 +95,7 @@ export async function fetchPhotoAssetsWithPagination(
     });
 
     return {
-      assets: result.assets.map((asset) => asset.uri),
+      assets: result.assets.map((asset) => ({ id: asset.id, uri: asset.uri })),
       hasNextPage: result.hasNextPage,
       endCursor: result.endCursor,
     };
@@ -124,4 +129,28 @@ export async function getAssetInfo(assetId: string): Promise<MediaLibrary.Asset 
     console.error('Error getting asset info:', error);
     return null;
   }
+}
+
+/**
+ * Permanently delete photo assets from the device
+ * @param assetIds - Array of asset IDs to delete
+ */
+export async function deletePhotoAssets(assetIds: string[]): Promise<void> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const permissionGranted = await requestMediaLibraryPermission();
+      if (!permissionGranted) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+
+    await MediaLibrary.deleteAssetsAsync(assetIds);
+  } catch (error) {
+    console.error('Error deleting photo assets:', error);
+  }
+}
+
+export async function deletePhotoAsset(assetId: string): Promise<void> {
+  return deletePhotoAssets([assetId]);
 }

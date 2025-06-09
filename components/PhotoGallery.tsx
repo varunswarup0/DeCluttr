@@ -46,12 +46,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       setSessionStartXp(currentXp);
       setSessionDeletedStart(currentDeleted.length);
 
-      const photoUris = await fetchPhotoAssets(50); // Load first 50 photos
-      const photoItems: SwipeDeckItem[] = photoUris.map((uri) => ({
-        // Use the uri itself as a stable id so deleted photos aren't blocked
-        // by duplicate IDs when a new session begins
-        id: uri,
-        imageUri: uri,
+      const assets = await fetchPhotoAssets(50); // Load first 50 photos
+      const photoItems: SwipeDeckItem[] = assets.map((asset) => ({
+        // Use the asset id as stable identifier
+        id: asset.id,
+        imageUri: asset.uri,
       }));
 
       if (!isMounted.current) return false;

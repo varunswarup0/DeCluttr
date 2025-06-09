@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['System', 'sans-serif'],
+        sans: ['Quicksand_400Regular', 'System', 'sans-serif'],
       },
       colors: {
         border: withOpacity('border'),

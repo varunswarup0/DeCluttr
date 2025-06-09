@@ -6,6 +6,7 @@ import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useFonts, Quicksand_400Regular, Quicksand_700Bold } from '@expo-google-fonts/quicksand';
 
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -23,6 +24,10 @@ export {
 
 export default function RootLayout() {
   useInitialAndroidBarSync();
+  const [fontsLoaded] = useFonts({
+    Quicksand_400Regular,
+    Quicksand_700Bold,
+  });
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const { loadXP, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
   const segments = useSegments();
@@ -51,6 +56,10 @@ export default function RootLayout() {
       }
     });
   }, [checkOnboardingStatus, segments, router]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <>

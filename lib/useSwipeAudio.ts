@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import * as Haptics from 'expo-haptics';
 import { useAudioSettings } from './useAudioSettings';
 import { audioService } from './audioService';
 
@@ -9,36 +10,34 @@ import { audioService } from './audioService';
 export const useSwipeAudio = () => {
   const { settings, isLoaded } = useAudioSettings();
 
-  // Initialize once after settings have loaded
-  /* eslint-disable react-hooks/exhaustive-deps */
+  // Initialize and sync settings when they change
   useEffect(() => {
-    if (isLoaded) {
-      audioService.initialize().then(() => {
-        audioService.setVolume(settings.volume);
-        audioService.setEnabled(settings.enabled);
-      });
-    }
-  }, [isLoaded]);
-  /* eslint-enable react-hooks/exhaustive-deps */
+    if (!isLoaded) return;
 
-  // Sync volume/enabled when settings change
-  useEffect(() => {
-    if (isLoaded) {
+    audioService.initialize().then(() => {
       audioService.setVolume(settings.volume);
       audioService.setEnabled(settings.enabled);
-    }
+    });
   }, [isLoaded, settings.enabled, settings.volume]);
 
   const playDeleteSound = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     audioService.playDeleteSound();
   };
 
   const playKeepSound = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     audioService.playKeepSound();
+  };
+
+  const playTapSound = () => {
+    Haptics.selectionAsync();
+    audioService.playTapSound();
   };
 
   return {
     playDeleteSound,
     playKeepSound,
+    playTapSound,
   };
 };

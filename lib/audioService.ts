@@ -3,8 +3,11 @@ import { getAsyncStorage } from './asyncStorageWrapper';
 
 export class AudioService {
   private static instance: AudioService;
-  private deletePlayer: AudioPlayer | null = null;
-  private keepPlayer: AudioPlayer | null = null;
+  private players: Record<string, AudioPlayer | null> = {
+    delete: null,
+    keep: null,
+    tap: null,
+  };
   private isInitialized = false;
   private initializing: Promise<void> | null = null;
 
@@ -30,20 +33,21 @@ export class AudioService {
 
     this.initializing = (async () => {
       try {
-        // Create audio players for each sound
-        this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
-        this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
+        this.players = {
+          delete: createAudioPlayer(require('../assets/sounds/delete.mp3')),
+          keep: createAudioPlayer(require('../assets/sounds/keep.mp3')),
+          // Reuse the keep sound for taps to avoid bundling extra assets
+          tap: createAudioPlayer(require('../assets/sounds/keep.mp3')),
+        };
 
-        // Set initial volume
-        const audioSettings = await this.getAudioSettings();
-        this.deletePlayer.volume = audioSettings.volume;
-        this.keepPlayer.volume = audioSettings.volume;
+        const { volume } = await this.getAudioSettings();
+        for (const key of Object.keys(this.players)) {
+          this.players[key]!.volume = volume;
+        }
 
         this.isInitialized = true;
-        console.log('Audio service initialized successfully');
       } catch (error) {
         console.warn('Failed to initialize audio service:', error);
-        // Create mock players that fail silently if files don't exist
         this.createMockPlayers();
       } finally {
         this.initializing = null;
@@ -70,10 +74,12 @@ export class AudioService {
       remove: () => {},
     } as any;
 
-    this.deletePlayer = mockPlayer;
-    this.keepPlayer = mockPlayer;
+    this.players = {
+      delete: mockPlayer,
+      keep: mockPlayer,
+      tap: mockPlayer,
+    };
     this.isInitialized = true;
-    console.log('Audio service initialized with mock players (sound files not found)');
   }
 
   /**
@@ -97,54 +103,37 @@ export class AudioService {
     return { enabled: true, volume: 0.8 };
   }
 
-  /**
-   * Play delete sound effect
-   */
-  public async playDeleteSound(): Promise<void> {
+  private async playSound(player: AudioPlayer | null): Promise<void> {
     try {
       if (!this.isInitialized) {
         await this.initialize();
       }
 
-      // Check if audio is enabled in settings
       const audioSettings = await this.getAudioSettings();
-      if (!audioSettings.enabled) {
+      if (!audioSettings.enabled || !player) {
         return;
       }
 
-      if (this.deletePlayer) {
-        // Reset to beginning and play
-        this.deletePlayer.seekTo(0);
-        this.deletePlayer.play();
-      }
+      player.seekTo(0);
+      player.play();
     } catch (error) {
-      console.warn('Failed to play delete sound:', error);
+      console.warn('Failed to play sound:', error);
     }
   }
 
-  /**
-   * Play keep sound effect
-   */
+  /** Play delete sound effect */
+  public async playDeleteSound(): Promise<void> {
+    return this.playSound(this.players.delete);
+  }
+
+  /** Play keep sound effect */
   public async playKeepSound(): Promise<void> {
-    try {
-      if (!this.isInitialized) {
-        await this.initialize();
-      }
+    return this.playSound(this.players.keep);
+  }
 
-      // Check if audio is enabled in settings
-      const audioSettings = await this.getAudioSettings();
-      if (!audioSettings.enabled) {
-        return;
-      }
-
-      if (this.keepPlayer) {
-        // Reset to beginning and play
-        this.keepPlayer.seekTo(0);
-        this.keepPlayer.play();
-      }
-    } catch (error) {
-      console.warn('Failed to play keep sound:', error);
-    }
+  /** Play generic tap sound effect */
+  public async playTapSound(): Promise<void> {
+    return this.playSound(this.players.tap);
   }
 
   /**
@@ -152,18 +141,15 @@ export class AudioService {
    */
   public async cleanup(): Promise<void> {
     try {
-      if (this.deletePlayer) {
-        this.deletePlayer.remove();
-        this.deletePlayer = null;
-      }
-
-      if (this.keepPlayer) {
-        this.keepPlayer.remove();
-        this.keepPlayer = null;
+      for (const key of Object.keys(this.players)) {
+        const player = this.players[key];
+        if (player) {
+          player.remove();
+          this.players[key] = null;
+        }
       }
 
       this.isInitialized = false;
-      console.log('Audio service cleaned up');
     } catch (error) {
       console.warn('Failed to cleanup audio service:', error);
     }
@@ -176,12 +162,8 @@ export class AudioService {
     try {
       const clampedVolume = Math.max(0, Math.min(1, volume));
 
-      if (this.deletePlayer) {
-        this.deletePlayer.volume = clampedVolume;
-      }
-
-      if (this.keepPlayer) {
-        this.keepPlayer.volume = clampedVolume;
+      for (const player of Object.values(this.players)) {
+        if (player) player.volume = clampedVolume;
       }
 
       // Save volume setting to AsyncStorage

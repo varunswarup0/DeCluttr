@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, Dimensions } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -32,25 +33,40 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const rotate = useSharedValue(0);
   const scale = useSharedValue(1);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
+
+  const overlayBase = {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: () => {
       if (!disabled) {
-        scale.value = withSpring(0.8);
+        scale.value = withSpring(0.9);
+        runOnJS(Haptics.selectionAsync)();
       }
     },
     onActive: (event) => {
       if (!disabled) {
         translateX.value = event.translationX;
         translateY.value = event.translationY * 0.1; // Reduce vertical movement
+        rotate.value = (event.translationX / screenWidth) * 15;
       }
     },
     onEnd: (event) => {
       if (disabled) return;
 
-      scale.value = withSpring(1);
+      scale.value = withSpring(1, { mass: 0.6, damping: 15, stiffness: 200 });
+      rotate.value = withTiming(0, { duration: 200 });
 
       const velocityX = event.velocityX;
       const shouldSwipeLeft = translateX.value < -SWIPE_THRESHOLD || velocityX < -1000;
@@ -60,6 +76,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         // Swipe left - delete
         translateX.value = withTiming(-screenWidth * 1.5, { duration: 300 });
         translateY.value = withTiming(0, { duration: 300 });
+        rotate.value = withTiming(-20, { duration: 300 });
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
@@ -69,6 +86,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         // Swipe right - keep
         translateX.value = withTiming(screenWidth * 1.5, { duration: 300 });
         translateY.value = withTiming(0, { duration: 300 });
+        rotate.value = withTiming(20, { duration: 300 });
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
@@ -78,6 +96,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         // Snap back to center
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
+        rotate.value = withTiming(0, { duration: 200 });
       }
     },
   });
@@ -90,6 +109,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         { translateX: translateX.value },
         { translateY: translateY.value },
         { scale: scale.value },
+        { rotate: `${rotate.value}deg` },
       ],
       opacity,
     };
@@ -141,33 +161,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           resizeMode="cover"
         />
 
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-            },
-            overlayStyle,
-          ]}>
+        <Animated.View style={[overlayBase, overlayStyle]}>
           <Animated.View
             style={[
-              {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 59, 48, 0.8)',
-                borderRadius: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-              },
+              overlayBase,
+              { backgroundColor: 'rgba(255, 160, 160, 0.8)' },
               deleteOverlayStyle,
             ]}>
             <View className="rounded-full bg-white p-4">
@@ -180,17 +178,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
           <Animated.View
             style={[
-              {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(52, 199, 89, 0.8)',
-                borderRadius: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-              },
+              overlayBase,
+              { backgroundColor: 'rgba(169, 255, 197, 0.8)' },
               keepOverlayStyle,
             ]}>
             <View className="rounded-full bg-white p-4">

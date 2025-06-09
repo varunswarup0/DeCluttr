@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { View, ScrollView, Image, Dimensions, Alert, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Container } from '~/components/Container';
 import { Text } from '~/components/nativewindui/Text';
@@ -98,7 +98,12 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
 };
 
 export default function RecycleBin() {
-  const { deletedPhotos, restorePhoto, permanentlyDelete, clearRecycleBin } = useRecycleBinStore();
+  const { deletedPhotos, restorePhoto, permanentlyDelete, clearRecycleBin, purgeExpiredPhotos } =
+    useRecycleBinStore();
+
+  useEffect(() => {
+    purgeExpiredPhotos();
+  }, [purgeExpiredPhotos]);
 
   const handleRestore = (photoId: string) => {
     const restoredPhoto = restorePhoto(photoId);
@@ -110,8 +115,8 @@ export default function RecycleBin() {
     }
   };
 
-  const handlePermanentDelete = (photoId: string) => {
-    permanentlyDelete(photoId);
+  const handlePermanentDelete = async (photoId: string) => {
+    await permanentlyDelete(photoId);
     Alert.alert(
       'Photo Deleted',
       `The photo has been permanently deleted.\n\n⭐ +${XP_CONFIG.PERMANENT_DELETE} XP`
@@ -129,9 +134,9 @@ export default function RecycleBin() {
         {
           text: 'Clear All',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             const photosCount = deletedPhotos.length;
-            clearRecycleBin();
+            await clearRecycleBin();
             Alert.alert(
               'Recycle Bin Cleared',
               `All photos have been permanently deleted.\n\n⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`

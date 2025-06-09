@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getAsyncStorage } from '~/lib/asyncStorageWrapper';
+import { deletePhotoAsset, deletePhotoAssets } from '~/lib/mediaLibrary';
 export interface BearState {
   bears: number;
   increasePopulation: () => void;
@@ -25,6 +26,7 @@ export const XP_CONFIG = {
 // Storage keys
 const XP_STORAGE_KEY = '@decluttr_xp';
 const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
+const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -41,8 +43,15 @@ export interface RecycleBinState {
   onboardingCompleted: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
-  permanentlyDelete: (photoId: string) => void;
-  clearRecycleBin: () => void;
+  permanentlyDelete: (photoId: string) => Promise<void>;
+  clearRecycleBin: () => Promise<void>;
+  /**
+   * Permanently remove photos that have been in the recycle bin for more than
+   * 30 days. This does not award XP since it's an automatic cleanup.
+   */
+  purgeExpiredPhotos: () => Promise<void>;
+  loadDeletedPhotos: () => Promise<void>;
+  saveDeletedPhotos: (photos: DeletedPhoto[]) => Promise<void>;
   getDeletedPhoto: (photoId: string) => DeletedPhoto | undefined;
   loadXP: () => Promise<void>;
   addXP: (amount: number) => Promise<void>;
@@ -59,6 +68,16 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   isXpLoaded: false,
   onboardingCompleted: false,
 
+  // Helper to persist deleted photos
+  saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
+    try {
+      const storage = getAsyncStorage();
+      await storage.setItem(DELETED_PHOTOS_STORAGE_KEY, JSON.stringify(photos));
+    } catch (error) {
+      console.error('Failed to save deleted photos:', error);
+    }
+  },
+
   // Load XP from AsyncStorage on app startup
   loadXP: async () => {
     try {
@@ -73,6 +92,24 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       console.error('Error in loadXP:', error);
       // If there's an error, just mark as loaded with 0 XP
       set({ xp: 0, isXpLoaded: true });
+    }
+  },
+
+  // Load deleted photos from storage on startup
+  loadDeletedPhotos: async () => {
+    try {
+      const storage = getAsyncStorage();
+      const data = await storage.getItem(DELETED_PHOTOS_STORAGE_KEY);
+      if (data) {
+        const parsed: DeletedPhoto[] = JSON.parse(data, (key, value) =>
+          key === 'deletedAt' ? new Date(value) : value
+        );
+        set({ deletedPhotos: parsed });
+        // Remove any items older than 30 days on startup
+        await get().purgeExpiredPhotos();
+      }
+    } catch (error) {
+      console.error('Failed to load deleted photos:', error);
     }
   },
 
@@ -111,7 +148,9 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     if (deletedPhotos.some((p) => p.id === photo.id)) {
       return;
     }
-    set({ deletedPhotos: [photo, ...deletedPhotos] });
+    const updated = [photo, ...deletedPhotos];
+    set({ deletedPhotos: updated });
+    get().saveDeletedPhotos(updated);
     // Add XP for deleting a photo
     get().addXP(XP_CONFIG.DELETE_PHOTO);
   },
@@ -121,9 +160,9 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     const photoToRestore = state.deletedPhotos.find((photo) => photo.id === photoId);
 
     if (photoToRestore) {
-      set((state) => ({
-        deletedPhotos: state.deletedPhotos.filter((photo) => photo.id !== photoId),
-      }));
+      const updated = state.deletedPhotos.filter((photo) => photo.id !== photoId);
+      set({ deletedPhotos: updated });
+      get().saveDeletedPhotos(updated);
       // Subtract XP for restoring a photo
       get().subtractXP(XP_CONFIG.RESTORE_PHOTO);
       return photoToRestore;
@@ -132,20 +171,55 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     return null;
   },
 
-  permanentlyDelete: (photoId: string) => {
-    set((state) => ({
-      deletedPhotos: state.deletedPhotos.filter((photo) => photo.id !== photoId),
-    }));
+  permanentlyDelete: async (photoId: string) => {
+    const photo = get().deletedPhotos.find((p) => p.id === photoId);
+    if (photo) {
+      await deletePhotoAsset(photo.id).catch((err) => {
+        console.error('Failed to delete photo asset:', err);
+      });
+    }
+
+    const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
+    set({ deletedPhotos: updated });
+    await get().saveDeletedPhotos(updated);
     // Add XP for permanently deleting a photo
-    get().addXP(XP_CONFIG.PERMANENT_DELETE);
+    await get().addXP(XP_CONFIG.PERMANENT_DELETE);
   },
 
-  clearRecycleBin: () => {
+  clearRecycleBin: async () => {
     const { deletedPhotos } = get();
     const photosCount = deletedPhotos.length;
+    if (photosCount > 0) {
+      await deletePhotoAssets(deletedPhotos.map((p) => p.id)).catch((err) => {
+        console.error('Failed to delete photo assets:', err);
+      });
+    }
     set({ deletedPhotos: [] });
+    await get().saveDeletedPhotos([]);
     // Add XP for clearing recycle bin (per photo)
-    get().addXP(XP_CONFIG.CLEAR_ALL * photosCount);
+    await get().addXP(XP_CONFIG.CLEAR_ALL * photosCount);
+  },
+
+  purgeExpiredPhotos: async () => {
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const expired = get().deletedPhotos.filter(
+      (p) => now - new Date(p.deletedAt).getTime() > THIRTY_DAYS_MS
+    );
+
+    if (expired.length === 0) {
+      return;
+    }
+
+    await deletePhotoAssets(expired.map((p) => p.id)).catch((err) => {
+      console.error('Failed to purge old photo assets:', err);
+    });
+
+    const updated = get().deletedPhotos.filter(
+      (p) => now - new Date(p.deletedAt).getTime() <= THIRTY_DAYS_MS
+    );
+    set({ deletedPhotos: updated });
+    await get().saveDeletedPhotos(updated);
   },
 
   getDeletedPhoto: (photoId: string) => {
@@ -157,6 +231,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     try {
       // Reset deleted photos array
       set({ deletedPhotos: [] });
+      await get().saveDeletedPhotos([]);
 
       // Reset XP to 0
       set({ xp: 0 });

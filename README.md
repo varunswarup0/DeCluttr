@@ -3,6 +3,12 @@
 Minimal photo clean-up game built with Expo React Native.
 **Android only** – other platforms are not supported.
 
+## Visual style
+
+The interface uses a light pastel palette and the rounded **Quicksand** font for
+a friendly, game-like feel. Buttons and cards animate subtly with scale and
+sound effects on taps or swipes, making the experience playful yet minimal.
+
 ## Prerequisites
 - Node.js 18+
 - npm 9+

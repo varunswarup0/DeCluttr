@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Image, Dimensions, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
@@ -37,8 +37,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const scale = useSharedValue(1);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
 
-  const overlayBase = {
-    position: 'absolute' as const,
+  const overlayBase: ViewStyle = {
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -165,7 +165,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           <Animated.View
             style={[
               overlayBase,
-              { backgroundColor: 'rgba(255, 160, 160, 0.8)' },
+              { backgroundColor: 'rgba(255, 185, 185, 0.85)' },
               deleteOverlayStyle,
             ]}>
             <View className="rounded-full bg-white p-4">
@@ -179,7 +179,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           <Animated.View
             style={[
               overlayBase,
-              { backgroundColor: 'rgba(169, 255, 197, 0.8)' },
+              { backgroundColor: 'rgba(188, 250, 222, 0.85)' },
               keepOverlayStyle,
             ]}>
             <View className="rounded-full bg-white p-4">

@@ -96,7 +96,7 @@ export interface RecycleBinState {
 ### For Users:
 
 1. **Delete photos** to earn 10 XP each
-2. **Check your level** in the header XP display
+2. **Check your level** and progress in the header XP display. The progress bar fills as you gain XP and a subtle vibration celebrates each level up.
 3. **View detailed stats** in the Statistics screen
 4. **Permanently delete** for bonus 5 XP per photo
 5. **Be careful restoring** as it costs 5 XP

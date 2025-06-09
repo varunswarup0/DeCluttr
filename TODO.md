@@ -23,3 +23,5 @@ Future improvements and feature ideas:
   - Basic editing tools.
 - AI-based sorting (selfies, pets, nature, etc.).
 - Add dopamine-inducing animations (confetti, XP pop effects). ✔️
+- Add haptic feedback for swipe actions. ✔️
+- Show level progress bar and vibrate on level up. ✔️

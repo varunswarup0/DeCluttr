@@ -25,6 +25,8 @@ Minimal photo clean-up game built with Expo React Native.
 5. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
 6. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games. A confetti burst rewards each successful delete.
 7. The `audioService` will load these sounds automatically and handle failures gracefully.
+8. Subtle haptic feedback triggers on each swipe for extra game feel.
+9. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.
 
 ## Running the App on Android
 

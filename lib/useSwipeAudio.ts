@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
+import * as Haptics from 'expo-haptics';
 import { useAudioSettings } from './useAudioSettings';
 import { audioService } from './audioService';
 
 /**
- * Hook providing keep/delete swipe sounds.
+ * Hook providing keep/delete swipe sounds and haptic feedback.
  * Ensures audioService is initialized only once per component.
  */
 export const useSwipeAudio = () => {
@@ -31,10 +32,14 @@ export const useSwipeAudio = () => {
 
   const playDeleteSound = () => {
     audioService.playDeleteSound();
+    // Trigger a strong haptic impact when a photo is deleted
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
   };
 
   const playKeepSound = () => {
     audioService.playKeepSound();
+    // Provide lighter feedback for keeping a photo
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   };
 
   return {

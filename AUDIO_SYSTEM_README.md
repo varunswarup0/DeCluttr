@@ -8,6 +8,7 @@ The audio system provides audio feedback when users swipe photos:
 
 - **Swipe Left (Delete)**: Plays `delete.mp3` sound
 - **Swipe Right (Keep)**: Plays `keep.mp3` sound
+- Subtle haptic vibration accompanies each swipe for a satisfying feel
 
 ## Implementation Details
 
@@ -133,7 +134,6 @@ by calling the functions returned from `useSwipeAudio` during testing.
 Potential improvements for future versions:
 
 - Additional sound themes
-- Haptic feedback integration
 - Sound customization options
 - Accessibility audio cues
 - Background music controls
@@ -158,5 +158,6 @@ Potential improvements for future versions:
 ## Dependencies
 
 - `expo-audio`: Underlying playback library used by `audioService`
+- `expo-haptics`: Tactile feedback on swipe actions
 - `@react-native-async-storage/async-storage`: Settings persistence
 - `react-native-reanimated`: Gesture integration

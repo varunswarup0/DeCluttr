@@ -27,6 +27,7 @@ export const XP_CONFIG = {
 const XP_STORAGE_KEY = '@decluttr_xp';
 const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
 const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
+const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -38,6 +39,7 @@ export interface DeletedPhoto {
 
 export interface RecycleBinState {
   deletedPhotos: DeletedPhoto[];
+  totalDeleted: number;
   xp: number;
   isXpLoaded: boolean;
   onboardingCompleted: boolean;
@@ -52,6 +54,8 @@ export interface RecycleBinState {
   purgeExpiredPhotos: () => Promise<void>;
   loadDeletedPhotos: () => Promise<void>;
   saveDeletedPhotos: (photos: DeletedPhoto[]) => Promise<void>;
+  loadTotalDeleted: () => Promise<void>;
+  saveTotalDeleted: (count: number) => Promise<void>;
   getDeletedPhoto: (photoId: string) => DeletedPhoto | undefined;
   loadXP: () => Promise<void>;
   addXP: (amount: number) => Promise<void>;
@@ -64,6 +68,7 @@ export interface RecycleBinState {
 
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   deletedPhotos: [],
+  totalDeleted: 0,
   xp: 0,
   isXpLoaded: false,
   onboardingCompleted: false,
@@ -75,6 +80,27 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       await storage.setItem(DELETED_PHOTOS_STORAGE_KEY, JSON.stringify(photos));
     } catch (error) {
       console.error('Failed to save deleted photos:', error);
+    }
+  },
+
+  saveTotalDeleted: async (count: number) => {
+    try {
+      const storage = getAsyncStorage();
+      await storage.setItem(TOTAL_DELETED_STORAGE_KEY, count.toString());
+    } catch (error) {
+      console.error('Failed to save total deleted count:', error);
+    }
+  },
+
+  loadTotalDeleted: async () => {
+    try {
+      const storage = getAsyncStorage();
+      const stored = await storage.getItem(TOTAL_DELETED_STORAGE_KEY);
+      const count = stored ? parseInt(stored, 10) : 0;
+      set({ totalDeleted: isNaN(count) ? 0 : count });
+    } catch (error) {
+      console.error('Failed to load total deleted count:', error);
+      set({ totalDeleted: 0 });
     }
   },
 
@@ -144,13 +170,15 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   },
 
   addDeletedPhoto: (photo: DeletedPhoto) => {
-    const { deletedPhotos } = get();
+    const { deletedPhotos, totalDeleted } = get();
     if (deletedPhotos.some((p) => p.id === photo.id)) {
       return;
     }
     const updated = [photo, ...deletedPhotos];
-    set({ deletedPhotos: updated });
+    const newTotal = totalDeleted + 1;
+    set({ deletedPhotos: updated, totalDeleted: newTotal });
     get().saveDeletedPhotos(updated);
+    get().saveTotalDeleted(newTotal);
     // Add XP for deleting a photo
     get().addXP(XP_CONFIG.DELETE_PHOTO);
   },
@@ -230,8 +258,9 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   resetGallery: async () => {
     try {
       // Reset deleted photos array
-      set({ deletedPhotos: [] });
+      set({ deletedPhotos: [], totalDeleted: 0 });
       await get().saveDeletedPhotos([]);
+      await get().saveTotalDeleted(0);
 
       // Reset XP to 0
       set({ xp: 0 });

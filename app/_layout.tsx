@@ -27,7 +27,7 @@ export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const fontsLoaded = useCustomFonts();
-  const { loadXP, loadDeletedPhotos, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
+  const { loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -36,8 +36,9 @@ export default function RootLayout() {
     if (!isXpLoaded) {
       loadXP();
       loadDeletedPhotos();
+      loadTotalDeleted();
     }
-  }, [loadXP, loadDeletedPhotos, isXpLoaded]);
+  }, [loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded]);
 
   // Check onboarding status on startup
   useEffect(() => {

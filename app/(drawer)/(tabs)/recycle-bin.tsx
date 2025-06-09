@@ -98,8 +98,14 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
 };
 
 export default function RecycleBin() {
-  const { deletedPhotos, restorePhoto, permanentlyDelete, clearRecycleBin, purgeExpiredPhotos } =
-    useRecycleBinStore();
+  const {
+    deletedPhotos,
+    restorePhoto,
+    permanentlyDelete,
+    clearRecycleBin,
+    purgeExpiredPhotos,
+    totalDeleted,
+  } = useRecycleBinStore();
 
   useEffect(() => {
     purgeExpiredPhotos();
@@ -185,6 +191,11 @@ export default function RecycleBin() {
                 removed.
               </Text>
             </View>
+            <View className="mt-6">
+              <Text variant="caption2" color="secondary" className="text-center">
+                {totalDeleted} photos deleted overall
+              </Text>
+            </View>
           </View>
         ) : (
           /* Photos Grid */
@@ -223,6 +234,9 @@ export default function RecycleBin() {
             <View className="border-t border-border bg-gray-50 px-4 py-3 dark:bg-gray-900">
               <Text variant="caption2" color="secondary" className="text-center">
                 Photos will be automatically deleted after 30 days
+              </Text>
+              <Text variant="caption2" color="secondary" className="mt-1 text-center">
+                {totalDeleted} photos deleted overall
               </Text>
             </View>
           </View>

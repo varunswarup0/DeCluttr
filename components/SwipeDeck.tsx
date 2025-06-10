@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, Dimensions, PixelRatio } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,6 +10,8 @@ import { SwipeCard } from './SwipeCard';
 import { cn } from '~/lib/cn';
 
 const { width: screenWidth } = Dimensions.get('window');
+const CONTAINER_WIDTH = PixelRatio.roundToNearestPixel(screenWidth * 0.9);
+const CONTAINER_HEIGHT = PixelRatio.roundToNearestPixel(screenWidth * 1.2);
 
 export interface SwipeDeckItem {
   id: string;
@@ -208,8 +210,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       <View
         className={cn('items-center justify-center', className)}
         style={{
-          width: screenWidth * 0.9,
-          height: screenWidth * 1.2,
+          width: CONTAINER_WIDTH,
+          height: CONTAINER_HEIGHT,
         }}></View>
     );
   }
@@ -218,8 +220,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     <View
       className={cn('items-center justify-center', className)}
       style={{
-        width: screenWidth * 0.9,
-        height: screenWidth * 1.2,
+        width: CONTAINER_WIDTH,
+        height: CONTAINER_HEIGHT,
       }}>
       {visibleCards.map((card) => {
         const isTopCard = card.stackIndex === 0;

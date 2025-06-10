@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, Dimensions } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
-import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
+import { fetchPhotoAssetsWithPagination, deletePhotoAsset } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
@@ -24,6 +24,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   }, []);
 
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
+  const [prefetchedPhotos, setPrefetchedPhotos] = useState<SwipeDeckItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [keptPhotos, setKeptPhotos] = useState<string[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -31,6 +32,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [sessionDeletedStart, setSessionDeletedStart] = useState(0);
   // Keep a ref to the cursor so callbacks always access the latest value
   const nextCursorRef = React.useRef<string | undefined>(undefined);
+  const prefetchCursorRef = React.useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
 
@@ -69,6 +71,24 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       setKeptPhotos([]); // reset kept list for the new session
       // Start swiping from the beginning whenever a new set is loaded
       setCurrentPhotoIndex(0);
+
+      // Prefetch the following batch in the background
+      if (result.hasNextPage) {
+        fetchPhotoAssetsWithPagination(result.endCursor, 50)
+          .then((nextResult) => {
+            if (!isMounted.current) return;
+            setPrefetchedPhotos(
+              nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
+            );
+            prefetchCursorRef.current = nextResult.endCursor;
+          })
+          .catch((err) => {
+            console.error('Failed to prefetch photos:', err);
+          });
+      } else {
+        setPrefetchedPhotos([]);
+        prefetchCursorRef.current = undefined;
+      }
       return true;
     } catch (error) {
       console.error('Error loading photos:', error);
@@ -106,8 +126,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
 
-    // Here you could implement actual photo deletion logic
-    // For example, using MediaLibrary.deleteAssetsAsync()
+    // Immediately delete the photo from the device
+    deletePhotoAsset(item.id).catch((err) => {
+      console.error('Failed to delete photo asset:', err);
+    });
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
@@ -122,17 +144,42 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const totalXpEarned = xp - sessionStartXp;
     const totalDeletedCount = totalDeleted;
     if (hasMore) {
-      Alert.alert(
-        'All Photos Reviewed!',
-        `You've reviewed all photos.\n\nDeleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
-        [
-          {
-            text: 'Load More',
-            onPress: loadPhotos,
-          },
-          { text: 'Done', style: 'cancel' },
-        ]
-      );
+      // If a prefetched batch exists use it to avoid a loading pause
+      if (prefetchedPhotos.length > 0) {
+        setPhotos(prefetchedPhotos);
+        setPrefetchedPhotos([]);
+        setKeptPhotos([]);
+        setCurrentPhotoIndex(0);
+        nextCursorRef.current = prefetchCursorRef.current;
+        // Prefetch the subsequent batch
+        if (nextCursorRef.current) {
+          fetchPhotoAssetsWithPagination(nextCursorRef.current, 50)
+            .then((nextResult) => {
+              if (!isMounted.current) return;
+              setPrefetchedPhotos(
+                nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
+              );
+              prefetchCursorRef.current = nextResult.endCursor;
+              setHasMore(nextResult.hasNextPage);
+            })
+            .catch((err) => {
+              console.error('Failed to prefetch photos:', err);
+            });
+        } else {
+          setHasMore(false);
+        }
+        Alert.alert(
+          'More Photos Loaded!',
+          `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
+        );
+      } else {
+        loadPhotos().then(() => {
+          Alert.alert(
+            'More Photos Loaded!',
+            `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
+          );
+        });
+      }
     } else {
       Alert.alert(
         'No More Photos',
@@ -221,7 +268,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             {deletedPhotos.length}
           </Text>
           <Text variant="caption1" color="secondary">
-            Deleted
+            In Bin
           </Text>
         </View>
         <View className="items-center">
@@ -237,7 +284,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             {totalDeleted}
           </Text>
           <Text variant="caption1" color="secondary">
-            Total Deleted
+            All-Time Deleted
           </Text>
         </View>
       </View>

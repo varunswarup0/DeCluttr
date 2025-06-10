@@ -35,7 +35,8 @@ const textVariants = cva('text-foreground', {
   },
 });
 
-const TextClassContext = React.createContext<string | undefined>('font-arcade');
+// Use a clean sans-serif font by default for a modern look
+const TextClassContext = React.createContext<string | undefined>('font-sans');
 
 function Text({
   className,

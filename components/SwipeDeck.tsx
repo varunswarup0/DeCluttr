@@ -87,19 +87,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     }
   }, [data, cardSpacing, maxVisibleCards, scaleValues, translateYValues, opacityValues]);
 
-  // Notify when there are no cards to show
-  const emptyNotified = React.useRef(false);
-  React.useEffect(() => {
-    if (data.length === 0) {
-      if (!emptyNotified.current) {
-        onDeckEmpty?.();
-        emptyNotified.current = true;
-      }
-    } else {
-      emptyNotified.current = false;
-    }
-  }, [data.length, onDeckEmpty]);
-
   // Create animated styles for each card position
   const animatedStyle0 = useAnimatedStyle(() => ({
     transform: [{ scale: scale0.value }, { translateY: translateY0.value }],
@@ -119,13 +106,17 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
   const advanceIndex = useCallback(() => {
     const timeout = setTimeout(() => {
+      let shouldNotify = false;
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
-        if (nextIndex >= data.length && onDeckEmpty) {
-          onDeckEmpty();
+        if (nextIndex >= data.length) {
+          shouldNotify = true;
         }
         return nextIndex;
       });
+      if (shouldNotify) {
+        onDeckEmpty?.();
+      }
       // remove finished timeout reference
       timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
     }, 300);

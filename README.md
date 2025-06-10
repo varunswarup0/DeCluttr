@@ -74,6 +74,18 @@ For more details on specific systems see:
 - `ONBOARDING_README.md`
 - `XP_SYSTEM_README.md`
 
+## Testing
+
+Run the automated test suite after installing dependencies:
+
+```bash
+npm install
+npm test
+```
+
+`npm install` is required so that dev dependencies like Jest are available and
+the `patch-package` script can apply fixes to expo-audio.
+
 ## Performance Tips
 
 ### Faster installation

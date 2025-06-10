@@ -27,25 +27,28 @@ function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
 function XPDisplay() {
   const { xp } = useRecycleBinStore();
   const scale = useSharedValue(1);
+  const rotate = useSharedValue(0);
   const prevLevel = useRef(Math.floor(xp / 100) + 1);
 
   const level = Math.floor(xp / 100) + 1;
   const progress = xp % 100;
 
-  // Trigger a brief scale animation whenever XP changes.
-  // Reanimated shared values are stable, so including `scale` is safe here.
+  // Animate XP display. Bigger bounce and a slight rotation on level up.
   useEffect(() => {
-    scale.value = 1.4;
+    const leveledUp = level > prevLevel.current;
+    scale.value = leveledUp ? 1.8 : 1.4;
+    rotate.value = leveledUp ? 15 : 0;
     scale.value = withTiming(1, { duration: 300 });
+    rotate.value = withTiming(0, { duration: 300 });
 
-    if (level > prevLevel.current) {
+    if (leveledUp) {
       successNotification();
     }
     prevLevel.current = level;
-  }, [xp, level, scale]);
+  }, [xp, level, scale, rotate]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.value }, { rotate: `${rotate.value}deg` }],
   }));
 
   return (

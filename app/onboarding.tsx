@@ -43,14 +43,14 @@ export default function OnboardingScreen() {
   // Check if onboarding is already completed
   useEffect(() => {
     if (onboardingCompleted) {
-      router.replace('/(drawer)/(tabs)');
+      router.replace('/(tabs)');
     }
   }, [onboardingCompleted, router]);
   // Function to handle onboarding completion
   const handleDone = async () => {
     await completeOnboarding();
     // Navigate to home screen
-    router.replace('/(drawer)/(tabs)');
+    router.replace('/(tabs)');
   };
 
   // Custom button components for better UI - using proper typing for React Native Onboarding Swiper

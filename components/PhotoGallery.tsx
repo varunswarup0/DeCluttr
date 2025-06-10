@@ -118,10 +118,19 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       originalIndex: currentPhotoIndex + index,
     };
 
+    const prevState = useRecycleBinStore.getState();
+    const prevXp = prevState.xp;
+    const prevTotal = prevState.totalDeleted;
+
     addDeletedPhoto(deletedPhoto);
 
-    // Trigger a confetti burst for extra dopamine
-    setConfettiKey((k) => k + 1);
+    const { xp: newXp, totalDeleted: newTotal } = useRecycleBinStore.getState();
+    const prevLevel = Math.floor(prevXp / 100) + 1;
+    const newLevel = Math.floor(newXp / 100) + 1;
+
+    if (newLevel > prevLevel || newTotal % 50 === 0) {
+      setConfettiKey((k) => k + 1);
+    }
 
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);

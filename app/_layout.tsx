@@ -48,7 +48,7 @@ export default function RootLayout() {
       if (completed) {
         // If onboarding is completed, navigate to the main app
         if (segments.length < 1 || segments[0] === 'onboarding') {
-          router.replace('/(drawer)/(tabs)');
+          router.replace('/(tabs)');
         }
       } else {
         // If onboarding is NOT completed, redirect to onboarding
@@ -88,7 +88,7 @@ export default function RootLayout() {
                   name="onboarding"
                   options={{ headerShown: false, gestureEnabled: false }}
                 />
-                <Stack.Screen name="(drawer)" options={DRAWER_OPTIONS} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               </Stack>
             </NavThemeProvider>
           </ActionSheetProvider>
@@ -102,8 +102,4 @@ export default function RootLayout() {
 
 const SCREEN_OPTIONS = {
   animation: 'default',
-} as const;
-
-const DRAWER_OPTIONS = {
-  headerShown: false,
 } as const;

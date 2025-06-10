@@ -1,34 +1,39 @@
+/** Maximum length for in-app messages. */
+export const MAX_MESSAGE_LENGTH = 30 as const;
+
 export const MOTIVATION_MESSAGES = [
-  'Great job keeping your gallery tidy!',
-  'Every swipe counts toward a cleaner phone!',
-  "You're doing awesome, keep it up!",
-  'Nice work! Your photos appreciate the love.',
-  'You deserve a clutter\u2011free gallery!',
-  'Every photo you clear makes room for joy!',
-  "You're in control and doing great!",
-  'Clutter\u2011free gallery, clutter\u2011free mind!',
-  'Your progress is inspiring!',
-  'Looking cool while cleaning up!',
-  'Swipe power activated!'
+  'Great job!',
+  'Every swipe counts!',
+  'Keep it up!',
+  'Nice work!',
+  'Clutter\u2011free gallery!',
+  'Room for joy!',
+  "You're in control!",
+  'Clear mind!',
+  'Inspiring progress!',
+  'Looking cool!',
+  'Swipe power!',
 ] as const;
 
 export const SESSION_MESSAGES = [
-  'Great progress! Ready for more?',
-  'Awesome work! Your gallery is getting cleaner.',
-  'Looking good! New photos just arrived.',
-  'Fantastic job! Keep enjoying the declutter.',
+  'Ready for more?',
+  'Gallery cleaner!',
+  'New photos arrived!',
+  'Great declutter!',
 ] as const;
 
-export const END_MESSAGES = [
-  "You're all caught up!",
-  'Gallery all cleaned up!',
-  'Nice work, no more photos!',
-] as const;
+export const END_MESSAGES = ['All caught up!', 'Gallery clean!', 'No more photos!'] as const;
 
+/**
+ * Return a random element from the provided list.
+ */
 export function randomMessage(messages: readonly string[]): string {
   return messages[Math.floor(Math.random() * messages.length)];
 }
 
+/**
+ * Create a picker that avoids repeating the last message.
+ */
 export function createMessagePicker(messages: readonly string[]): () => string {
   let last = -1;
   return () => {

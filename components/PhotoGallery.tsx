@@ -326,7 +326,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       {/* Swipe Instructions */}
       <View className="mb-6 px-8">
         <Text variant="subhead" color="secondary" className="text-center">
-          Swipe left to delete • Swipe right to keep
+          Swipe left to delete, right to keep
         </Text>
       </View>
 

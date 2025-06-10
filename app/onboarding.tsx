@@ -10,28 +10,22 @@ import { useColorScheme } from '~/lib/useColorScheme';
 // Screen images
 const screens = [
   {
-    title: 'Declutter Your Photos',
-    subtitle: 'Swipe left to remove photos you no longer need, swipe right to keep them.',
-    image: <Image source={require('../assets/onboarding/step-1.png')} />, // Using app icon
+    title: 'Declutter Photos',
+    subtitle: 'Swipe left to delete, right to keep.',
+    image: <Image source={require('../assets/onboarding/step-1.png')} />,
     backgroundColor: '#025CBD',
   },
   {
     title: 'Recycle Bin',
-    subtitle: 'Deleted photos go to the Recycle Bin. You can restore them anytime.',
-    image: <Image source={require('../assets/onboarding/step-2.png')} />, // Using app icon
+    subtitle: 'Restore deleted photos anytime.',
+    image: <Image source={require('../assets/onboarding/step-2.png')} />,
     backgroundColor: '#E33131',
   },
   {
     title: 'Earn XP',
-    subtitle: 'Earn experience points for decluttering your photos. Track your progress!',
-    image: <Image source={require('../assets/onboarding/step-3.png')} />, // Using app icon
+    subtitle: 'Gain points as you clean.',
+    image: <Image source={require('../assets/onboarding/step-3.png')} />,
     backgroundColor: '#025CBD',
-  },
-  {
-    title: 'Earn XP',
-    subtitle: 'Earn experience points for decluttering your photos. Track your progress!',
-    image: <Image source={require('../assets/onboarding/step-4.png')} />, // Using app icon
-    backgroundColor: '#E33131',
   },
 ];
 

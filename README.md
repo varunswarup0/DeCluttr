@@ -58,7 +58,10 @@ unavailable, an in-memory fallback ensures the app still works.
 2. **Gallery Game**
    - A stack of recent photos is loaded.
    - Swipe **left** to delete (plays a sound and grants XP) or **right** to keep.
-   - When the stack is empty an alert summarizes how many photos you deleted and XP earned.
+  - When the stack is empty an alert summarizes how many photos you deleted and XP earned.
+  - Friendly alerts celebrate your progress and encourage you to keep going.
+  - A motivational banner shows supportive messages to keep you feeling positive while you declutter.
+  - Messages are chosen from a shared module and cycled so you rarely see the same encouragement twice in a row.
 
 - If more images are available the next batch loads automatically so the game never ends until your gallery is empty. The app also prefetches the following batch in the background to keep swiping smooth.
 

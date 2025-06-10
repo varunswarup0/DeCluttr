@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, Dimensions } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
-import { fetchPhotoAssetsWithPagination, deletePhotoAsset } from '~/lib/mediaLibrary';
+import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
@@ -126,10 +126,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
 
-    // Immediately delete the photo from the device
-    deletePhotoAsset(item.id).catch((err) => {
-      console.error('Failed to delete photo asset:', err);
-    });
+    // Deletion from the device now happens when the recycle bin is cleared
+    // or a photo is permanently deleted from within the recycle bin screen.
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {

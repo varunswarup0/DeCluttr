@@ -20,6 +20,8 @@ jest.mock('../lib/mediaLibrary', () => ({
   deletePhotoAssets: jest.fn().mockResolvedValue(undefined),
 }));
 
+const mediaLibrary = require('../lib/mediaLibrary');
+
 const createPhoto = (id: string): DeletedPhoto => ({
   id,
   imageUri: `uri-${id}`,
@@ -33,14 +35,20 @@ describe('RecycleBin store', () => {
 
   it('adds and restores photos with XP updates', async () => {
     const { addDeletedPhoto, restorePhoto } = useRecycleBinStore.getState();
-    addDeletedPhoto(createPhoto('1'));
+    const photo = createPhoto('1');
+    addDeletedPhoto(photo);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
     expect(useRecycleBinStore.getState().totalDeleted).toBe(1);
     expect(useRecycleBinStore.getState().xp).toBe(XP_CONFIG.DELETE_PHOTO);
+    expect(mediaLibrary.deletePhotoAsset).not.toHaveBeenCalled();
 
-    restorePhoto('1');
+    const restored = restorePhoto('1');
+    expect(restored).toEqual(photo);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
-    expect(useRecycleBinStore.getState().xp).toBe((XP_CONFIG.DELETE_PHOTO - XP_CONFIG.RESTORE_PHOTO));
+    expect(useRecycleBinStore.getState().xp).toBe(
+      XP_CONFIG.DELETE_PHOTO - XP_CONFIG.RESTORE_PHOTO
+    );
+    expect(mediaLibrary.deletePhotoAsset).not.toHaveBeenCalled();
   });
 
   it('permanently deletes photos and clears recycle bin', async () => {
@@ -48,8 +56,10 @@ describe('RecycleBin store', () => {
     addDeletedPhoto(createPhoto('1'));
     addDeletedPhoto(createPhoto('2'));
     await permanentlyDelete('1');
+    expect(mediaLibrary.deletePhotoAsset).toHaveBeenCalledWith('1');
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
     await clearRecycleBin();
+    expect(mediaLibrary.deletePhotoAssets).toHaveBeenCalledWith(['2']);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
     expect(useRecycleBinStore.getState().xp).toBeGreaterThan(0);
   });

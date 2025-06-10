@@ -1,4 +1,4 @@
-# Sound Files for DeClutter App
+# Sound Files for DeCluttr App
 
 This folder should contain the following sound files:
 

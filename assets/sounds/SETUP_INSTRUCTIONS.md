@@ -1,4 +1,4 @@
-# Sound File Generation for DeClutter App
+# Sound File Generation for DeCluttr App
 
 Since actual MP3 files cannot be created through text, here are several options to get the required sound files:
 

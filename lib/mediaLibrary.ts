@@ -36,7 +36,7 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
 /**
  * Fetch all photo assets from the user's gallery
  * @param first - Number of assets to fetch (default: 1000)
- * @returns Promise<string[]> - Array of photo asset URIs
+ * @returns Promise<PhotoAsset[]> - Array of photo assets
  */
 export async function fetchPhotoAssets(first: number = 1000): Promise<PhotoAsset[]> {
   try {
@@ -66,7 +66,7 @@ export async function fetchPhotoAssets(first: number = 1000): Promise<PhotoAsset
  * Fetch photo assets with pagination support
  * @param after - Cursor for pagination (optional)
  * @param first - Number of assets to fetch per page (default: 20)
- * @returns Promise<{assets: string[], hasNextPage: boolean, endCursor?: string}>
+ * @returns Promise<{assets: PhotoAsset[], hasNextPage: boolean, endCursor?: string}>
  */
 export async function fetchPhotoAssetsWithPagination(
   after?: string,

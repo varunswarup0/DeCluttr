@@ -46,7 +46,7 @@ describe('RecycleBin store', () => {
     expect(restored).toEqual(photo);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
     expect(useRecycleBinStore.getState().xp).toBe(
-      XP_CONFIG.DELETE_PHOTO - XP_CONFIG.RESTORE_PHOTO
+      XP_CONFIG.DELETE_PHOTO + XP_CONFIG.RESTORE_PHOTO
     );
     expect(mediaLibrary.deletePhotoAsset).not.toHaveBeenCalled();
   });
@@ -61,7 +61,9 @@ describe('RecycleBin store', () => {
     await clearRecycleBin();
     expect(mediaLibrary.deletePhotoAssets).toHaveBeenCalledWith(['2']);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
-    expect(useRecycleBinStore.getState().xp).toBeGreaterThan(0);
+    expect(useRecycleBinStore.getState().xp).toBe(
+      XP_CONFIG.DELETE_PHOTO * 2 + XP_CONFIG.PERMANENT_DELETE + XP_CONFIG.CLEAR_ALL
+    );
   });
 
   it('purges expired photos', async () => {

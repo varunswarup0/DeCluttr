@@ -18,7 +18,7 @@ export const useStore = create<BearState>((set) => ({
 // XP Constants
 export const XP_CONFIG = {
   DELETE_PHOTO: 10,
-  RESTORE_PHOTO: 5,
+  RESTORE_PHOTO: -5,
   PERMANENT_DELETE: 5,
   CLEAR_ALL: 2, // per photo cleared
 } as const;
@@ -191,8 +191,8 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       const updated = state.deletedPhotos.filter((photo) => photo.id !== photoId);
       set({ deletedPhotos: updated });
       get().saveDeletedPhotos(updated);
-      // Subtract XP for restoring a photo
-      get().subtractXP(XP_CONFIG.RESTORE_PHOTO);
+      // Update XP for restoring a photo (negative value deducts XP)
+      get().addXP(XP_CONFIG.RESTORE_PHOTO);
       return photoToRestore;
     }
 

@@ -1,6 +1,6 @@
-# Audio System for DeClutter App
+# Audio System for DeCluttr App
 
-This document describes the sound effects implementation for swipe actions in the DeClutter app.
+This document describes the sound effects implementation for swipe actions in the DeCluttr app.
 
 ## Overview
 

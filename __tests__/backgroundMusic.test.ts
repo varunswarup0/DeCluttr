@@ -1,7 +1,7 @@
 // @ts-nocheck
 const mockPlayer = {
   play: jest.fn(),
-  stop: jest.fn(),
+  pause: jest.fn(),
   seekTo: jest.fn(),
   remove: jest.fn(),
   loop: false,
@@ -24,5 +24,6 @@ test('background music plays and stops', async () => {
   await backgroundMusicService.play();
   expect(mockPlayer.play).toHaveBeenCalled();
   await backgroundMusicService.stop();
-  expect(mockPlayer.stop).toHaveBeenCalled();
+  expect(mockPlayer.pause).toHaveBeenCalled();
+  expect(mockPlayer.seekTo).toHaveBeenCalledWith(0);
 });

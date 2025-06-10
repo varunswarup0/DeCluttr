@@ -29,7 +29,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [sessionStartXp, setSessionStartXp] = useState(0);
   const [sessionDeletedStart, setSessionDeletedStart] = useState(0);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  // Keep a ref to the cursor so callbacks always access the latest value
+  const nextCursorRef = React.useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
 
@@ -43,21 +44,24 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     isXpLoaded,
   } = useRecycleBinStore();
 
-  const loadPhotos = React.useCallback(async (): Promise<boolean> => {
+  const loadPhotos = React.useCallback(async (cursor?: string): Promise<boolean> => {
     try {
       if (!isMounted.current) return false;
       setLoading(true);
-      // Capture current XP and deleted count when a new session begins
-      const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
-      setSessionStartXp(currentXp);
-      setSessionDeletedStart(currentDeleted.length);
 
-      const result = await fetchPhotoAssetsWithPagination(nextCursor, 50);
+      // Capture session start stats only when loading from the beginning
+      if (!(cursor ?? nextCursorRef.current)) {
+        const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
+        setSessionStartXp(currentXp);
+        setSessionDeletedStart(currentDeleted.length);
+      }
+
+      const result = await fetchPhotoAssetsWithPagination(cursor ?? nextCursorRef.current, 50);
       const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
         id: asset.id,
         imageUri: asset.uri,
       }));
-      setNextCursor(result.endCursor);
+      nextCursorRef.current = result.endCursor;
       setHasMore(result.hasNextPage);
 
       if (!isMounted.current) return false;
@@ -81,7 +85,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     if (isXpLoaded) {
       loadPhotos();
     }
-  }, [isXpLoaded, loadPhotos]);
+    // Intentionally omit loadPhotos from deps to avoid reloading when the cursor changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isXpLoaded]);
 
   const handleSwipeLeft = (item: SwipeDeckItem, index: number) => {
     // Add photo to RecycleBin store
@@ -153,10 +159,16 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
               // Reset local component state
               setKeptPhotos([]);
+              setConfettiKey(0);
+              setPhotos([]);
               setCurrentPhotoIndex(0);
+              setSessionStartXp(0);
+              setSessionDeletedStart(0);
+              nextCursorRef.current = undefined;
+              setHasMore(true);
 
-              // Reload photos and wait until done
-              const loaded = await loadPhotos();
+              // Reload photos from the start and wait until done
+              const loaded = await loadPhotos(undefined);
 
               if (loaded) {
                 // Notify the user only if photos reloaded successfully

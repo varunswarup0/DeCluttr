@@ -219,6 +219,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
               setSessionStartXp(0);
               setSessionDeletedStart(0);
               nextCursorRef.current = undefined;
+              prefetchCursorRef.current = undefined;
+              setPrefetchedPhotos([]);
               setHasMore(true);
 
               // Reload photos from the start and wait until done

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import * as Haptics from 'expo-haptics';
 import { useAudioSettings } from './useAudioSettings';
 import { audioService } from './audioService';
 
@@ -32,14 +31,22 @@ export const useSwipeAudio = () => {
 
   const playDeleteSound = () => {
     audioService.playDeleteSound();
-    // Trigger a strong haptic impact when a photo is deleted
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+    // Trigger a strong haptic impact when a photo is deleted, if available
+    import('expo-haptics')
+      .then((Haptics) =>
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {})
+      )
+      .catch(() => {});
   };
 
   const playKeepSound = () => {
     audioService.playKeepSound();
-    // Provide lighter feedback for keeping a photo
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    // Provide lighter feedback for keeping a photo, if available
+    import('expo-haptics')
+      .then((Haptics) =>
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+      )
+      .catch(() => {});
   };
 
   return {

@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 import { useEffect, useRef } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 import { useRecycleBinStore } from '~/store/store';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 
@@ -39,7 +38,11 @@ function XPDisplay() {
     scale.value = withTiming(1, { duration: 300 });
 
     if (level > prevLevel.current) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      import('expo-haptics')
+        .then((Haptics) =>
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
+        )
+        .catch(() => {});
     }
     prevLevel.current = level;
   }, [xp, level, scale]);

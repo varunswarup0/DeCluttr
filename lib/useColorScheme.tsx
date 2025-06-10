@@ -50,9 +50,18 @@ function setNavigationBar(colorScheme: 'light' | 'dark') {
   if (Platform.OS !== 'android') {
     return Promise.resolve();
   }
+  if (
+    !NavigationBar.setButtonStyleAsync ||
+    !NavigationBar.setPositionAsync ||
+    !NavigationBar.setBackgroundColorAsync
+  ) {
+    return Promise.resolve();
+  }
   return Promise.all([
     NavigationBar.setButtonStyleAsync(colorScheme === 'dark' ? 'light' : 'dark'),
     NavigationBar.setPositionAsync('absolute'),
-    NavigationBar.setBackgroundColorAsync(colorScheme === 'dark' ? '#00000030' : '#ffffff80'),
+    NavigationBar.setBackgroundColorAsync(
+      colorScheme === 'dark' ? '#00000030' : '#ffffff80'
+    ),
   ]);
 }

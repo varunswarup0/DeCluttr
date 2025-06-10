@@ -8,6 +8,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import { Stack, useRouter, useSegments } from 'expo-router';
+import { ErrorFallback } from '~/components/ErrorFallback';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -18,16 +19,17 @@ import { useCustomFonts } from '~/lib/useCustomFonts';
 import { backgroundMusicService } from '~/lib/backgroundMusic';
 import { NAV_THEME } from '~/theme';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+  return <ErrorFallback error={error} />;
+}
 
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const fontsLoaded = useCustomFonts();
-  const { loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
+  const { loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded, checkOnboardingStatus } =
+    useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
 

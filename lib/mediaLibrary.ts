@@ -109,6 +109,29 @@ export async function fetchPhotoAssetsWithPagination(
 }
 
 /**
+ * Fetch every photo asset on the device. May return a large array.
+ * @param batchSize - Number of assets to fetch per batch (default: 100)
+ * @returns Promise<PhotoAsset[]>
+ */
+export async function fetchAllPhotoAssets(batchSize: number = 100): Promise<PhotoAsset[]> {
+  try {
+    const all: PhotoAsset[] = [];
+    let after: string | undefined = undefined;
+    let hasNext = true;
+    while (hasNext) {
+      const { assets, hasNextPage, endCursor } = await fetchPhotoAssetsWithPagination(after, batchSize);
+      all.push(...assets);
+      after = endCursor;
+      hasNext = hasNextPage;
+    }
+    return all;
+  } catch (error) {
+    console.error('Error fetching all photo assets:', error);
+    return [];
+  }
+}
+
+/**
  * Get detailed asset information including metadata
  * @param assetId - The asset ID to get details for
  * @returns Promise<MediaLibrary.Asset | null>

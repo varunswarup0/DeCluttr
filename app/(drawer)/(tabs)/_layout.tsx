@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useRecycleBinStore } from '~/store/store';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
+import { successNotification } from '~/lib/haptics';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   const { deletedPhotos } = useRecycleBinStore();
@@ -38,11 +39,7 @@ function XPDisplay() {
     scale.value = withTiming(1, { duration: 300 });
 
     if (level > prevLevel.current) {
-      import('expo-haptics')
-        .then((Haptics) =>
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
-        )
-        .catch(() => {});
+      successNotification();
     }
     prevLevel.current = level;
   }, [xp, level, scale]);
@@ -54,7 +51,7 @@ function XPDisplay() {
   return (
     <Animated.View
       style={animatedStyle}
-      className="w-28 items-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900">
+      className="items-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900">
       <Text className="font-arcade text-xs text-yellow-700 dark:text-yellow-300">
         ⭐ Lv {level} • {xp} XP
       </Text>

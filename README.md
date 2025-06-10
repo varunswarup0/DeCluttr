@@ -46,7 +46,9 @@ unavailable, an in-memory fallback ensures the app still works.
    - A stack of recent photos is loaded.
    - Swipe **left** to delete (plays a sound and grants XP) or **right** to keep.
    - When the stack is empty an alert summarizes how many photos you deleted and XP earned.
-   - If more images are available the next batch loads automatically so the game never ends until your gallery is empty.
+
+- If more images are available the next batch loads automatically so the game never ends until your gallery is empty. The app also prefetches the following batch in the background to keep swiping smooth.
+
 3. **Recycle Bin**
    - Deleted photos move to a recycle bin tab.
    - You can restore or permanently delete them here; permanent deletion grants bonus XP. Deleted files are removed from the device using the platform MediaLibrary API.
@@ -58,6 +60,27 @@ For more details on specific systems see:
 - `AUDIO_SYSTEM_README.md`
 - `ONBOARDING_README.md`
 - `XP_SYSTEM_README.md`
+
+## Performance Tips
+
+### Faster installation
+
+- Use `npm ci` in continuous integration or clean environments to install exact versions from `package-lock.json`.
+- Cache the `node_modules` directory or npm cache between runs to avoid downloading packages every time.
+- On CI, cache the Expo CLI artifacts and the npm cache (`~/.cache`) to speed up subsequent installs.
+- Pass `--prefer-offline` to reuse previously downloaded packages when possible.
+- Disable progress output with `--silent --no-progress` for slightly faster npm execution.
+- Skip the security audit step with `--no-audit` to shave a few seconds off installation.
+- Keep a pre-filled cache of the next dependency build or Expo prebuild to avoid redundant work.
+
+### Reducing crashes
+
+- Keep dependencies updated with `npm outdated` and `npm update`.
+- Wrap optional native modules such as `expo-haptics` in a try/catch and provide fallbacks so missing packages don't crash the app.
+- Guard MediaLibrary and audio calls with error handling so unexpected failures are logged instead of crashing.
+- Fetch photos in smaller batches to avoid memory spikes and call `fetchAllPhotoAssets` only when absolutely necessary.
+- Use a global error boundary to catch unexpected exceptions and offer a restart option.
+- Prefetch the next batch of photos while the user swipes to prevent loading pauses.
 
 ## Future Work
 

@@ -91,6 +91,15 @@ npm test
 `npm install` is required so that dev dependencies like Jest are available and
 the `patch-package` script can apply fixes to expo-audio.
 
+## Swipe Cooldown and Test Mode
+
+An invisible 0.3&nbsp;second mask blocks input after each swipe so fast gestures are registered reliably while the next card loads.
+Tap anywhere five times quickly to simulate a left swipe for debugging.
+
+### Audio Fallback
+
+Sound playback can fail if audio files are missing or the device blocks audio initialization. When that happens a default chime is used instead. See `lib/audioService.ts` for implementation details.
+
 ## Performance Tips
 
 ### Faster installation

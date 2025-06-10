@@ -54,11 +54,11 @@ function XPDisplay() {
   return (
     <Animated.View
       style={animatedStyle}
-      className="items-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900">
-      <Text className="font-arcade text-xs text-yellow-700 dark:text-yellow-300">
+      className="items-center rounded-full bg-[rgb(var(--android-xp)/0.2)] px-3 py-1 dark:bg-[rgb(var(--android-xp)/0.3)]">
+      <Text className="font-arcade text-xs text-[rgb(var(--android-xp))]">
         ⭐ Lv {level} • {xp} XP
       </Text>
-      <ProgressIndicator value={progress} className="mt-1" />
+      <ProgressIndicator value={progress} className="mt-1 bg-[rgb(var(--android-xp))]" />
     </Animated.View>
   );
 }

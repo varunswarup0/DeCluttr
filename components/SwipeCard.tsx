@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Image, Dimensions, PixelRatio } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -9,10 +9,14 @@ import Animated, {
   withTiming,
   interpolate,
   runOnJS,
+  Easing,
 } from 'react-native-reanimated';
 import { useSwipeAudio } from '~/lib/useSwipeAudio';
 
 const { width: screenWidth } = Dimensions.get('window');
+const CARD_WIDTH = PixelRatio.roundToNearestPixel(screenWidth * 0.7);
+const CARD_HEIGHT = PixelRatio.roundToNearestPixel(screenWidth * 0.8);
+const BORDER_RADIUS = PixelRatio.roundToNearestPixel(20);
 const SWIPE_THRESHOLD = screenWidth * 0.3;
 
 export interface SwipeCardProps {
@@ -58,8 +62,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
       if (shouldSwipeLeft) {
         // Swipe left - delete
-        translateX.value = withTiming(-screenWidth * 1.5, { duration: 300 });
-        translateY.value = withTiming(0, { duration: 300 });
+        translateX.value = withTiming(-screenWidth * 1.5, {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        });
+        translateY.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        });
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
@@ -67,8 +77,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         }
       } else if (shouldSwipeRight) {
         // Swipe right - keep
-        translateX.value = withTiming(screenWidth * 1.5, { duration: 300 });
-        translateY.value = withTiming(0, { duration: 300 });
+        translateX.value = withTiming(screenWidth * 1.5, {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        });
+        translateY.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.out(Easing.cubic),
+        });
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
@@ -76,8 +92,9 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         }
       } else {
         // Snap back to center
-        translateX.value = withSpring(0);
-        translateY.value = withSpring(0);
+        const springConfig = { damping: 15, stiffness: 200 };
+        translateX.value = withSpring(0, springConfig);
+        translateY.value = withSpring(0, springConfig);
       }
     },
   });
@@ -119,9 +136,9 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       <Animated.View
         style={[
           {
-            width: screenWidth * 0.7,
-            height: screenWidth * 0.8,
-            borderRadius: 20,
+            width: CARD_WIDTH,
+            height: CARD_HEIGHT,
+            borderRadius: BORDER_RADIUS,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
@@ -136,7 +153,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: 20,
+            borderRadius: BORDER_RADIUS,
           }}
           resizeMode="cover"
         />
@@ -149,7 +166,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               left: 0,
               right: 0,
               bottom: 0,
-              borderRadius: 20,
+              borderRadius: BORDER_RADIUS,
               justifyContent: 'center',
               alignItems: 'center',
             },
@@ -164,7 +181,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(255, 59, 48, 0.8)',
-                borderRadius: 20,
+                borderRadius: BORDER_RADIUS,
                 justifyContent: 'center',
                 alignItems: 'center',
               },
@@ -187,7 +204,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(52, 199, 89, 0.8)',
-                borderRadius: 20,
+                borderRadius: BORDER_RADIUS,
                 justifyContent: 'center',
                 alignItems: 'center',
               },

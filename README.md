@@ -84,4 +84,4 @@ For more details on specific systems see:
 
 ## Future Work
 
-See [TODO.md](TODO.md) for planned improvements and feature ideas.
+Multi-folder scanning is not yet implemented. See [TODO.md](TODO.md) for planned improvements and feature ideas.

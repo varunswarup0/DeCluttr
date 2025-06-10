@@ -16,8 +16,8 @@ jest.mock('../lib/asyncStorageWrapper', () => {
 });
 
 jest.mock('../lib/mediaLibrary', () => ({
-  deletePhotoAsset: jest.fn().mockResolvedValue(undefined),
-  deletePhotoAssets: jest.fn().mockResolvedValue(undefined),
+  deletePhotoAsset: jest.fn().mockResolvedValue(true),
+  deletePhotoAssets: jest.fn().mockResolvedValue(true),
 }));
 
 const mediaLibrary = require('../lib/mediaLibrary');
@@ -66,12 +66,48 @@ describe('RecycleBin store', () => {
     );
   });
 
+  it('keeps photo and XP unchanged when permanent delete fails', async () => {
+    const { addDeletedPhoto, permanentlyDelete } = useRecycleBinStore.getState();
+    addDeletedPhoto(createPhoto('1'));
+    (mediaLibrary.deletePhotoAsset as jest.Mock).mockResolvedValueOnce(false);
+
+    await permanentlyDelete('1');
+
+    // Photo should remain because deletion failed
+    expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
+    // XP should not include permanent delete reward
+    expect(useRecycleBinStore.getState().xp).toBe(XP_CONFIG.DELETE_PHOTO);
+  });
+
   it('purges expired photos', async () => {
     const oldDate = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
     useRecycleBinStore.setState({ deletedPhotos: [{...createPhoto('old'), deletedAt: oldDate}, { ...createPhoto('new'), deletedAt: new Date() }] });
     await useRecycleBinStore.getState().purgeExpiredPhotos();
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
     expect(useRecycleBinStore.getState().deletedPhotos[0].id).toBe('new');
+  });
+
+  it('does not clear recycle bin when deletion fails', async () => {
+    const { addDeletedPhoto, clearRecycleBin } = useRecycleBinStore.getState();
+    addDeletedPhoto(createPhoto('1'));
+    addDeletedPhoto(createPhoto('2'));
+    (mediaLibrary.deletePhotoAssets as jest.Mock).mockResolvedValueOnce(false);
+
+    await clearRecycleBin();
+
+    expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(2);
+    // XP should only reflect initial deletes
+    expect(useRecycleBinStore.getState().xp).toBe(XP_CONFIG.DELETE_PHOTO * 2);
+  });
+
+  it('keeps expired photos when purge deletion fails', async () => {
+    const oldDate = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
+    useRecycleBinStore.setState({ deletedPhotos: [{...createPhoto('old'), deletedAt: oldDate}] });
+    (mediaLibrary.deletePhotoAssets as jest.Mock).mockResolvedValueOnce(false);
+
+    await useRecycleBinStore.getState().purgeExpiredPhotos();
+
+    expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
   });
 
   it('resets gallery and onboarding flags', async () => {

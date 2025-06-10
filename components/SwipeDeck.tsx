@@ -37,6 +37,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const timeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [cooldown, setCooldown] = useState(false);
+
+  const triggerCooldown = useCallback(() => {
+    setCooldown(true);
+    const to = setTimeout(() => setCooldown(false), 300);
+    timeoutsRef.current.push(to);
+  }, []);
 
   // Clear any pending timeouts on unmount or data reset
   React.useEffect(() => {
@@ -135,6 +142,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       advanceIndex();
+      triggerCooldown();
     },
     [
       onSwipeLeft,
@@ -158,6 +166,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       advanceIndex();
+      triggerCooldown();
     },
     [
       onSwipeRight,
@@ -243,6 +252,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           </Animated.View>
         );
       })}
+      {cooldown && <View pointerEvents="auto" style={{ position: 'absolute', inset: 0 }} />}
     </View>
   );
 };

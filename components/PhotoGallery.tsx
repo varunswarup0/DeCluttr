@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, Dimensions } from 'react-native';
+import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
@@ -9,15 +9,10 @@ import { Button } from '~/components/nativewindui/Button';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 import { MotivationBanner } from './MotivationBanner';
-import {
-  SESSION_MESSAGES,
-  END_MESSAGES,
-  createMessagePicker,
-} from '~/lib/positiveMessages';
+import { SESSION_MESSAGES, END_MESSAGES, createMessagePicker } from '~/lib/positiveMessages';
 
 const pickSessionMessage = createMessagePicker(SESSION_MESSAGES);
 const pickEndMessage = createMessagePicker(END_MESSAGES);
-
 
 interface PhotoGalleryProps {
   className?: string;
@@ -44,6 +39,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const prefetchCursorRef = React.useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
+  const tapTimesRef = React.useRef<number[]>([]);
 
   // Use RecycleBin store
   const {
@@ -119,7 +115,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   }, [isXpLoaded]);
 
   const handleSwipeLeft = (item: SwipeDeckItem, index: number) => {
-    // Add photo to RecycleBin store
+    // Swipe event - user wants to delete the current photo
+    // Add photo to RecycleBin store and assign XP
     const deletedPhoto: DeletedPhoto = {
       id: item.id,
       imageUri: item.imageUri,
@@ -131,12 +128,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const prevXp = prevState.xp;
     const prevTotal = prevState.totalDeleted;
 
-    addDeletedPhoto(deletedPhoto);
+    addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
 
     const { xp: newXp, totalDeleted: newTotal } = useRecycleBinStore.getState();
     const prevLevel = Math.floor(prevXp / 100) + 1;
     const newLevel = Math.floor(newXp / 100) + 1;
 
+    // Combo check and level-up trigger
     if (newLevel > prevLevel || newTotal % 50 === 0) {
       setConfettiKey((k) => k + 1);
     }
@@ -149,6 +147,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
+    // Swipe event - user keeps the current photo
     setKeptPhotos((prev) => [...prev, item.imageUri]);
 
     // Update current photo index for tracking progress
@@ -205,6 +204,18 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
         [{ text: 'OK', style: 'default' }]
       );
+    }
+  };
+
+  const handleDebugTap = () => {
+    const now = Date.now();
+    tapTimesRef.current = tapTimesRef.current.filter((t) => now - t < 1000);
+    tapTimesRef.current.push(now);
+    if (tapTimesRef.current.length >= 5) {
+      if (photos.length > 0) {
+        handleSwipeLeft(photos[0], 0);
+      }
+      tapTimesRef.current = [];
     }
   };
 
@@ -280,12 +291,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   }
 
   return (
-    <View className={cn('flex-1 items-center justify-center', className)}>
+    <Pressable
+      onPress={handleDebugTap}
+      className={cn('flex-1 items-center justify-center', className)}>
       <MotivationBanner />
       {/* Stats */}
       <View className="mb-6 flex-row space-x-6">
         <View className="items-center">
-          <Text variant="title2" className="text-red-600">
+          <Text variant="title2" className="font-arcade text-red-600">
             {deletedPhotos.length}
           </Text>
           <Text variant="caption1" color="secondary">
@@ -293,7 +306,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           </Text>
         </View>
         <View className="items-center">
-          <Text variant="title2" className="text-green-600">
+          <Text variant="title2" className="font-arcade text-green-600">
             {keptPhotos.length}
           </Text>
           <Text variant="caption1" color="secondary">
@@ -301,7 +314,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           </Text>
         </View>
         <View className="items-center">
-          <Text variant="title2" className="text-yellow-600">
+          <Text variant="title2" className="font-arcade text-yellow-600">
             {totalDeleted}
           </Text>
           <Text variant="caption1" color="secondary">
@@ -343,6 +356,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           <Text className="text-white">Reset Gallery & XP</Text>
         </Button>
       </View>
-    </View>
+    </Pressable>
   );
 };

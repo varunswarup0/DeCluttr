@@ -201,11 +201,13 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
 
   permanentlyDelete: async (photoId: string) => {
     const photo = get().deletedPhotos.find((p) => p.id === photoId);
-    if (photo) {
-      await deletePhotoAsset(photo.id).catch((err) => {
-        console.error('Failed to delete photo asset:', err);
-      });
+    if (!photo) {
+      return; // nothing to delete
     }
+
+    await deletePhotoAsset(photo.id).catch((err) => {
+      console.error('Failed to delete photo asset:', err);
+    });
 
     const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
     set({ deletedPhotos: updated });
@@ -262,8 +264,8 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       await get().saveDeletedPhotos([]);
       await get().saveTotalDeleted(0);
 
-      // Reset XP to 0
-      set({ xp: 0 });
+      // Reset XP to 0 and mark as loaded
+      set({ xp: 0, isXpLoaded: true });
 
       // Save the reset XP to storage using fallback mechanism if needed
       const storage = getAsyncStorage();
@@ -271,7 +273,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     } catch (error) {
       console.error('Failed to reset gallery:', error);
       // Make sure the state is reset even if storage fails
-      set({ deletedPhotos: [], xp: 0 });
+      set({ deletedPhotos: [], totalDeleted: 0, xp: 0, isXpLoaded: true });
     }
   },
 

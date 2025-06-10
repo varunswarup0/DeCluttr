@@ -43,7 +43,10 @@ class BackgroundMusicService {
 
   async stop() {
     try {
-      await this.player?.stop();
+      // expo-audio players don't expose a stop method
+      // use pause and reset to the beginning
+      this.player?.pause();
+      await this.player?.seekTo(0);
     } catch (err) {
       console.warn('Failed to stop background music:', err);
     }

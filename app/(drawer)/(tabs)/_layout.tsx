@@ -32,6 +32,8 @@ function XPDisplay() {
   const level = Math.floor(xp / 100) + 1;
   const progress = xp % 100;
 
+  // Trigger a brief scale animation whenever XP changes.
+  // Reanimated shared values are stable, so including `scale` is safe here.
   useEffect(() => {
     scale.value = 1.4;
     scale.value = withTiming(1, { duration: 300 });
@@ -40,7 +42,7 @@ function XPDisplay() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     }
     prevLevel.current = level;
-  }, [xp, level]);
+  }, [xp, level, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

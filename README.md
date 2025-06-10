@@ -34,6 +34,19 @@ Minimal photo clean-up game built with Expo React Native.
 npm start
 ```
 
+Expo Go cannot grant full media-library permissions. Features like file deletion
+and scanning require a development build. Create one with:
+
+```bash
+eas build --profile development
+```
+
+or
+
+```bash
+expo run:android
+```
+
 XP and onboarding progress are stored using AsyncStorage. If storage is
 unavailable, an in-memory fallback ensures the app still works.
 

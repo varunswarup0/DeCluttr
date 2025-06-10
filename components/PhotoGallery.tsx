@@ -249,7 +249,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         <Text color="secondary" className="mb-6 text-center">
           Make sure you have photos in your gallery and have granted permission.
         </Text>
-        <Button onPress={loadPhotos}>
+        <Button onPress={() => loadPhotos()}>
           <Text>Try Again</Text>
         </Button>
       </View>

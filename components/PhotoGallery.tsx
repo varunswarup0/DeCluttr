@@ -9,6 +9,15 @@ import { Button } from '~/components/nativewindui/Button';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 import { MotivationBanner } from './MotivationBanner';
+import {
+  SESSION_MESSAGES,
+  END_MESSAGES,
+  createMessagePicker,
+} from '~/lib/positiveMessages';
+
+const pickSessionMessage = createMessagePicker(SESSION_MESSAGES);
+const pickEndMessage = createMessagePicker(END_MESSAGES);
+
 
 interface PhotoGalleryProps {
   className?: string;
@@ -175,22 +184,25 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         } else {
           setHasMore(false);
         }
+        const msg = pickSessionMessage();
         Alert.alert(
-          'More Photos Loaded!',
+          msg,
           `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
         );
       } else {
         loadPhotos().then(() => {
+          const msg = pickSessionMessage();
           Alert.alert(
-            'More Photos Loaded!',
+            msg,
             `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
           );
         });
       }
     } else {
+      const endMsg = pickEndMessage();
       Alert.alert(
-        'No More Photos',
-        `You've reached the end of your gallery.\n\nDeleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
+        endMsg,
+        `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
         [{ text: 'OK', style: 'default' }]
       );
     }

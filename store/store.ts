@@ -205,9 +205,14 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       return; // nothing to delete
     }
 
-    await deletePhotoAsset(photo.id).catch((err) => {
+    const success = await deletePhotoAsset(photo.id).catch((err) => {
       console.error('Failed to delete photo asset:', err);
+      return false;
     });
+
+    if (!success) {
+      return; // keep photo if deletion failed
+    }
 
     const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
     set({ deletedPhotos: updated });
@@ -220,9 +225,13 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     const { deletedPhotos } = get();
     const photosCount = deletedPhotos.length;
     if (photosCount > 0) {
-      await deletePhotoAssets(deletedPhotos.map((p) => p.id)).catch((err) => {
+      const success = await deletePhotoAssets(deletedPhotos.map((p) => p.id)).catch((err) => {
         console.error('Failed to delete photo assets:', err);
+        return false;
       });
+      if (!success) {
+        return; // abort if deletion failed
+      }
     }
     set({ deletedPhotos: [] });
     await get().saveDeletedPhotos([]);
@@ -241,9 +250,13 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       return;
     }
 
-    await deletePhotoAssets(expired.map((p) => p.id)).catch((err) => {
+    const success = await deletePhotoAssets(expired.map((p) => p.id)).catch((err) => {
       console.error('Failed to purge old photo assets:', err);
+      return false;
     });
+    if (!success) {
+      return;
+    }
 
     const updated = get().deletedPhotos.filter(
       (p) => now - new Date(p.deletedAt).getTime() <= THIRTY_DAYS_MS

@@ -119,7 +119,10 @@ export async function fetchAllPhotoAssets(batchSize: number = 100): Promise<Phot
     let after: string | undefined = undefined;
     let hasNext = true;
     while (hasNext) {
-      const { assets, hasNextPage, endCursor } = await fetchPhotoAssetsWithPagination(after, batchSize);
+      const { assets, hasNextPage, endCursor } = await fetchPhotoAssetsWithPagination(
+        after,
+        batchSize
+      );
       all.push(...assets);
       after = endCursor;
       hasNext = hasNextPage;
@@ -158,14 +161,18 @@ export async function getAssetInfo(assetId: string): Promise<MediaLibrary.Asset 
  * Permanently delete photo assets from the device
  * @param assetIds - Array of asset IDs to delete
  */
-export async function deletePhotoAssets(assetIds: string[]): Promise<void> {
+/**
+ * Permanently delete photo assets from the device.
+ * @returns boolean indicating if deletion succeeded for all assets
+ */
+export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
   try {
     let hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {
       hasPermission = await requestMediaLibraryPermission();
       if (!hasPermission) {
         console.warn('Media library permission not granted. Skipping delete.');
-        return;
+        return false;
       }
     }
 
@@ -182,7 +189,7 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<void> {
 
     if (validIds.length === 0) {
       console.log('No photo assets to delete.');
-      return;
+      return true;
     }
 
     const success = await MediaLibrary.deleteAssetsAsync(validIds);
@@ -191,15 +198,17 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<void> {
     } else {
       console.warn('Some photo assets could not be deleted.');
     }
+    return success;
   } catch (error: any) {
     if (error?.message?.toLowerCase().includes('permission')) {
       console.warn('Permission denied while deleting photo assets.');
     } else {
       console.error('Error deleting photo assets:', error);
     }
+    return false;
   }
 }
 
-export async function deletePhotoAsset(assetId: string): Promise<void> {
+export async function deletePhotoAsset(assetId: string): Promise<boolean> {
   return deletePhotoAssets([assetId]);
 }

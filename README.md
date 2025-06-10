@@ -63,6 +63,7 @@ unavailable, an in-memory fallback ensures the app still works.
   - Friendly alerts celebrate your progress and encourage you to keep going.
   - A motivational banner shows supportive messages to keep you feeling positive while you declutter.
   - Messages are chosen from a shared module and cycled so you rarely see the same encouragement twice in a row.
+  - Customize these phrases in `lib/positiveMessages.ts`; keep each under 30 characters so they fit the banner.
 
 - If more images are available the next batch loads automatically so the game never ends until your gallery is empty. The app also prefetches the following batch in the background to keep swiping smooth.
 

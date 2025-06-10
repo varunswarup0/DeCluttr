@@ -1,6 +1,7 @@
 # DeCluttr
 
 Minimal photo clean-up game built with Expo React Native.
+It features a small bird mascot inspired by **Flappy Bird** that celebrates your progress.
 **Android only** – other platforms are not supported.
 
 ## Prerequisites
@@ -76,6 +77,7 @@ For more details on specific systems see:
 - `AUDIO_SYSTEM_README.md`
 - `ONBOARDING_README.md`
 - `XP_SYSTEM_README.md`
+- `MASCOT_README.md`
 
 ## Testing
 

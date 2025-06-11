@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Dimensions, PixelRatio } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,8 +10,6 @@ import { SwipeCard } from './SwipeCard';
 import { cn } from '~/lib/cn';
 
 const { width: screenWidth } = Dimensions.get('window');
-const CONTAINER_WIDTH = PixelRatio.roundToNearestPixel(screenWidth * 0.9);
-const CONTAINER_HEIGHT = PixelRatio.roundToNearestPixel(screenWidth * 1.2);
 
 export interface SwipeDeckItem {
   id: string;
@@ -39,13 +37,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const timeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [cooldown, setCooldown] = useState(false);
-
-  const triggerCooldown = useCallback(() => {
-    setCooldown(true);
-    const to = setTimeout(() => setCooldown(false), 300);
-    timeoutsRef.current.push(to);
-  }, []);
 
   // Clear any pending timeouts on unmount or data reset
   React.useEffect(() => {
@@ -87,6 +78,19 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     }
   }, [data, cardSpacing, maxVisibleCards, scaleValues, translateYValues, opacityValues]);
 
+  // Notify when there are no cards to show
+  const emptyNotified = React.useRef(false);
+  React.useEffect(() => {
+    if (data.length === 0) {
+      if (!emptyNotified.current) {
+        onDeckEmpty?.();
+        emptyNotified.current = true;
+      }
+    } else {
+      emptyNotified.current = false;
+    }
+  }, [data.length, onDeckEmpty]);
+
   // Create animated styles for each card position
   const animatedStyle0 = useAnimatedStyle(() => ({
     transform: [{ scale: scale0.value }, { translateY: translateY0.value }],
@@ -106,17 +110,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
   const advanceIndex = useCallback(() => {
     const timeout = setTimeout(() => {
-      let shouldNotify = false;
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
-        if (nextIndex >= data.length) {
-          shouldNotify = true;
+        if (nextIndex >= data.length && onDeckEmpty) {
+          onDeckEmpty();
         }
         return nextIndex;
       });
-      if (shouldNotify) {
-        onDeckEmpty?.();
-      }
       // remove finished timeout reference
       timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
     }, 300);
@@ -135,7 +135,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       advanceIndex();
-      triggerCooldown();
     },
     [
       onSwipeLeft,
@@ -159,7 +158,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       }
 
       advanceIndex();
-      triggerCooldown();
     },
     [
       onSwipeRight,
@@ -201,8 +199,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       <View
         className={cn('items-center justify-center', className)}
         style={{
-          width: CONTAINER_WIDTH,
-          height: CONTAINER_HEIGHT,
+          width: screenWidth * 0.9,
+          height: screenWidth * 1.2,
         }}></View>
     );
   }
@@ -211,8 +209,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     <View
       className={cn('items-center justify-center', className)}
       style={{
-        width: CONTAINER_WIDTH,
-        height: CONTAINER_HEIGHT,
+        width: screenWidth * 0.9,
+        height: screenWidth * 1.2,
       }}>
       {visibleCards.map((card) => {
         const isTopCard = card.stackIndex === 0;
@@ -245,7 +243,6 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           </Animated.View>
         );
       })}
-      {cooldown && <View pointerEvents="auto" style={{ position: 'absolute', inset: 0 }} />}
     </View>
   );
 };

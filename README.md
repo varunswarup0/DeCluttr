@@ -28,6 +28,7 @@ It features a small bird mascot inspired by **Flappy Bird** that celebrates your
 7. The `audioService` will load these sounds automatically and handle failures gracefully.
 8. Subtle haptic feedback triggers on each swipe for extra game feel.
 9. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.
+10. The file `assets/favicon.png` serves as the favicon when running on the web. Replace it with your own image to customize the icon.
 
 ## Running the App on Android
 

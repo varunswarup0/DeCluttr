@@ -1,0 +1,1177 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/app/_layout.tsx b/app/_layout.tsx
+index 605ad5fbc8296d29861f633820ee71f74623b2df..bbdf853999df13bc746300fd991f5523593fb6f3 100644
+--- a/app/_layout.tsx
++++ b/app/_layout.tsx
+@@ -1,79 +1,88 @@
+ import '../global.css';
+ import 'expo-dev-client';
+ import { useEffect } from 'react';
+ import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
+ 
+ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+ 
+ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
++import { useFonts, Quicksand_400Regular, Quicksand_700Bold } from '@expo-google-fonts/quicksand';
+ 
+ import { Stack, useRouter, useSegments } from 'expo-router';
+ import { StatusBar } from 'expo-status-bar';
+ 
+ import { GestureHandlerRootView } from 'react-native-gesture-handler';
+ 
+ import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
+ import { useRecycleBinStore } from '~/store/store';
+ import { NAV_THEME } from '~/theme';
+ 
+ export {
+   // Catch any errors thrown by the Layout component.
+   ErrorBoundary,
+ } from 'expo-router';
+ 
+ export default function RootLayout() {
+   useInitialAndroidBarSync();
++  const [fontsLoaded] = useFonts({
++    Quicksand_400Regular,
++    Quicksand_700Bold,
++  });
+   const { colorScheme, isDarkColorScheme } = useColorScheme();
+   const { loadXP, isXpLoaded, checkOnboardingStatus } = useRecycleBinStore();
+   const segments = useSegments();
+   const router = useRouter();
+ 
+   // Load XP from AsyncStorage on app startup
+   useEffect(() => {
+     if (!isXpLoaded) {
+       loadXP();
+     }
+   }, [loadXP, isXpLoaded]);
+ 
+   // Check onboarding status on startup
+   useEffect(() => {
+     checkOnboardingStatus().then((completed) => {
+       if (completed) {
+         // If onboarding is completed, navigate to the main app
+         if (segments.length < 1 || segments[0] === 'onboarding') {
+           router.replace('/(drawer)/(tabs)');
+         }
+       } else {
+         // If onboarding is NOT completed, redirect to onboarding
+         if (segments[0] !== 'onboarding') {
+           router.replace('/onboarding');
+         }
+       }
+     });
+   }, [checkOnboardingStatus, segments, router]);
+ 
++  if (!fontsLoaded) {
++    return null;
++  }
++
+   return (
+     <>
+       <StatusBar
+         key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
+         style={isDarkColorScheme ? 'light' : 'dark'}
+       />
+       <GestureHandlerRootView style={{ flex: 1 }}>
+         <BottomSheetModalProvider>
+           <ActionSheetProvider>
+             <NavThemeProvider value={NAV_THEME[colorScheme]}>
+               <Stack screenOptions={SCREEN_OPTIONS}>
+                 <Stack.Screen
+                   name="onboarding"
+                   options={{ headerShown: false, gestureEnabled: false }}
+                 />
+                 <Stack.Screen name="(drawer)" options={DRAWER_OPTIONS} />
+               </Stack>
+             </NavThemeProvider>
+           </ActionSheetProvider>
+         </BottomSheetModalProvider>
+       </GestureHandlerRootView>
+ 
+       {/* </ExampleProvider> */}
+     </>
+   );
+diff --git a/assets/sounds/tap.mp3 b/assets/sounds/tap.mp3
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2cb5d786bb2bbe9785576cef931404aa27d868a
+GIT binary patch
+literal 2107
+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
+Z7FvI|&;D?ywh{K}5J3N>o&Haf{sUm*n_>U}
+
+literal 0
+HcmV?d00001
+
+diff --git a/components/SwipeCard.tsx b/components/SwipeCard.tsx
+index 3f1a545d8681bb6b17cba976eb347df831a469e8..1c048ffbcda453287d3dc7cd55a77ba5b0ece0bd 100644
+--- a/components/SwipeCard.tsx
++++ b/components/SwipeCard.tsx
+@@ -141,66 +141,66 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
+           resizeMode="cover"
+         />
+ 
+         <Animated.View
+           style={[
+             {
+               position: 'absolute',
+               top: 0,
+               left: 0,
+               right: 0,
+               bottom: 0,
+               borderRadius: 20,
+               justifyContent: 'center',
+               alignItems: 'center',
+             },
+             overlayStyle,
+           ]}>
+           <Animated.View
+             style={[
+               {
+                 position: 'absolute',
+                 top: 0,
+                 left: 0,
+                 right: 0,
+                 bottom: 0,
+-                backgroundColor: 'rgba(255, 59, 48, 0.8)',
++                backgroundColor: 'rgba(255, 160, 160, 0.8)',
+                 borderRadius: 20,
+                 justifyContent: 'center',
+                 alignItems: 'center',
+               },
+               deleteOverlayStyle,
+             ]}>
+             <View className="rounded-full bg-white p-4">
+               <View className="h-8 w-8 items-center justify-center">
+                 <View className="absolute h-0.5 w-6 rotate-45 bg-red-500" />
+                 <View className="absolute h-0.5 w-6 -rotate-45 bg-red-500" />
+               </View>
+             </View>
+           </Animated.View>
+ 
+           <Animated.View
+             style={[
+               {
+                 position: 'absolute',
+                 top: 0,
+                 left: 0,
+                 right: 0,
+                 bottom: 0,
+-                backgroundColor: 'rgba(52, 199, 89, 0.8)',
++                backgroundColor: 'rgba(169, 255, 197, 0.8)',
+                 borderRadius: 20,
+                 justifyContent: 'center',
+                 alignItems: 'center',
+               },
+               keepOverlayStyle,
+             ]}>
+             <View className="rounded-full bg-white p-4">
+               <View className="h-8 w-8 items-center justify-center">
+                 <View className="-mt-1 h-4 w-2 rotate-45 border-b-2 border-r-2 border-green-500" />
+               </View>
+             </View>
+           </Animated.View>
+         </Animated.View>
+       </Animated.View>
+     </PanGestureHandler>
+   );
+ };
+diff --git a/components/nativewindui/Button.tsx b/components/nativewindui/Button.tsx
+index 002601f262ff54be496d3601e02aecd2781b792a..8c135d1d70d52599b99357d0b875758734b5443a 100644
+--- a/components/nativewindui/Button.tsx
++++ b/components/nativewindui/Button.tsx
+@@ -1,33 +1,37 @@
+ import { cva, type VariantProps } from 'class-variance-authority';
+ import * as React from 'react';
+ import { Pressable, PressableProps, View, ViewStyle } from 'react-native';
++import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+ 
+ import { TextClassContext } from '~/components/nativewindui/Text';
+ import { cn } from '~/lib/cn';
+ import { useColorScheme } from '~/lib/useColorScheme';
+ import { COLORS } from '~/theme/colors';
++import { useSwipeAudio } from '~/lib/useSwipeAudio';
++
++const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+ 
+ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
+   variants: {
+     variant: {
+       primary: 'bg-primary',
+       secondary: 'border border-foreground/40',
+       tonal: 'bg-primary/15 dark:bg-primary/30',
+       plain: '',
+     },
+     size: {
+       none: '',
+       sm: 'py-1 px-2.5 rounded-full',
+       md: 'py-2 px-5 rounded-full',
+       lg: 'py-2.5 px-5 rounded-xl gap-2',
+       icon: 'h-10 w-10 rounded-full',
+     },
+   },
+   defaultVariants: {
+     variant: 'primary',
+     size: 'md',
+   },
+ });
+ 
+ const androidRootVariants = cva('overflow-hidden', {
+   variants: {
+@@ -99,49 +103,68 @@ const ANDROID_RIPPLE = {
+ const BORDER_CURVE: ViewStyle = {
+   borderCurve: 'continuous',
+ };
+ 
+ type ButtonVariantProps = Omit<VariantProps<typeof buttonVariants>, 'variant'> & {
+   variant?: Exclude<VariantProps<typeof buttonVariants>['variant'], null>;
+ };
+ 
+ type AndroidOnlyButtonProps = {
+   /**
+    * ANDROID ONLY: The class name of root responsible for hidding the ripple overflow.
+    */
+   androidRootClassName?: string;
+ };
+ 
+ type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
+ 
+ const Root = View;
+ 
+ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+   (
+     { className, variant = 'primary', size, style = BORDER_CURVE, androidRootClassName, ...props },
+     ref
+   ) => {
+     const { colorScheme } = useColorScheme();
++    const { playTapSound } = useSwipeAudio();
++    const scale = useSharedValue(1);
++    const animatedStyle = useAnimatedStyle(() => ({
++      transform: [{ scale: scale.value }],
++    }));
+ 
+     return (
+       <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
+         <Root className={androidRootVariants({ size, className: androidRootClassName })}>
+-          <Pressable
++          <AnimatedPressable
+             className={cn(
+               props.disabled && 'opacity-50',
+               buttonVariants({ variant, size, className })
+             )}
+             ref={ref}
+-            style={style}
++            style={[style, animatedStyle]}
+             android_ripple={ANDROID_RIPPLE[colorScheme][variant]}
+             {...props}
++            onPress={(event) => {
++              if (!props.disabled) {
++                playTapSound();
++              }
++              props.onPress?.(event);
++            }}
++            onPressIn={() => {
++              if (!props.disabled) {
++                scale.value = withSpring(0.96);
++              }
++            }}
++            onPressOut={() => {
++              scale.value = withSpring(1);
++            }}
+           />
+         </Root>
+       </TextClassContext.Provider>
+     );
+   }
+ );
+ 
+ Button.displayName = 'Button';
+ 
+ export { Button, buttonTextVariants, buttonVariants };
+ export type { ButtonProps };
+diff --git a/global.css b/global.css
+index cdb50e6e20ed316e9b8a8c32b49fd3a6f308d1f3..e93e8ffe891df20b041bf432588fc19256ddf3b9 100644
+--- a/global.css
++++ b/global.css
+@@ -1,91 +1,91 @@
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;
+ 
+ @layer base {
+   :root {
+-    --background: 242 242 247;
+-    --foreground: 0 0 0;
++    --background: 250 250 252;
++    --foreground: 25 28 35;
+     --card: 255 255 255;
+     --card-foreground: 8 28 30;
+-    --popover: 230 230 235;
+-    --popover-foreground: 0 0 0;
+-    --primary: 0 123 254;
++    --popover: 237 239 249;
++    --popover-foreground: 25 28 35;
++    --primary: 173 213 255;
+     --primary-foreground: 255 255 255;
+-    --secondary: 45 175 231;
+-    --secondary-foreground: 255 255 255;
+-    --muted: 175 176 180;
+-    --muted-foreground: 142 142 147;
+-    --accent: 255 40 84;
+-    --accent-foreground: 255 255 255;
+-    --destructive: 255 56 43;
+-    --destructive-foreground: 255 255 255;
+-    --border: 230 230 235;
+-    --input: 210 210 215;
+-    --ring: 230 230 235;
++    --secondary: 255 214 219;
++    --secondary-foreground: 25 28 35;
++    --muted: 208 212 232;
++    --muted-foreground: 97 103 123;
++    --accent: 255 203 244;
++    --accent-foreground: 25 28 35;
++    --destructive: 255 160 160;
++    --destructive-foreground: 25 28 35;
++    --border: 228 232 246;
++    --input: 222 226 238;
++    --ring: 228 232 246;
+ 
+-    --android-background: 249 249 255;
+-    --android-foreground: 0 0 0;
++    --android-background: 249 250 255;
++    --android-foreground: 25 28 35;
+     --android-card: 255 255 255;
+-    --android-card-foreground: 24 28 35;
+-    --android-popover: 215 217 228;
+-    --android-popover-foreground: 0 0 0;
+-    --android-primary: 0 112 233;
+-    --android-primary-foreground: 255 255 255;
+-    --android-secondary: 176 201 255;
+-    --android-secondary-foreground: 20 55 108;
+-    --android-muted: 193 198 215;
+-    --android-muted-foreground: 65 71 84;
+-    --android-accent: 169 73 204;
+-    --android-accent-foreground: 255 255 255;
+-    --android-destructive: 186 26 26;
+-    --android-destructive-foreground: 255 255 255;
+-    --android-border: 215 217 228;
+-    --android-input: 210 210 215;
+-    --android-ring: 215 217 228;
++    --android-card-foreground: 25 28 35;
++    --android-popover: 237 239 249;
++    --android-popover-foreground: 25 28 35;
++    --android-primary: 173 213 255;
++    --android-primary-foreground: 25 28 35;
++    --android-secondary: 255 214 219;
++    --android-secondary-foreground: 25 28 35;
++    --android-muted: 208 212 232;
++    --android-muted-foreground: 97 103 123;
++    --android-accent: 255 203 244;
++    --android-accent-foreground: 25 28 35;
++    --android-destructive: 255 160 160;
++    --android-destructive-foreground: 25 28 35;
++    --android-border: 228 232 246;
++    --android-input: 222 226 238;
++    --android-ring: 228 232 246;
+   }
+ 
+   @media (prefers-color-scheme: dark) {
+     :root {
+-      --background: 0 0 0;
+-      --foreground: 255 255 255;
+-      --card: 21 21 24;
+-      --card-foreground: 255 255 255;
+-      --popover: 40 40 42;
+-      --popover-foreground: 255 255 255;
+-      --primary: 3 133 255;
+-      --primary-foreground: 255 255 255;
+-      --secondary: 100 211 254;
+-      --secondary-foreground: 255 255 255;
+-      --muted: 70 70 73;
+-      --muted-foreground: 142 142 147;
+-      --accent: 255 52 95;
+-      --accent-foreground: 255 255 255;
+-      --destructive: 254 67 54;
+-      --destructive-foreground: 255 255 255;
+-      --border: 40 40 42;
+-      --input: 55 55 57;
+-      --ring: 40 40 42;
++      --background: 18 21 30;
++      --foreground: 230 232 240;
++      --card: 30 33 42;
++      --card-foreground: 230 232 240;
++      --popover: 48 53 62;
++      --popover-foreground: 230 232 240;
++      --primary: 136 173 255;
++      --primary-foreground: 18 21 30;
++      --secondary: 255 181 194;
++      --secondary-foreground: 18 21 30;
++      --muted: 120 125 145;
++      --muted-foreground: 170 175 193;
++      --accent: 216 171 255;
++      --accent-foreground: 18 21 30;
++      --destructive: 255 120 120;
++      --destructive-foreground: 18 21 30;
++      --border: 48 53 62;
++      --input: 60 65 73;
++      --ring: 48 53 62;
+ 
+-      --android-background: 0 0 0;
+-      --android-foreground: 255 255 255;
+-      --android-card: 16 19 27;
+-      --android-card-foreground: 224 226 237;
+-      --android-popover: 39 42 50;
+-      --android-popover-foreground: 224 226 237;
+-      --android-primary: 3 133 255;
+-      --android-primary-foreground: 255 255 255;
+-      --android-secondary: 28 60 114;
+-      --android-secondary-foreground: 189 209 255;
+-      --android-muted: 216 226 255;
+-      --android-muted-foreground: 139 144 160;
+-      --android-accent: 83 0 111;
+-      --android-accent-foreground: 238 177 255;
+-      --android-destructive: 147 0 10;
+-      --android-destructive-foreground: 255 255 255;
+-      --android-border: 39 42 50;
+-      --android-input: 55 55 57;
+-      --android-ring: 39 42 50;
++      --android-background: 18 21 30;
++      --android-foreground: 230 232 240;
++      --android-card: 30 33 42;
++      --android-card-foreground: 230 232 240;
++      --android-popover: 48 53 62;
++      --android-popover-foreground: 230 232 240;
++      --android-primary: 136 173 255;
++      --android-primary-foreground: 18 21 30;
++      --android-secondary: 255 181 194;
++      --android-secondary-foreground: 18 21 30;
++      --android-muted: 120 125 145;
++      --android-muted-foreground: 170 175 193;
++      --android-accent: 216 171 255;
++      --android-accent-foreground: 18 21 30;
++      --android-destructive: 255 120 120;
++      --android-destructive-foreground: 18 21 30;
++      --android-border: 48 53 62;
++      --android-input: 60 65 73;
++      --android-ring: 48 53 62;
+     }
+   }
+ }
+diff --git a/lib/audioService.ts b/lib/audioService.ts
+index ce486a70e0a893e580652db2ba539ca59607e1e2..99e5184cef4db3647db31191fc4485f0cf649a60 100644
+--- a/lib/audioService.ts
++++ b/lib/audioService.ts
+@@ -1,99 +1,103 @@
+ import { createAudioPlayer, AudioPlayer } from 'expo-audio';
+ import { getAsyncStorage } from './asyncStorageWrapper';
+ 
+ export class AudioService {
+   private static instance: AudioService;
+   private deletePlayer: AudioPlayer | null = null;
+   private keepPlayer: AudioPlayer | null = null;
++  private tapPlayer: AudioPlayer | null = null;
+   private isInitialized = false;
+   private initializing: Promise<void> | null = null;
+ 
+   private constructor() {}
+ 
+   public static getInstance(): AudioService {
+     if (!AudioService.instance) {
+       AudioService.instance = new AudioService();
+     }
+     return AudioService.instance;
+   }
+ 
+   /**
+    * Initialize audio service by preloading sound files
+    */
+   public async initialize(): Promise<void> {
+     if (this.isInitialized) {
+       return;
+     }
+     if (this.initializing) {
+       return this.initializing;
+     }
+ 
+     this.initializing = (async () => {
+       try {
+         // Create audio players for each sound
+         this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
+         this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
++        this.tapPlayer = createAudioPlayer(require('../assets/sounds/tap.mp3'));
+ 
+         // Set initial volume
+         const audioSettings = await this.getAudioSettings();
+         this.deletePlayer.volume = audioSettings.volume;
+         this.keepPlayer.volume = audioSettings.volume;
++        this.tapPlayer.volume = audioSettings.volume;
+ 
+         this.isInitialized = true;
+         console.log('Audio service initialized successfully');
+       } catch (error) {
+         console.warn('Failed to initialize audio service:', error);
+         // Create mock players that fail silently if files don't exist
+         this.createMockPlayers();
+       } finally {
+         this.initializing = null;
+       }
+     })();
+     return this.initializing;
+   }
+ 
+   /**
+    * Create mock player objects that fail silently
+    */
+   private createMockPlayers(): void {
+     const mockPlayer = {
+       play: () => {},
+       pause: () => {},
+       stop: () => {},
+       seekTo: () => {},
+       volume: 0.8,
+       currentTime: 0,
+       duration: 0,
+       playing: false,
+       muted: false,
+       loop: false,
+       remove: () => {},
+     } as any;
+ 
+     this.deletePlayer = mockPlayer;
+     this.keepPlayer = mockPlayer;
++    this.tapPlayer = mockPlayer;
+     this.isInitialized = true;
+     console.log('Audio service initialized with mock players (sound files not found)');
+   }
+ 
+   /**
+    * Get audio settings from AsyncStorage
+    */
+   private async getAudioSettings(): Promise<{ enabled: boolean; volume: number }> {
+     try {
+       const storage = getAsyncStorage();
+       const stored = await storage.getItem('decluttr_audio_settings');
+       if (stored) {
+         try {
+           const settings = JSON.parse(stored);
+           return { enabled: settings.enabled ?? true, volume: settings.volume ?? 0.8 };
+         } catch {
+           // fall through to default if JSON is invalid
+         }
+       }
+     } catch (error) {
+       console.warn('Failed to load audio settings:', error);
+     }
+     return { enabled: true, volume: 0.8 };
+   }
+ 
+@@ -125,87 +129,119 @@ export class AudioService {
+   /**
+    * Play keep sound effect
+    */
+   public async playKeepSound(): Promise<void> {
+     try {
+       if (!this.isInitialized) {
+         await this.initialize();
+       }
+ 
+       // Check if audio is enabled in settings
+       const audioSettings = await this.getAudioSettings();
+       if (!audioSettings.enabled) {
+         return;
+       }
+ 
+       if (this.keepPlayer) {
+         // Reset to beginning and play
+         this.keepPlayer.seekTo(0);
+         this.keepPlayer.play();
+       }
+     } catch (error) {
+       console.warn('Failed to play keep sound:', error);
+     }
+   }
+ 
++  /**
++   * Play generic tap sound effect
++   */
++  public async playTapSound(): Promise<void> {
++    try {
++      if (!this.isInitialized) {
++        await this.initialize();
++      }
++
++      const audioSettings = await this.getAudioSettings();
++      if (!audioSettings.enabled) {
++        return;
++      }
++
++      if (this.tapPlayer) {
++        this.tapPlayer.seekTo(0);
++        this.tapPlayer.play();
++      }
++    } catch (error) {
++      console.warn('Failed to play tap sound:', error);
++    }
++  }
++
+   /**
+    * Clean up resources
+    */
+   public async cleanup(): Promise<void> {
+     try {
+       if (this.deletePlayer) {
+         this.deletePlayer.remove();
+         this.deletePlayer = null;
+       }
+ 
+       if (this.keepPlayer) {
+         this.keepPlayer.remove();
+         this.keepPlayer = null;
+       }
+ 
++      if (this.tapPlayer) {
++        this.tapPlayer.remove();
++        this.tapPlayer = null;
++      }
++
+       this.isInitialized = false;
+       console.log('Audio service cleaned up');
+     } catch (error) {
+       console.warn('Failed to cleanup audio service:', error);
+     }
+   }
+ 
+   /**
+    * Set volume for all sounds (0.0 to 1.0)
+    */
+   public async setVolume(volume: number): Promise<void> {
+     try {
+       const clampedVolume = Math.max(0, Math.min(1, volume));
+ 
+       if (this.deletePlayer) {
+         this.deletePlayer.volume = clampedVolume;
+       }
+ 
+       if (this.keepPlayer) {
+         this.keepPlayer.volume = clampedVolume;
+       }
+ 
++      if (this.tapPlayer) {
++        this.tapPlayer.volume = clampedVolume;
++      }
++
+       // Save volume setting to AsyncStorage
+       const currentSettings = await this.getAudioSettings();
+       const storage = getAsyncStorage();
+       await storage.setItem(
+         'decluttr_audio_settings',
+         JSON.stringify({
+           ...currentSettings,
+           volume: clampedVolume,
+         })
+       );
+     } catch (error) {
+       console.warn('Failed to set volume:', error);
+     }
+   }
+ 
+   /**
+    * Enable or disable audio playback
+    */
+   public async setEnabled(enabled: boolean): Promise<void> {
+     try {
+       const currentSettings = await this.getAudioSettings();
+       const storage = getAsyncStorage();
+       await storage.setItem(
+         'decluttr_audio_settings',
+         JSON.stringify({
+diff --git a/lib/useSwipeAudio.ts b/lib/useSwipeAudio.ts
+index 48583acfb505e9a562ce008b1ae345804444edf3..9b535bcf17db2730e8e00a1e48d4452853d89b61 100644
+--- a/lib/useSwipeAudio.ts
++++ b/lib/useSwipeAudio.ts
+@@ -15,30 +15,35 @@ export const useSwipeAudio = () => {
+     if (isLoaded) {
+       audioService.initialize().then(() => {
+         audioService.setVolume(settings.volume);
+         audioService.setEnabled(settings.enabled);
+       });
+     }
+   }, [isLoaded]);
+   /* eslint-enable react-hooks/exhaustive-deps */
+ 
+   // Sync volume/enabled when settings change
+   useEffect(() => {
+     if (isLoaded) {
+       audioService.setVolume(settings.volume);
+       audioService.setEnabled(settings.enabled);
+     }
+   }, [isLoaded, settings.enabled, settings.volume]);
+ 
+   const playDeleteSound = () => {
+     audioService.playDeleteSound();
+   };
+ 
+   const playKeepSound = () => {
+     audioService.playKeepSound();
+   };
+ 
++  const playTapSound = () => {
++    audioService.playTapSound();
++  };
++
+   return {
+     playDeleteSound,
+     playKeepSound,
++    playTapSound,
+   };
+ };
+diff --git a/package-lock.json b/package-lock.json
+index 69da8861328e1fe9f2b2168b98ef0eddb88d4c64..6e327c28bdaa40f1480bc632f189241867bcf6dc 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,58 +1,60 @@
+ {
+   "name": "decluttr",
+   "version": "1.0.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "decluttr",
+       "version": "1.0.0",
+       "hasInstallScript": true,
+       "dependencies": {
++        "@expo-google-fonts/quicksand": "^0.2.2",
+         "@expo/react-native-action-sheet": "^4.1.1",
+         "@expo/vector-icons": "^14.0.0",
+         "@gorhom/bottom-sheet": "^4.6.4",
+         "@legendapp/list": "^1.0.7",
+         "@react-native-async-storage/async-storage": "^1.24.0",
+         "@react-native-community/datetimepicker": "8.3.0",
+         "@react-native-community/slider": "4.5.6",
+         "@react-native-picker/picker": "2.11.0",
+         "@react-navigation/bottom-tabs": "^7.0.5",
+         "@react-navigation/drawer": "^7.0.0",
+         "@react-navigation/native": "^7.0.3",
+         "@rn-primitives/avatar": "^1.2.0",
+         "@rn-primitives/slot": "^1.2.0",
+         "@roninoss/icons": "^0.0.4",
+         "class-variance-authority": "^0.7.0",
+         "clsx": "^2.1.0",
+         "date-fns": "^4.1.0",
+         "expo": "^53.0.9",
+         "expo-audio": "~0.4.5",
+         "expo-constants": "~17.1.4",
+         "expo-dev-client": "~5.1.7",
+         "expo-dev-launcher": "^5.0.17",
++        "expo-font": "^11.3.0",
+         "expo-linking": "~7.1.4",
+         "expo-media-library": "^17.1.6",
+         "expo-navigation-bar": "~4.2.4",
+         "expo-router": "~5.0.3",
+         "expo-status-bar": "~2.2.3",
+         "expo-store-review": "~8.1.5",
+         "expo-system-ui": "~5.0.6",
+         "firebase": "^10.5.2",
+         "nativewind": "latest",
+         "react": "19.0.0",
+         "react-native": "0.79.2",
+         "react-native-gesture-handler": "~2.24.0",
+         "react-native-onboarding-swiper": "^1.3.0",
+         "react-native-pager-view": "6.7.1",
+         "react-native-reanimated": "~3.17.4",
+         "react-native-safe-area-context": "5.4.0",
+         "react-native-screens": "~4.10.0",
+         "react-native-uitextview": "2.0.0-rc.10",
+         "tailwind-merge": "^2.2.1",
+         "zustand": "^4.5.1"
+       },
+       "devDependencies": {
+         "@babel/core": "^7.20.0",
+         "@types/react": "~19.0.10",
+         "@types/react-native": "^0.73.0",
+@@ -1759,50 +1761,56 @@
+     },
+     "node_modules/@eslint/object-schema": {
+       "version": "2.1.6",
+       "resolved": "https://registry.npmjs.org/@eslint/object-schema/-/object-schema-2.1.6.tgz",
+       "integrity": "sha512-RBMg5FRL0I0gs51M/guSAj5/e14VQ4tpZnQNWwuDT66P14I43ItmPfIZRhO9fUVIPOAQXU47atlywZ/czoqFPA==",
+       "dev": true,
+       "license": "Apache-2.0",
+       "engines": {
+         "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+       }
+     },
+     "node_modules/@eslint/plugin-kit": {
+       "version": "0.3.1",
+       "resolved": "https://registry.npmjs.org/@eslint/plugin-kit/-/plugin-kit-0.3.1.tgz",
+       "integrity": "sha512-0J+zgWxHN+xXONWIyPWKFMgVuJoZuGiIFu8yxk7RJjxkzpGmyja5wRFqZIVtjDVOQpV+Rw0iOAjYPE2eQyjr0w==",
+       "dev": true,
+       "license": "Apache-2.0",
+       "dependencies": {
+         "@eslint/core": "^0.14.0",
+         "levn": "^0.4.1"
+       },
+       "engines": {
+         "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+       }
+     },
++    "node_modules/@expo-google-fonts/quicksand": {
++      "version": "0.2.3",
++      "resolved": "https://registry.npmjs.org/@expo-google-fonts/quicksand/-/quicksand-0.2.3.tgz",
++      "integrity": "sha512-cQhYsOYPBbKzqry0TT87fJz8ZlCKLLeHiECsjI9zRx4pMB3XKnHSWNO7JBDvMA6w9ekcQ17aaBZ4vj9RC2Kgtw==",
++      "license": "MIT"
++    },
+     "node_modules/@expo/cli": {
+       "version": "0.24.13",
+       "resolved": "https://registry.npmjs.org/@expo/cli/-/cli-0.24.13.tgz",
+       "integrity": "sha512-2LSdbvYs+WmUljnplQXMCUyNzyX4H+F4l8uExfA1hud25Bl5kyaGrx1jjtgNxMTXmfmMjvgBdK798R50imEhkA==",
+       "license": "MIT",
+       "dependencies": {
+         "@0no-co/graphql.web": "^1.0.8",
+         "@babel/runtime": "^7.20.0",
+         "@expo/code-signing-certificates": "^0.0.5",
+         "@expo/config": "~11.0.10",
+         "@expo/config-plugins": "~10.0.2",
+         "@expo/devcert": "^1.1.2",
+         "@expo/env": "~1.0.5",
+         "@expo/image-utils": "^0.7.4",
+         "@expo/json-file": "^9.1.4",
+         "@expo/metro-config": "~0.20.14",
+         "@expo/osascript": "^2.2.4",
+         "@expo/package-manager": "^1.8.4",
+         "@expo/plist": "^0.3.4",
+         "@expo/prebuild-config": "^9.0.6",
+         "@expo/spawn-async": "^1.7.2",
+         "@expo/ws-tunnel": "^1.0.1",
+         "@expo/xcpretty": "^4.3.0",
+         "@react-native/dev-middleware": "0.79.2",
+         "@urql/core": "^5.0.6",
+@@ -7464,60 +7472,59 @@
+       },
+       "peerDependencies": {
+         "expo": "*"
+       }
+     },
+     "node_modules/expo-dev-menu-interface": {
+       "version": "1.10.0",
+       "resolved": "https://registry.npmjs.org/expo-dev-menu-interface/-/expo-dev-menu-interface-1.10.0.tgz",
+       "integrity": "sha512-NxtM/qot5Rh2cY333iOE87dDg1S8CibW+Wu4WdLua3UMjy81pXYzAGCZGNOeY7k9GpNFqDPNDXWyBSlk9r2pBg==",
+       "license": "MIT",
+       "peerDependencies": {
+         "expo": "*"
+       }
+     },
+     "node_modules/expo-file-system": {
+       "version": "18.1.10",
+       "resolved": "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.1.10.tgz",
+       "integrity": "sha512-SyaWg+HitScLuyEeSG9gMSDT0hIxbM9jiZjSBP9l9zMnwZjmQwsusE6+7qGiddxJzdOhTP4YGUfvEzeeS0YL3Q==",
+       "license": "MIT",
+       "peerDependencies": {
+         "expo": "*",
+         "react-native": "*"
+       }
+     },
+     "node_modules/expo-font": {
+-      "version": "13.3.1",
+-      "resolved": "https://registry.npmjs.org/expo-font/-/expo-font-13.3.1.tgz",
+-      "integrity": "sha512-d+xrHYvSM9WB42wj8vP9OOFWyxed5R1evphfDb6zYBmC1dA9Hf89FpT7TNFtj2Bk3clTnpmVqQTCYbbA2P3CLg==",
++      "version": "11.10.3",
++      "resolved": "https://registry.npmjs.org/expo-font/-/expo-font-11.10.3.tgz",
++      "integrity": "sha512-q1Td2zUvmLbCA9GV4OG4nLPw5gJuNY1VrPycsnemN1m8XWTzzs8nyECQQqrcBhgulCgcKZZJJ6U0kC2iuSoQHQ==",
+       "license": "MIT",
+       "dependencies": {
+         "fontfaceobserver": "^2.1.0"
+       },
+       "peerDependencies": {
+-        "expo": "*",
+-        "react": "*"
++        "expo": "*"
+       }
+     },
+     "node_modules/expo-json-utils": {
+       "version": "0.15.0",
+       "resolved": "https://registry.npmjs.org/expo-json-utils/-/expo-json-utils-0.15.0.tgz",
+       "integrity": "sha512-duRT6oGl80IDzH2LD2yEFWNwGIC2WkozsB6HF3cDYNoNNdUvFk6uN3YiwsTsqVM/D0z6LEAQ01/SlYvN+Fw0JQ==",
+       "license": "MIT"
+     },
+     "node_modules/expo-keep-awake": {
+       "version": "14.1.4",
+       "resolved": "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-14.1.4.tgz",
+       "integrity": "sha512-wU9qOnosy4+U4z/o4h8W9PjPvcFMfZXrlUoKTMBW7F4pLqhkkP/5G4EviPZixv4XWFMjn1ExQ5rV6BX8GwJsWA==",
+       "license": "MIT",
+       "peerDependencies": {
+         "expo": "*",
+         "react": "*"
+       }
+     },
+     "node_modules/expo-linking": {
+       "version": "7.1.5",
+       "resolved": "https://registry.npmjs.org/expo-linking/-/expo-linking-7.1.5.tgz",
+       "integrity": "sha512-8g20zOpROW78bF+bLI4a3ZWj4ntLgM0rCewKycPL0jk9WGvBrBtFtwwADJgOiV1EurNp3lcquerXGlWS+SOQyA==",
+       "license": "MIT",
+       "dependencies": {
+         "expo-constants": "~17.1.6",
+@@ -7680,50 +7687,63 @@
+       "license": "MIT",
+       "dependencies": {
+         "@react-native/normalize-colors": "0.79.2",
+         "debug": "^4.3.2"
+       },
+       "peerDependencies": {
+         "expo": "*",
+         "react-native": "*",
+         "react-native-web": "*"
+       },
+       "peerDependenciesMeta": {
+         "react-native-web": {
+           "optional": true
+         }
+       }
+     },
+     "node_modules/expo-updates-interface": {
+       "version": "1.1.0",
+       "resolved": "https://registry.npmjs.org/expo-updates-interface/-/expo-updates-interface-1.1.0.tgz",
+       "integrity": "sha512-DeB+fRe0hUDPZhpJ4X4bFMAItatFBUPjw/TVSbJsaf3Exeami+2qbbJhWkcTMoYHOB73nOIcaYcWXYJnCJXO0w==",
+       "license": "MIT",
+       "peerDependencies": {
+         "expo": "*"
+       }
+     },
++    "node_modules/expo/node_modules/expo-font": {
++      "version": "13.3.1",
++      "resolved": "https://registry.npmjs.org/expo-font/-/expo-font-13.3.1.tgz",
++      "integrity": "sha512-d+xrHYvSM9WB42wj8vP9OOFWyxed5R1evphfDb6zYBmC1dA9Hf89FpT7TNFtj2Bk3clTnpmVqQTCYbbA2P3CLg==",
++      "license": "MIT",
++      "dependencies": {
++        "fontfaceobserver": "^2.1.0"
++      },
++      "peerDependencies": {
++        "expo": "*",
++        "react": "*"
++      }
++    },
+     "node_modules/exponential-backoff": {
+       "version": "3.1.2",
+       "resolved": "https://registry.npmjs.org/exponential-backoff/-/exponential-backoff-3.1.2.tgz",
+       "integrity": "sha512-8QxYTVXUkuy7fIIoitQkPwGonB8F3Zj8eEO8Sqg9Zv/bkI7RJAzowee4gr81Hak/dUTpA2Z7VfQgoijjPNlUZA==",
+       "license": "Apache-2.0"
+     },
+     "node_modules/fast-deep-equal": {
+       "version": "3.1.3",
+       "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
+       "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==",
+       "license": "MIT"
+     },
+     "node_modules/fast-glob": {
+       "version": "3.3.3",
+       "resolved": "https://registry.npmjs.org/fast-glob/-/fast-glob-3.3.3.tgz",
+       "integrity": "sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==",
+       "license": "MIT",
+       "dependencies": {
+         "@nodelib/fs.stat": "^2.0.2",
+         "@nodelib/fs.walk": "^1.2.3",
+         "glob-parent": "^5.1.2",
+         "merge2": "^1.3.0",
+         "micromatch": "^4.0.8"
+       },
+       "engines": {
+diff --git a/package.json b/package.json
+index 4dccda5f51778e7defcc1b276cc10813ea0740dc..bd278b75fbc9fd4b20575a27db1f9b659fd9407f 100644
+--- a/package.json
++++ b/package.json
+@@ -21,50 +21,52 @@
+     "@react-native-async-storage/async-storage": "^1.24.0",
+     "@react-native-community/datetimepicker": "8.3.0",
+     "@react-native-community/slider": "4.5.6",
+     "@react-native-picker/picker": "2.11.0",
+     "@react-navigation/bottom-tabs": "^7.0.5",
+     "@react-navigation/drawer": "^7.0.0",
+     "@react-navigation/native": "^7.0.3",
+     "@rn-primitives/avatar": "^1.2.0",
+     "@rn-primitives/slot": "^1.2.0",
+     "@roninoss/icons": "^0.0.4",
+     "class-variance-authority": "^0.7.0",
+     "clsx": "^2.1.0",
+     "date-fns": "^4.1.0",
+     "expo": "^53.0.9",
+     "expo-audio": "~0.4.5",
+     "expo-constants": "~17.1.4",
+     "expo-dev-client": "~5.1.7",
+     "expo-dev-launcher": "^5.0.17",
+     "expo-linking": "~7.1.4",
+     "expo-media-library": "^17.1.6",
+     "expo-navigation-bar": "~4.2.4",
+     "expo-router": "~5.0.3",
+     "expo-status-bar": "~2.2.3",
+     "expo-store-review": "~8.1.5",
+     "expo-system-ui": "~5.0.6",
++    "expo-font": "^11.3.0",
++    "@expo-google-fonts/quicksand": "^0.2.2",
+     "firebase": "^10.5.2",
+     "nativewind": "latest",
+     "react": "19.0.0",
+     "react-native": "0.79.2",
+     "react-native-gesture-handler": "~2.24.0",
+     "react-native-onboarding-swiper": "^1.3.0",
+     "react-native-pager-view": "6.7.1",
+     "react-native-reanimated": "~3.17.4",
+     "react-native-safe-area-context": "5.4.0",
+     "react-native-screens": "~4.10.0",
+     "react-native-uitextview": "2.0.0-rc.10",
+     "tailwind-merge": "^2.2.1",
+     "zustand": "^4.5.1"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.20.0",
+     "@types/react": "~19.0.10",
+     "@types/react-native": "^0.73.0",
+     "@types/react-native-onboarding-swiper": "^1.1.9",
+     "ajv": "^8.12.0",
+     "eslint": "^9.25.1",
+     "eslint-config-expo": "^9.2.0",
+     "eslint-config-prettier": "^10.1.2",
+     "patch-package": "^8.0.0",
+     "prettier": "^3.2.5",
+diff --git a/tailwind.config.js b/tailwind.config.js
+index 9013ed94548eadf9ec66b325e7f6b0094d8f5464..a83bf7c3248b5ad58eb99b074c94e967a23aa34a 100644
+--- a/tailwind.config.js
++++ b/tailwind.config.js
+@@ -1,37 +1,37 @@
+ const { hairlineWidth } = require('nativewind/theme');
+ 
+ /** @type {import('tailwindcss').Config} */
+ module.exports = {
+   // NOTE: Update this to include the paths to all of your component files.
+   darkMode: 'class', // Enable manual toggling of dark mode
+   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+   presets: [require('nativewind/preset')],
+   theme: {
+     extend: {
+       fontFamily: {
+-        sans: ['System', 'sans-serif'],
++        sans: ['Quicksand_400Regular', 'System', 'sans-serif'],
+       },
+       colors: {
+         border: withOpacity('border'),
+         input: withOpacity('input'),
+         ring: withOpacity('ring'),
+         background: withOpacity('background'),
+         foreground: withOpacity('foreground'),
+         primary: {
+           DEFAULT: withOpacity('primary'),
+           foreground: withOpacity('primary-foreground'),
+         },
+         secondary: {
+           DEFAULT: withOpacity('secondary'),
+           foreground: withOpacity('secondary-foreground'),
+         },
+         destructive: {
+           DEFAULT: withOpacity('destructive'),
+           foreground: withOpacity('destructive-foreground'),
+         },
+         muted: {
+           DEFAULT: withOpacity('muted'),
+           foreground: withOpacity('muted-foreground'),
+         },
+         accent: {
+           DEFAULT: withOpacity('accent'),
+diff --git a/theme/colors.ts b/theme/colors.ts
+index 03cb713b675df20ba7ec4977048181ca256e0901..34e96c80d9e2bd67a3049a75a4dfbab6a831f3c9 100644
+--- a/theme/colors.ts
++++ b/theme/colors.ts
+@@ -1,36 +1,36 @@
+ const ANDROID_COLORS = {
+   white: 'rgb(255, 255, 255)',
+   black: 'rgb(0, 0, 0)',
+   light: {
+-    grey6: 'rgb(249, 249, 255)',
+-    grey5: 'rgb(215, 217, 228)',
+-    grey4: 'rgb(193, 198, 215)',
+-    grey3: 'rgb(113, 119, 134)',
+-    grey2: 'rgb(65, 71, 84)',
+-    grey: 'rgb(24, 28, 35)',
+-    background: 'rgb(249, 249, 255)',
+-    foreground: 'rgb(0, 0, 0)',
++    grey6: 'rgb(247, 248, 255)',
++    grey5: 'rgb(228, 232, 246)',
++    grey4: 'rgb(208, 212, 232)',
++    grey3: 'rgb(140, 146, 169)',
++    grey2: 'rgb(97, 103, 123)',
++    grey: 'rgb(25, 28, 35)',
++    background: 'rgb(250, 250, 252)',
++    foreground: 'rgb(25, 28, 35)',
+     root: 'rgb(255, 255, 255)',
+     card: 'rgb(255, 255, 255)',
+-    destructive: 'rgb(186, 26, 26)',
+-    primary: 'rgb(0, 112, 233)',
++    destructive: 'rgb(255, 160, 160)',
++    primary: 'rgb(173, 213, 255)',
+   },
+   dark: {
+-    grey6: 'rgb(16, 19, 27)',
+-    grey5: 'rgb(39, 42, 50)',
+-    grey4: 'rgb(49, 53, 61)',
+-    grey3: 'rgb(54, 57, 66)',
+-    grey2: 'rgb(139, 144, 160)',
+-    grey: 'rgb(193, 198, 215)',
+-    background: 'rgb(0, 0, 0)',
+-    foreground: 'rgb(255, 255, 255)',
+-    root: 'rgb(0, 0, 0)',
+-    card: 'rgb(16, 19, 27)',
+-    destructive: 'rgb(147, 0, 10)',
+-    primary: 'rgb(3, 133, 255)',
++    grey6: 'rgb(30, 33, 42)',
++    grey5: 'rgb(45, 50, 63)',
++    grey4: 'rgb(66, 70, 83)',
++    grey3: 'rgb(120, 125, 145)',
++    grey2: 'rgb(170, 175, 193)',
++    grey: 'rgb(230, 232, 240)',
++    background: 'rgb(18, 21, 30)',
++    foreground: 'rgb(230, 232, 240)',
++    root: 'rgb(18, 21, 30)',
++    card: 'rgb(30, 33, 42)',
++    destructive: 'rgb(255, 120, 120)',
++    primary: 'rgb(136, 173, 255)',
+   },
+ } as const;
+ 
+ const COLORS = ANDROID_COLORS;
+ 
+ export { COLORS };
+ 
+EOF
+)

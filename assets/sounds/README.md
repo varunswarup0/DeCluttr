@@ -1,27 +1,31 @@
 # Sound Files for DeCluttr App
 
-This folder should contain the following sound files:
+This folder contains example sound effects used by the app.
 
-## Required Files:
+## Required Files
 
 - `delete.mp3` - Sound effect played when user swipes left to delete a photo
 - `keep.mp3` - Sound effect played when user swipes right to keep a photo
 
-## Optional Files:
+These sample clips are short (~0.5–1s) MP3s. Replace them with your own before shipping.
+
+## Optional Files
 
 - `voice1.mp3` and `voice2.mp3` - short voice clips that occasionally play after deleting a photo
 
-## File Requirements:
+The included files are silent placeholders. Provide your own voice clips to use this feature.
+
+## File Requirements
 
 - Format: MP3
 - Duration: 0.5-2.0 seconds recommended
 - Volume: Normalized to prevent sudden loud sounds
 - File size: Keep under 100KB for optimal performance
 
-## Sound Suggestions:
+## Sound Suggestions
 
-- **delete.mp3**: Short "zap", "crunch", or gentle "whoosh" effect
-- **keep.mp3**: Bright "coin" or "chime" sound that rewards the swipe
+- **delete.mp3**: Short "zap" or "whoosh" effect for a playful feel
+- **keep.mp3**: Pleasant "ding" or "chime" that rewards the swipe
 - For a retro vibe, keep the clips under half a second and use 8‑bit samples reminiscent of classic Nintendo games
 
 ## How to Add Sounds:

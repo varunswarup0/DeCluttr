@@ -3,6 +3,8 @@ import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { jest } from '@jest/globals';
 
+import { useAudioSettings } from '../lib/useAudioSettings';
+
 const memory: Record<string, string> = {};
 jest.mock('../lib/asyncStorageWrapper', () => ({
   getAsyncStorage: () => ({
@@ -12,8 +14,6 @@ jest.mock('../lib/asyncStorageWrapper', () => ({
     },
   }),
 }));
-
-import { useAudioSettings } from '../lib/useAudioSettings';
 
 beforeEach(() => {
   Object.keys(memory).forEach((k) => delete memory[k]);

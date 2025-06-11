@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Text } from '~/components/nativewindui/Text';
-import {
-  MOTIVATION_MESSAGES,
-  createMessagePicker,
-} from '~/lib/positiveMessages';
+import { MOTIVATION_MESSAGES, createMessagePicker } from '~/lib/positiveMessages';
 
 const MESSAGES = MOTIVATION_MESSAGES;
 const pickMessage = createMessagePicker(MESSAGES);

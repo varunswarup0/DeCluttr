@@ -9,7 +9,13 @@ import { Button } from '~/components/nativewindui/Button';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 import { MotivationBanner } from './MotivationBanner';
-import { SESSION_MESSAGES, END_MESSAGES, createMessagePicker } from '~/lib/positiveMessages';
+import {
+  SESSION_MESSAGES,
+  END_MESSAGES,
+  SURPRISE_MESSAGES,
+  createMessagePicker,
+} from '~/lib/positiveMessages';
+import { audioService } from '~/lib/audioService';
 
 const pickSessionMessage = createMessagePicker(SESSION_MESSAGES);
 const pickEndMessage = createMessagePicker(END_MESSAGES);
@@ -40,6 +46,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
   const tapTimesRef = React.useRef<number[]>([]);
+  // Track total deletes this session for surprise messages
+  const deleteCountRef = React.useRef(0);
 
   // Use RecycleBin store
   const {
@@ -129,6 +137,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const prevTotal = prevState.totalDeleted;
 
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
+    // Play a random voice clip for extra feedback
+    audioService.playRandomVoice();
+    // Keep count of deletes to occasionally show surprise messages
+    deleteCountRef.current += 1;
 
     const { xp: newXp, totalDeleted: newTotal } = useRecycleBinStore.getState();
     const prevLevel = Math.floor(prevXp / 100) + 1;
@@ -137,6 +149,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Combo check and level-up trigger
     if (newLevel > prevLevel || newTotal % 50 === 0) {
       setConfettiKey((k) => k + 1);
+    }
+
+    // Show surprise message roughly every 5 deletes
+    if (deleteCountRef.current % 5 === 0) {
+      const msg = SURPRISE_MESSAGES[Math.floor(Math.random() * SURPRISE_MESSAGES.length)];
+      Alert.alert(msg);
     }
 
     // Update current photo index for tracking progress

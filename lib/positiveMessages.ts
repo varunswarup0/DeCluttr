@@ -24,6 +24,9 @@ export const SESSION_MESSAGES = [
 
 export const END_MESSAGES = ['All caught up!', 'Gallery clean!', 'No more photos!'] as const;
 
+// Short encouraging messages shown occasionally after deletes
+export const SURPRISE_MESSAGES = ['Nice swipe!', "You're on fire!"] as const;
+
 /**
  * Return a random element from the provided list.
  */

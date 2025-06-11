@@ -59,11 +59,12 @@ unavailable, an in-memory fallback ensures the app still works.
 2. **Gallery Game**
    - A stack of recent photos is loaded.
    - Swipe **left** to delete (plays a sound and grants XP) or **right** to keep.
-  - When the stack is empty an alert summarizes how many photos you deleted and XP earned.
-  - Friendly alerts celebrate your progress and encourage you to keep going.
-  - A motivational banner shows supportive messages to keep you feeling positive while you declutter.
-  - Messages are chosen from a shared module and cycled so you rarely see the same encouragement twice in a row.
-  - Customize these phrases in `lib/positiveMessages.ts`; keep each under 30 characters so they fit the banner.
+
+- When the stack is empty an alert summarizes how many photos you deleted and XP earned.
+- Friendly alerts celebrate your progress and encourage you to keep going.
+- A motivational banner shows supportive messages to keep you feeling positive while you declutter.
+- Messages are chosen from a shared module and cycled so you rarely see the same encouragement twice in a row.
+- Customize these phrases in `lib/positiveMessages.ts`; keep each under 30 characters so they fit the banner.
 
 - If more images are available the next batch loads automatically so the game never ends until your gallery is empty. The app also prefetches the following batch in the background to keep swiping smooth.
 
@@ -100,6 +101,9 @@ Tap anywhere five times quickly to simulate a left swipe for debugging.
 ### Audio Fallback
 
 Sound playback can fail if audio files are missing or the device blocks audio initialization. When that happens a default chime is used instead. See `lib/audioService.ts` for implementation details.
+
+The audio service queues rapid playback requests so quick swipes never overlap. Each swipe sound waits about 0.3&nbsp;seconds before the next begins. Delete actions sometimes play one of two short voice clips for extra charm.
+These clips are processed through the same queue so they won't overlap even if you swipe rapidly. To enable the clips, add `voice1.mp3` and `voice2.mp3` under `assets/sounds/` as described in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 
 ## Performance Tips
 

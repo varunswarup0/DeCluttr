@@ -3,6 +3,8 @@ import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { jest } from '@jest/globals';
 
+import { useSwipeAudio } from '../lib/useSwipeAudio';
+
 jest.mock('../lib/useAudioSettings', () => ({
   useAudioSettings: () => ({
     settings: { enabled: true, volume: 0.8 },
@@ -26,8 +28,6 @@ jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn().mockResolvedValue(undefined),
   ImpactFeedbackStyle: { Heavy: 'heavy', Light: 'light' },
 }));
-
-import { useSwipeAudio } from '../lib/useSwipeAudio';
 
 test('useSwipeAudio triggers audio and haptics', async () => {
   let hook: ReturnType<typeof useSwipeAudio>;

@@ -30,7 +30,13 @@ const createPhoto = (id: string): DeletedPhoto => ({
 
 describe('RecycleBin store', () => {
   beforeEach(() => {
-    useRecycleBinStore.setState({ deletedPhotos: [], totalDeleted: 0, xp: 0, isXpLoaded: true, onboardingCompleted: false });
+    useRecycleBinStore.setState({
+      deletedPhotos: [],
+      totalDeleted: 0,
+      xp: 0,
+      isXpLoaded: true,
+      onboardingCompleted: false,
+    });
   });
 
   it('adds and restores photos with XP updates', async () => {
@@ -45,9 +51,7 @@ describe('RecycleBin store', () => {
     const restored = restorePhoto('1');
     expect(restored).toEqual(photo);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
-    expect(useRecycleBinStore.getState().xp).toBe(
-      XP_CONFIG.DELETE_PHOTO + XP_CONFIG.RESTORE_PHOTO
-    );
+    expect(useRecycleBinStore.getState().xp).toBe(XP_CONFIG.DELETE_PHOTO + XP_CONFIG.RESTORE_PHOTO);
     expect(mediaLibrary.deletePhotoAsset).not.toHaveBeenCalled();
   });
 
@@ -81,7 +85,12 @@ describe('RecycleBin store', () => {
 
   it('purges expired photos', async () => {
     const oldDate = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
-    useRecycleBinStore.setState({ deletedPhotos: [{...createPhoto('old'), deletedAt: oldDate}, { ...createPhoto('new'), deletedAt: new Date() }] });
+    useRecycleBinStore.setState({
+      deletedPhotos: [
+        { ...createPhoto('old'), deletedAt: oldDate },
+        { ...createPhoto('new'), deletedAt: new Date() },
+      ],
+    });
     await useRecycleBinStore.getState().purgeExpiredPhotos();
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
     expect(useRecycleBinStore.getState().deletedPhotos[0].id).toBe('new');
@@ -102,7 +111,7 @@ describe('RecycleBin store', () => {
 
   it('keeps expired photos when purge deletion fails', async () => {
     const oldDate = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
-    useRecycleBinStore.setState({ deletedPhotos: [{...createPhoto('old'), deletedAt: oldDate}] });
+    useRecycleBinStore.setState({ deletedPhotos: [{ ...createPhoto('old'), deletedAt: oldDate }] });
     (mediaLibrary.deletePhotoAssets as jest.Mock).mockResolvedValueOnce(false);
 
     await useRecycleBinStore.getState().purgeExpiredPhotos();
@@ -126,7 +135,12 @@ describe('RecycleBin store', () => {
     await storage.setItem('@decluttr_xp', '15');
     await storage.setItem('@decluttr_deleted_photos', JSON.stringify([createPhoto('a')]));
     await storage.setItem('@decluttr_total_deleted', '5');
-    useRecycleBinStore.setState({ deletedPhotos: [], xp: 0, isXpLoaded: false, onboardingCompleted: false });
+    useRecycleBinStore.setState({
+      deletedPhotos: [],
+      xp: 0,
+      isXpLoaded: false,
+      onboardingCompleted: false,
+    });
     await useRecycleBinStore.getState().loadXP();
     await useRecycleBinStore.getState().loadDeletedPhotos();
     await useRecycleBinStore.getState().loadTotalDeleted();

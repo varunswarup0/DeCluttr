@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { backgroundMusicService } from '../lib/backgroundMusic';
+
 const mockPlayer = {
   play: jest.fn(),
   pause: jest.fn(),
@@ -13,8 +15,6 @@ jest.mock('expo-audio', () => ({
 }));
 
 jest.mock('../assets/music/background.mp3', () => 1, { virtual: true });
-
-import { backgroundMusicService } from '../lib/backgroundMusic';
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -5,7 +5,7 @@ import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
-  useDerivedValue,
+  useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 
@@ -34,16 +34,16 @@ const ProgressIndicator = React.forwardRef<
   ) => {
     const max = maxProp ?? DEFAULT_MAX;
     const value = isValidValueNumber(valueProp, max) ? valueProp : 0;
-    const progress = useDerivedValue(() => value ?? 0);
+    const progress = useSharedValue(value);
 
-    const indicator = useAnimatedStyle(() => {
-      return {
-        width: withSpring(
-          `${interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP)}%`,
-          { overshootClamping: true }
-        ),
-      };
-    });
+    React.useEffect(() => {
+      progress.value = withSpring(value, { overshootClamping: true });
+    }, [value, progress]);
+
+  const indicator = useAnimatedStyle(() => {
+    const width = interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP);
+    return { width: `${width}%` };
+  });
 
     return (
       <View

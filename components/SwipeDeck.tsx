@@ -15,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
 // Delay before the next card becomes interactive
-const ADVANCE_DELAY = 100;
+const ADVANCE_DELAY = 50;
 
 export interface SwipeDeckItem {
   id: string;
@@ -265,12 +265,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           </Animated.View>
         );
       })}
-      {inputBlocked && (
-        <View
-          pointerEvents="auto"
-          style={{ position: 'absolute', inset: 0 }}
-        />
-      )}
+      {inputBlocked && <View pointerEvents="auto" style={{ position: 'absolute', inset: 0 }} />}
     </View>
   );
 };

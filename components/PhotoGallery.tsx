@@ -82,12 +82,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       if (!isMounted.current) return false;
       setLoading(true);
 
-      // Capture session start stats only when loading from the beginning
-      if (!(cursor ?? nextCursorRef.current)) {
-        const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
-        setSessionStartXp(currentXp);
-        setSessionDeletedStart(currentDeleted.length);
-      }
+      // Capture session start stats for every new batch
+      const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
+      setSessionStartXp(currentXp);
+      setSessionDeletedStart(currentDeleted.length);
 
       const result = await fetchPhotoAssetsWithPagination(cursor ?? nextCursorRef.current, 50);
       const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
@@ -206,6 +204,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     if (hasMore) {
       // If a prefetched batch exists use it to avoid a loading pause
       if (prefetchedPhotos.length > 0) {
+        // New batch: record session start stats
+        const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
+        setSessionStartXp(currentXp);
+        setSessionDeletedStart(currentDeleted.length);
+
         setPhotos(prefetchedPhotos);
         setPrefetchedPhotos([]);
         setKeptPhotos([]);

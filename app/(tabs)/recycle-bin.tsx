@@ -122,11 +122,15 @@ export default function RecycleBin() {
   };
 
   const handlePermanentDelete = async (photoId: string) => {
-    await permanentlyDelete(photoId);
-    Alert.alert(
-      'Photo Deleted',
-      `The photo has been permanently deleted.\n\n⭐ +${XP_CONFIG.PERMANENT_DELETE} XP`
-    );
+    const success = await permanentlyDelete(photoId);
+    if (success) {
+      Alert.alert(
+        'Photo Deleted',
+        `The photo has been permanently deleted.\n\n⭐ +${XP_CONFIG.PERMANENT_DELETE} XP`
+      );
+    } else {
+      Alert.alert('Error', 'Failed to delete photo. Please try again.');
+    }
   };
 
   const handleClearAll = () => {
@@ -142,11 +146,15 @@ export default function RecycleBin() {
           style: 'destructive',
           onPress: async () => {
             const photosCount = deletedPhotos.length;
-            await clearRecycleBin();
-            Alert.alert(
-              'Recycle Bin Cleared',
-              `All photos have been permanently deleted.\n\n⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`
-            );
+            const success = await clearRecycleBin();
+            if (success) {
+              Alert.alert(
+                'Recycle Bin Cleared',
+                `All photos have been permanently deleted.\n\n⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`
+              );
+            } else {
+              Alert.alert('Error', 'Failed to clear recycle bin.');
+            }
           },
         },
       ]

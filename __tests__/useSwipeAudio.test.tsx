@@ -12,6 +12,7 @@ jest.mock('../lib/useAudioSettings', () => ({
   }),
 }));
 
+// eslint-disable-next-line no-var
 var mockAudio: any;
 jest.mock('../lib/audioService', () => {
   mockAudio = {

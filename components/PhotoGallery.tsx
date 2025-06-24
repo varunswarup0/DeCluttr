@@ -6,6 +6,7 @@ import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
+import { Toggle } from '~/components/nativewindui/Toggle';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 import { MotivationBanner } from './MotivationBanner';
@@ -33,6 +34,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     };
   }, []);
 
+  useEffect(() => {
+    loadZenMode();
+  }, [loadZenMode]);
+
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
   const [prefetchedPhotos, setPrefetchedPhotos] = useState<SwipeDeckItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +62,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     xp,
     resetGallery: resetRecycleBinStore,
     isXpLoaded,
+    zenMode,
+    setZenMode,
+    loadZenMode,
   } = useRecycleBinStore();
 
   const loadPhotos = React.useCallback(async (cursor?: string): Promise<boolean> => {
@@ -312,34 +320,36 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     <Pressable
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
-      <MotivationBanner />
+      {!zenMode && <MotivationBanner />}
       {/* Stats */}
-      <View className="mb-6 flex-row space-x-6">
-        <View className="items-center">
-          <Text variant="title2" className="font-arcade text-red-600">
-            {deletedPhotos.length}
-          </Text>
-          <Text variant="caption1" color="secondary">
-            In Bin
-          </Text>
+      {!zenMode && (
+        <View className="mb-6 flex-row space-x-6">
+          <View className="items-center">
+            <Text variant="title2" className="font-arcade text-red-600">
+              {deletedPhotos.length}
+            </Text>
+            <Text variant="caption1" color="secondary">
+              In Bin
+            </Text>
+          </View>
+          <View className="items-center">
+            <Text variant="title2" className="font-arcade text-green-600">
+              {keptPhotos.length}
+            </Text>
+            <Text variant="caption1" color="secondary">
+              Kept
+            </Text>
+          </View>
+          <View className="items-center">
+            <Text variant="title2" className="font-arcade text-yellow-600">
+              {totalDeleted}
+            </Text>
+            <Text variant="caption1" color="secondary">
+              All-Time Deleted
+            </Text>
+          </View>
         </View>
-        <View className="items-center">
-          <Text variant="title2" className="font-arcade text-green-600">
-            {keptPhotos.length}
-          </Text>
-          <Text variant="caption1" color="secondary">
-            Kept
-          </Text>
-        </View>
-        <View className="items-center">
-          <Text variant="title2" className="font-arcade text-yellow-600">
-            {totalDeleted}
-          </Text>
-          <Text variant="caption1" color="secondary">
-            All-Time Deleted
-          </Text>
-        </View>
-      </View>
+      )}
 
       {/* Swipe Instructions */}
       <View className="mb-6 px-8">
@@ -359,7 +369,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       />
 
       {/* Confetti burst when deleting */}
-      {confettiKey > 0 && (
+      {confettiKey > 0 && !zenMode && (
         <ConfettiCannon
           key={confettiKey}
           count={30}
@@ -373,6 +383,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         <Button variant="primary" onPress={resetGallery} className="bg-red-500">
           <Text className="text-white">Reset Gallery & XP</Text>
         </Button>
+        <View className="mt-4 flex-row items-center justify-center space-x-2">
+          <Text variant="caption1" color="secondary">
+            Zen Mode
+          </Text>
+          <Toggle value={zenMode} onValueChange={setZenMode} />
+        </View>
       </View>
     </Pressable>
   );

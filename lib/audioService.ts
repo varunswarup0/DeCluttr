@@ -5,6 +5,7 @@ export class AudioService {
   private static instance: AudioService;
   private deletePlayer: AudioPlayer | null = null;
   private keepPlayer: AudioPlayer | null = null;
+  private tapPlayer: AudioPlayer | null = null;
   private voicePlayers: AudioPlayer[] = [];
   private queue: (() => Promise<void>)[] = [];
   private playing = false;
@@ -36,6 +37,11 @@ export class AudioService {
         // Create audio players for each sound
         this.deletePlayer = createAudioPlayer(require('../assets/sounds/delete.mp3'));
         this.keepPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
+        try {
+          this.tapPlayer = createAudioPlayer(require('../assets/sounds/tap.mp3'));
+        } catch {
+          this.tapPlayer = null;
+        }
         // Load optional voice clips if present
         const players: AudioPlayer[] = [];
         try {
@@ -54,6 +60,9 @@ export class AudioService {
         const audioSettings = await this.getAudioSettings();
         this.deletePlayer.volume = audioSettings.volume;
         this.keepPlayer.volume = audioSettings.volume;
+        if (this.tapPlayer) {
+          this.tapPlayer.volume = audioSettings.volume;
+        }
         this.voicePlayers.forEach((p) => (p.volume = audioSettings.volume));
 
         this.isInitialized = true;
@@ -89,6 +98,7 @@ export class AudioService {
 
     this.deletePlayer = mockPlayer;
     this.keepPlayer = mockPlayer;
+    this.tapPlayer = mockPlayer;
     this.voicePlayers = [mockPlayer, mockPlayer];
     this.isInitialized = true;
     console.log('Audio service initialized with mock players (sound files not found)');
@@ -184,6 +194,29 @@ export class AudioService {
   }
 
   /**
+   * Play tap sound effect for button presses
+   */
+  public async playTapSound(): Promise<void> {
+    this.enqueue(async () => {
+      try {
+        if (!this.isInitialized) {
+          await this.initialize();
+        }
+
+        const audioSettings = await this.getAudioSettings();
+        if (!audioSettings.enabled || !this.tapPlayer) {
+          return;
+        }
+
+        this.tapPlayer.seekTo(0);
+        this.tapPlayer.play();
+      } catch (error) {
+        console.warn('Failed to play tap sound:', error);
+      }
+    });
+  }
+
+  /**
    * Clean up resources
    */
   public async cleanup(): Promise<void> {
@@ -196,6 +229,11 @@ export class AudioService {
       if (this.keepPlayer) {
         this.keepPlayer.remove();
         this.keepPlayer = null;
+      }
+
+      if (this.tapPlayer) {
+        this.tapPlayer.remove();
+        this.tapPlayer = null;
       }
 
       this.voicePlayers.forEach((p) => p.remove && p.remove());
@@ -223,6 +261,9 @@ export class AudioService {
 
       if (this.keepPlayer) {
         this.keepPlayer.volume = clampedVolume;
+      }
+      if (this.tapPlayer) {
+        this.tapPlayer.volume = clampedVolume;
       }
       this.voicePlayers.forEach((p) => (p.volume = clampedVolume));
 

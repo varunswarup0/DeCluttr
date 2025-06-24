@@ -40,8 +40,13 @@ export const useSwipeAudio = () => {
     lightImpact();
   };
 
+  const playTapSound = () => {
+    audioService.playTapSound();
+  };
+
   return {
     playDeleteSound,
     playKeepSound,
+    playTapSound,
   };
 };

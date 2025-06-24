@@ -144,7 +144,7 @@ export class AudioService {
     } catch (error) {
       console.warn('Audio playback failed:', error);
     }
-    setTimeout(() => this.processQueue(), 300);
+    setTimeout(() => this.processQueue(), 150);
   }
 
   /**

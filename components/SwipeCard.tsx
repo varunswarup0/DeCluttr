@@ -21,7 +21,7 @@ const BORDER_RADIUS = px(20);
 // Reduced threshold so even short drags register quickly
 const SWIPE_THRESHOLD = px(screenWidth * 0.1);
 // Shorter exit animation for snappier feedback
-const SWIPE_EXIT_DURATION = 80;
+const SWIPE_EXIT_DURATION = 60;
 const ICON_SIZE = px(36);
 const STROKE_WIDTH = px(3);
 const OVERLAY_PADDING = px(6);

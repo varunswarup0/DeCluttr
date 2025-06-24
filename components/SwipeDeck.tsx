@@ -15,8 +15,8 @@ const { width: screenWidth } = Dimensions.get('window');
 const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
 // Delay before the next card becomes interactive
-const ADVANCE_DELAY = 50;
-const STACK_DELAY = 60; // Faster stack animation for snappier feel
+const ADVANCE_DELAY = 40;
+const STACK_DELAY = 40; // Faster stack animation for snappier feel
 
 export interface SwipeDeckItem {
   id: string;
@@ -39,7 +39,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   onSwipeRight,
   onDeckEmpty,
   maxVisibleCards = 3,
-  cardSpacing = 8,
+  cardSpacing = px(8),
   className,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -63,8 +63,8 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   const scale1 = useSharedValue(0.95);
   const scale2 = useSharedValue(0.9);
   const translateY0 = useSharedValue(0);
-  const translateY1 = useSharedValue(8);
-  const translateY2 = useSharedValue(16);
+  const translateY1 = useSharedValue(px(8));
+  const translateY2 = useSharedValue(px(16));
   const opacity0 = useSharedValue(1);
   const opacity1 = useSharedValue(0.9);
   const opacity2 = useSharedValue(0.8);

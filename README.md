@@ -110,14 +110,14 @@ the `patch-package` script can apply fixes to expo-audio.
 
 ## Swipe Cooldown and Test Mode
 
-A brief 0.3&nbsp;second input mask now blocks touches after each swipe so fast gestures register cleanly while the next card loads.
+A brief 0.15&nbsp;second input mask now blocks touches after each swipe so fast gestures register cleanly while the next card loads.
 Tap anywhere five times quickly to simulate a left swipe for debugging.
 
 ### Audio Fallback
 
 Sound playback can fail if audio files are missing or the device blocks audio initialization. When that happens a default chime is used instead. See `lib/audioService.ts` for implementation details.
 
-The audio service queues rapid playback requests so quick swipes never overlap. Each swipe sound waits about 0.3&nbsp;seconds before the next begins. Delete actions sometimes play one of two short voice clips for extra charm.
+The audio service queues rapid playback requests so quick swipes never overlap. Each swipe sound waits about 0.15&nbsp;seconds before the next begins. Delete actions sometimes play one of two short voice clips for extra charm.
 These clips are processed through the same queue so they won't overlap even if you swipe rapidly. To enable the clips, add `voice1.mp3` and `voice2.mp3` under `assets/sounds/` as described in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 
 ## Performance Tips

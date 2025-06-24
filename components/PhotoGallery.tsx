@@ -3,6 +3,7 @@ import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
+import { LevelHeader } from './LevelHeader';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
@@ -328,6 +329,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     <Pressable
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
+      <LevelHeader className="mb-6" />
       {/* Stats displayed as progress bars */}
       <View className="mb-6 w-3/4 space-y-2">
         <View>
@@ -367,9 +369,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         cardSpacing={12}
       />
 
-      {xpToast && (
-        <XPToast amount={xpToast} onDone={() => setXpToast(null)} />
-      )}
+      {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}
 
       {/* Confetti burst when deleting */}
       {confettiKey > 0 && (

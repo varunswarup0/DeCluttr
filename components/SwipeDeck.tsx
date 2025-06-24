@@ -16,6 +16,7 @@ const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
 // Delay before the next card becomes interactive
 const ADVANCE_DELAY = 50;
+const STACK_DELAY = 60; // Faster stack animation for snappier feel
 
 export interface SwipeDeckItem {
   id: string;
@@ -193,9 +194,12 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   ); // Initialize animation values for the stack effect
   React.useEffect(() => {
     for (let index = 0; index < Math.min(maxVisibleCards, scaleValues.length); index++) {
-      scaleValues[index].value = withDelay(index * 100, withSpring(1 - index * 0.05));
-      translateYValues[index].value = withDelay(index * 100, withSpring(index * cardSpacing));
-      opacityValues[index].value = withDelay(index * 100, withSpring(1 - index * 0.1));
+      scaleValues[index].value = withDelay(index * STACK_DELAY, withSpring(1 - index * 0.05));
+      translateYValues[index].value = withDelay(
+        index * STACK_DELAY,
+        withSpring(index * cardSpacing)
+      );
+      opacityValues[index].value = withDelay(index * STACK_DELAY, withSpring(1 - index * 0.1));
     }
   }, [scaleValues, translateYValues, opacityValues, cardSpacing, maxVisibleCards]);
 

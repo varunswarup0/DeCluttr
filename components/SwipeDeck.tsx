@@ -40,13 +40,18 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   className,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [inputBlocked, setInputBlocked] = useState(false);
   const timeoutsRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
+  const blockTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clear any pending timeouts on unmount or data reset
   React.useEffect(() => {
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
       timeoutsRef.current = [];
+      if (blockTimeoutRef.current) {
+        clearTimeout(blockTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -113,6 +118,13 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
   const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
   const advanceIndex = useCallback(() => {
+    setInputBlocked(true);
+    if (blockTimeoutRef.current) {
+      clearTimeout(blockTimeoutRef.current);
+    }
+    blockTimeoutRef.current = setTimeout(() => {
+      setInputBlocked(false);
+    }, 300);
     const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
@@ -129,6 +141,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
 
   const handleSwipeLeft = useCallback(
     (item: SwipeDeckItem, index: number) => {
+      if (inputBlocked) return;
       onSwipeLeft?.(item, index);
 
       // Animate cards moving up in the stack
@@ -141,6 +154,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       advanceIndex();
     },
     [
+      inputBlocked,
       onSwipeLeft,
       scaleValues,
       translateYValues,
@@ -152,6 +166,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
   );
   const handleSwipeRight = useCallback(
     (item: SwipeDeckItem, index: number) => {
+      if (inputBlocked) return;
       onSwipeRight?.(item, index);
 
       // Animate cards moving up in the stack
@@ -164,6 +179,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       advanceIndex();
     },
     [
+      inputBlocked,
       onSwipeRight,
       scaleValues,
       translateYValues,
@@ -238,7 +254,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
               imageUri={card.imageUri}
               onSwipeLeft={() => handleSwipeLeft(card, card.dataIndex)}
               onSwipeRight={() => handleSwipeRight(card, card.dataIndex)}
-              disabled={!isTopCard}
+              disabled={!isTopCard || inputBlocked}
               style={{
                 shadowOpacity: isTopCard ? 0.3 : 0.1,
                 shadowRadius: isTopCard ? 8 : 4,
@@ -247,6 +263,12 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
           </Animated.View>
         );
       })}
+      {inputBlocked && (
+        <View
+          pointerEvents="auto"
+          style={{ position: 'absolute', inset: 0 }}
+        />
+      )}
     </View>
   );
 };

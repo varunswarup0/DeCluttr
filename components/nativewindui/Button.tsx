@@ -7,7 +7,7 @@ import { TextClassContext } from '~/components/nativewindui/Text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { COLORS } from '~/theme/colors';
-import { useSwipeAudio } from '~/lib/useSwipeAudio';
+import { lightImpact } from '~/lib/haptics';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -125,7 +125,6 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     ref
   ) => {
     const { colorScheme } = useColorScheme();
-    const { playTapSound } = useSwipeAudio();
     const scale = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
@@ -145,7 +144,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
             {...props}
             onPress={(event) => {
               if (!props.disabled) {
-                playTapSound();
+                lightImpact();
               }
               props.onPress?.(event);
             }}

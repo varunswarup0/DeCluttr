@@ -6,10 +6,9 @@ import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
-import { Toggle } from '~/components/nativewindui/Toggle';
+import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 import { cn } from '~/lib/cn';
 import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
-import { MotivationBanner } from './MotivationBanner';
 import {
   SESSION_MESSAGES,
   END_MESSAGES,
@@ -62,8 +61,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     xp,
     resetGallery: resetRecycleBinStore,
     isXpLoaded,
-    zenMode,
-    setZenMode,
     loadZenMode,
   } = useRecycleBinStore();
 
@@ -320,36 +317,27 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     <Pressable
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
-      {!zenMode && <MotivationBanner />}
-      {/* Stats */}
-      {!zenMode && (
-        <View className="mb-6 flex-row space-x-6">
-          <View className="items-center">
-            <Text variant="title2" className="font-arcade text-red-600">
-              {deletedPhotos.length}
-            </Text>
-            <Text variant="caption1" color="secondary">
-              In Bin
-            </Text>
-          </View>
-          <View className="items-center">
-            <Text variant="title2" className="font-arcade text-green-600">
-              {keptPhotos.length}
-            </Text>
-            <Text variant="caption1" color="secondary">
-              Kept
-            </Text>
-          </View>
-          <View className="items-center">
-            <Text variant="title2" className="font-arcade text-yellow-600">
-              {totalDeleted}
-            </Text>
-            <Text variant="caption1" color="secondary">
-              All-Time Deleted
-            </Text>
-          </View>
+      {/* Stats displayed as progress bars */}
+      <View className="mb-6 w-3/4 space-y-2">
+        <View>
+          <ProgressIndicator value={Math.min(deletedPhotos.length, 100)} className="bg-red-500" />
+          <Text variant="caption1" color="secondary" className="mt-1 text-center">
+            In Bin
+          </Text>
         </View>
-      )}
+        <View>
+          <ProgressIndicator value={Math.min(keptPhotos.length, 100)} className="bg-green-500" />
+          <Text variant="caption1" color="secondary" className="mt-1 text-center">
+            Kept
+          </Text>
+        </View>
+        <View>
+          <ProgressIndicator value={Math.min(totalDeleted % 100, 100)} className="bg-yellow-500" />
+          <Text variant="caption1" color="secondary" className="mt-1 text-center">
+            All-Time Deleted
+          </Text>
+        </View>
+      </View>
 
       {/* Swipe Instructions */}
       <View className="mb-6 px-8">
@@ -369,7 +357,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       />
 
       {/* Confetti burst when deleting */}
-      {confettiKey > 0 && !zenMode && (
+      {confettiKey > 0 && (
         <ConfettiCannon
           key={confettiKey}
           count={30}
@@ -383,12 +371,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         <Button variant="primary" onPress={resetGallery} className="bg-red-500">
           <Text className="text-white">Reset Gallery & XP</Text>
         </Button>
-        <View className="mt-4 flex-row items-center justify-center space-x-2">
-          <Text variant="caption1" color="secondary">
-            Zen Mode
-          </Text>
-          <Toggle value={zenMode} onValueChange={setZenMode} />
-        </View>
       </View>
     </Pressable>
   );

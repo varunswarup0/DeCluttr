@@ -19,6 +19,7 @@ import {
   createMessagePicker,
 } from '~/lib/positiveMessages';
 import { audioService } from '~/lib/audioService';
+import { successNotification } from '~/lib/haptics';
 
 const pickSessionMessage = createMessagePicker(SESSION_MESSAGES);
 const pickEndMessage = createMessagePicker(END_MESSAGES);
@@ -161,6 +162,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Trigger confetti on level ups or long delete streaks
     if (newLevel > prevLevel || consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
       setConfettiKey((k) => k + 1);
+      successNotification();
       if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
         consecutiveDeleteRef.current = 0;
       }

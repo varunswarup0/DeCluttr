@@ -18,11 +18,12 @@ const { width: screenWidth } = Dimensions.get('window');
 const CARD_WIDTH = px(screenWidth * 0.7);
 const CARD_HEIGHT = px(screenWidth * 0.8);
 const BORDER_RADIUS = px(20);
-// Slightly easier swipe threshold for smoother feel
-// Reduce the swipe threshold slightly so cards respond quicker
-const SWIPE_THRESHOLD = px(screenWidth * 0.12);
-// Faster exit animation for snappier feedback
-const SWIPE_EXIT_DURATION = 120;
+// Reduced threshold so even short drags register quickly
+const SWIPE_THRESHOLD = px(screenWidth * 0.1);
+// Shorter exit animation for snappier feedback
+const SWIPE_EXIT_DURATION = 100;
+// Expand touch area to make starting swipes easier
+const HIT_SLOP = px(16);
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -143,7 +144,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       enabled={!disabled}
       activeOffsetX={[-6, 6]}
       failOffsetY={[-6, 6]}
-      shouldCancelWhenOutside={false}>
+      shouldCancelWhenOutside={false}
+      hitSlop={{ horizontal: HIT_SLOP, vertical: HIT_SLOP }}>
       <Animated.View
         style={[
           {

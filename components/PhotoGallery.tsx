@@ -10,6 +10,7 @@ import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 import { cn } from '~/lib/cn';
+import { px } from '~/lib/pixelPerfect';
 import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
 import {
   SESSION_MESSAGES,
@@ -366,7 +367,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         onSwipeRight={handleSwipeRight}
         onDeckEmpty={handleDeckEmpty}
         maxVisibleCards={3}
-        cardSpacing={12}
+        cardSpacing={px(12)}
       />
 
       {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}

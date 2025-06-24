@@ -124,7 +124,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     }
     blockTimeoutRef.current = setTimeout(() => {
       setInputBlocked(false);
-    }, 150);
+    }, 120);
     const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
@@ -135,7 +135,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       });
       // remove finished timeout reference
       timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
-    }, 150);
+    }, 120);
     timeoutsRef.current.push(timeout);
   }, [data.length, onDeckEmpty]);
 

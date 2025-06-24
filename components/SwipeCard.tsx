@@ -19,7 +19,8 @@ const CARD_WIDTH = px(screenWidth * 0.7);
 const CARD_HEIGHT = px(screenWidth * 0.8);
 const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
-const SWIPE_THRESHOLD = px(screenWidth * 0.15);
+// Reduce the swipe threshold slightly so cards respond quicker
+const SWIPE_THRESHOLD = px(screenWidth * 0.12);
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -66,11 +67,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       if (shouldSwipeLeft) {
         // Swipe left - delete
         translateX.value = withTiming(-px(screenWidth * 1.5), {
-          duration: 180,
+          duration: 160,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 180,
+          duration: 160,
           easing: Easing.out(Easing.cubic),
         });
         // Play delete sound and trigger callback
@@ -81,11 +82,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       } else if (shouldSwipeRight) {
         // Swipe right - keep
         translateX.value = withTiming(px(screenWidth * 1.5), {
-          duration: 180,
+          duration: 160,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 180,
+          duration: 160,
           easing: Easing.out(Easing.cubic),
         });
         // Play keep sound and trigger callback
@@ -195,17 +196,17 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               deleteOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white" style={{ padding: px(4) }}>
+            <View className="rounded-full bg-white" style={{ padding: px(6) }}>
               <View
                 className="items-center justify-center"
-                style={{ height: px(32), width: px(32) }}>
+                style={{ height: px(36), width: px(36) }}>
                 <View
                   className="absolute rotate-45 bg-red-500"
-                  style={{ height: px(2), width: px(24) }}
+                  style={{ height: px(3), width: px(28) }}
                 />
                 <View
                   className="absolute -rotate-45 bg-red-500"
-                  style={{ height: px(2), width: px(24) }}
+                  style={{ height: px(3), width: px(28) }}
                 />
               </View>
             </View>
@@ -226,13 +227,13 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               keepOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white" style={{ padding: px(4) }}>
+            <View className="rounded-full bg-white" style={{ padding: px(6) }}>
               <View
                 className="items-center justify-center"
-                style={{ height: px(32), width: px(32) }}>
+                style={{ height: px(36), width: px(36) }}>
                 <View
                   className="rotate-45 border-b-2 border-r-2 border-green-500"
-                  style={{ marginTop: -px(4), height: px(16), width: px(8) }}
+                  style={{ marginTop: -px(4), height: px(20), width: px(10) }}
                 />
               </View>
             </View>

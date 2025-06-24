@@ -28,6 +28,7 @@ const XP_STORAGE_KEY = '@decluttr_xp';
 const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
 const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
+const ZEN_MODE_STORAGE_KEY = '@decluttr_zen_mode';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -43,6 +44,7 @@ export interface RecycleBinState {
   xp: number;
   isXpLoaded: boolean;
   onboardingCompleted: boolean;
+  zenMode: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
   permanentlyDelete: (photoId: string) => Promise<void>;
@@ -64,6 +66,8 @@ export interface RecycleBinState {
   checkOnboardingStatus: () => Promise<boolean>;
   completeOnboarding: () => Promise<void>;
   resetOnboarding: () => Promise<void>;
+  loadZenMode: () => Promise<void>;
+  setZenMode: (value: boolean) => Promise<void>;
 }
 
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
@@ -72,6 +76,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   xp: 0,
   isXpLoaded: false,
   onboardingCompleted: false,
+  zenMode: false,
 
   // Helper to persist deleted photos
   saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
@@ -118,6 +123,29 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       console.error('Error in loadXP:', error);
       // If there's an error, just mark as loaded with 0 XP
       set({ xp: 0, isXpLoaded: true });
+    }
+  },
+
+  loadZenMode: async () => {
+    try {
+      const storage = getAsyncStorage();
+      const stored = await storage.getItem(ZEN_MODE_STORAGE_KEY);
+      const zen = stored === 'true';
+      set({ zenMode: zen });
+    } catch (error) {
+      console.error('Failed to load zen mode:', error);
+      set({ zenMode: false });
+    }
+  },
+
+  setZenMode: async (value: boolean) => {
+    try {
+      set({ zenMode: value });
+      const storage = getAsyncStorage();
+      await storage.setItem(ZEN_MODE_STORAGE_KEY, value ? 'true' : 'false');
+    } catch (error) {
+      console.error('Failed to set zen mode:', error);
+      set({ zenMode: value });
     }
   },
 

@@ -9,9 +9,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'System', 'sans-serif'],
-        arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
-      },
+  sans: ['Inter', 'System', 'sans-serif'],
+  arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
+  celeste: ['"VT323"', 'monospace'],
+  funky: ['"Bungee"', 'sans-serif'],
+  medieval: ['"UnifrakturCook"', 'serif'],
+},
       colors: {
         border: withOpacity('border'),
         input: withOpacity('input'),

@@ -28,7 +28,6 @@ const XP_STORAGE_KEY = '@decluttr_xp';
 const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
 const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
-const ZEN_MODE_STORAGE_KEY = '@decluttr_zen_mode';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -67,7 +66,7 @@ export interface RecycleBinState {
   completeOnboarding: () => Promise<void>;
   resetOnboarding: () => Promise<void>;
   loadZenMode: () => Promise<void>;
-  setZenMode: (value: boolean) => Promise<void>;
+  setZenMode: () => Promise<void>;
 }
 
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
@@ -76,7 +75,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   xp: 0,
   isXpLoaded: false,
   onboardingCompleted: false,
-  zenMode: false,
+  zenMode: true,
 
   // Helper to persist deleted photos
   saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
@@ -127,26 +126,13 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   },
 
   loadZenMode: async () => {
-    try {
-      const storage = getAsyncStorage();
-      const stored = await storage.getItem(ZEN_MODE_STORAGE_KEY);
-      const zen = stored === 'true';
-      set({ zenMode: zen });
-    } catch (error) {
-      console.error('Failed to load zen mode:', error);
-      set({ zenMode: false });
-    }
+    // Zen mode is always enabled in the minimalist build
+    set({ zenMode: true });
   },
 
-  setZenMode: async (value: boolean) => {
-    try {
-      set({ zenMode: value });
-      const storage = getAsyncStorage();
-      await storage.setItem(ZEN_MODE_STORAGE_KEY, value ? 'true' : 'false');
-    } catch (error) {
-      console.error('Failed to set zen mode:', error);
-      set({ zenMode: value });
-    }
+  setZenMode: async () => {
+    // Zen mode cannot be disabled
+    set({ zenMode: true });
   },
 
   // Load deleted photos from storage on startup

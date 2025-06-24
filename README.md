@@ -95,6 +95,7 @@ For more details on specific systems see:
 - `XP_SYSTEM_README.md`
 - `MASCOT_README.md`
 - `lib/pixelPerfect.ts` explains the `px()` helper used for pixel-accurate layout.
+- `GAME_CUSTOMIZATION.md` summarizes how to tweak fonts, sounds and other game settings.
 
 ## Testing
 

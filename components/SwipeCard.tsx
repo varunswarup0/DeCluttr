@@ -21,6 +21,8 @@ const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
 // Reduce the swipe threshold slightly so cards respond quicker
 const SWIPE_THRESHOLD = px(screenWidth * 0.12);
+// Faster exit animation for snappier feedback
+const SWIPE_EXIT_DURATION = 120;
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -67,11 +69,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       if (shouldSwipeLeft) {
         // Swipe left - delete
         translateX.value = withTiming(-px(screenWidth * 1.5), {
-          duration: 160,
+          duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 160,
+          duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
         // Play delete sound and trigger callback
@@ -82,11 +84,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       } else if (shouldSwipeRight) {
         // Swipe right - keep
         translateX.value = withTiming(px(screenWidth * 1.5), {
-          duration: 160,
+          duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 160,
+          duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
         // Play keep sound and trigger callback
@@ -139,8 +141,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     <PanGestureHandler
       onGestureEvent={gestureHandler}
       enabled={!disabled}
-      activeOffsetX={[-8, 8]}
-      failOffsetY={[-8, 8]}
+      activeOffsetX={[-6, 6]}
+      failOffsetY={[-6, 6]}
       shouldCancelWhenOutside={false}>
       <Animated.View
         style={[

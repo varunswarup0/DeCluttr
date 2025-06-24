@@ -14,6 +14,8 @@ import { px } from '~/lib/pixelPerfect';
 const { width: screenWidth } = Dimensions.get('window');
 const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
+// Delay before the next card becomes interactive
+const ADVANCE_DELAY = 100;
 
 export interface SwipeDeckItem {
   id: string;
@@ -124,7 +126,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
     }
     blockTimeoutRef.current = setTimeout(() => {
       setInputBlocked(false);
-    }, 120);
+    }, ADVANCE_DELAY);
     const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
@@ -135,7 +137,7 @@ export const SwipeDeck: React.FC<SwipeDeckProps> = ({
       });
       // remove finished timeout reference
       timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
-    }, 120);
+    }, ADVANCE_DELAY);
     timeoutsRef.current.push(timeout);
   }, [data.length, onDeckEmpty]);
 

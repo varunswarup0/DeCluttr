@@ -40,10 +40,10 @@ const ProgressIndicator = React.forwardRef<
       progress.value = withSpring(value, { overshootClamping: true });
     }, [value, progress]);
 
-  const indicator = useAnimatedStyle(() => {
-    const width = interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP);
-    return { width: `${width}%` };
-  });
+    const indicator = useAnimatedStyle(() => {
+      const width = interpolate(progress.value, [0, max], [1, 100], Extrapolation.CLAMP);
+      return { width: `${width}%` };
+    }, [max]);
 
     return (
       <View

@@ -40,7 +40,7 @@ Use built-in Android system sounds:
 ## Quick Setup:
 
 1. Place MP3 files in this directory
-2. Name them exactly: `delete.mp3` and `keep.mp3`
+2. Name them exactly: `delete.mp3`, `keep.mp3` and (optionally) `tap.mp3`
 3. App will automatically detect and use them
 4. If files are missing, audio will fail gracefully without errors
 

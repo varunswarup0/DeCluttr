@@ -1,11 +1,15 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Pressable, PressableProps, View, ViewStyle } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { TextClassContext } from '~/components/nativewindui/Text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { COLORS } from '~/theme/colors';
+import { useSwipeAudio } from '~/lib/useSwipeAudio';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
@@ -121,19 +125,38 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     ref
   ) => {
     const { colorScheme } = useColorScheme();
+    const { playTapSound } = useSwipeAudio();
+    const scale = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: scale.value }],
+    }));
 
     return (
       <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
         <Root className={androidRootVariants({ size, className: androidRootClassName })}>
-          <Pressable
+          <AnimatedPressable
             className={cn(
               props.disabled && 'opacity-50',
               buttonVariants({ variant, size, className })
             )}
             ref={ref}
-            style={style}
+            style={[style, animatedStyle]}
             android_ripple={ANDROID_RIPPLE[colorScheme][variant]}
             {...props}
+            onPress={(event) => {
+              if (!props.disabled) {
+                playTapSound();
+              }
+              props.onPress?.(event);
+            }}
+            onPressIn={() => {
+              if (!props.disabled) {
+                scale.value = withSpring(0.96);
+              }
+            }}
+            onPressOut={() => {
+              scale.value = withSpring(1);
+            }}
           />
         </Root>
       </TextClassContext.Provider>

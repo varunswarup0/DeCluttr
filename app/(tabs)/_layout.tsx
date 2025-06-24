@@ -33,15 +33,14 @@ function XPDisplay() {
   const level = Math.floor(xp / 100) + 1;
   const progress = xp % 100;
 
-  // Animate XP display. Bigger bounce and a slight rotation on level up.
+  // Animate XP display only when leveling up
   useEffect(() => {
     const leveledUp = level > prevLevel.current;
-    scale.value = leveledUp ? 1.8 : 1.4;
-    rotate.value = leveledUp ? 15 : 0;
-    scale.value = withTiming(1, { duration: 300 });
-    rotate.value = withTiming(0, { duration: 300 });
-
     if (leveledUp) {
+      scale.value = 1.8;
+      rotate.value = 15;
+      scale.value = withTiming(1, { duration: 300 });
+      rotate.value = withTiming(0, { duration: 300 });
       successNotification();
     }
     prevLevel.current = level;

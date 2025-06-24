@@ -24,7 +24,7 @@ It features a small bird mascot inspired by **Flappy Bird** that celebrates your
 3. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 4. (Optional) Place a music file at `assets/music/background.mp3` to enable looping background music. The app starts this track automatically.
 5. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
-6. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games. A confetti burst rewards each successful delete.
+6. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games. A confetti burst celebrates each level up.
 7. The `audioService` will load these sounds automatically and handle failures gracefully.
 8. Subtle haptic feedback triggers on each swipe for extra game feel.
 9. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.

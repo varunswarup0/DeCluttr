@@ -1,5 +1,12 @@
 import * as MediaLibrary from 'expo-media-library';
 
+// Cache permission status to avoid extra async calls
+let permissionGrantedCache: boolean | null = null;
+
+export function resetMediaLibraryPermissionCache(): void {
+  permissionGrantedCache = null;
+}
+
 export interface PhotoAsset {
   id: string;
   uri: string;
@@ -12,9 +19,11 @@ export interface PhotoAsset {
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
     const { status } = await MediaLibrary.requestPermissionsAsync();
-    return status === 'granted';
+    permissionGrantedCache = status === 'granted';
+    return permissionGrantedCache;
   } catch (error) {
     console.error('Error requesting media library permission:', error);
+    permissionGrantedCache = false;
     return false;
   }
 }
@@ -24,11 +33,16 @@ export async function requestMediaLibraryPermission(): Promise<boolean> {
  * @returns Promise<boolean> - true if permission is granted, false otherwise
  */
 export async function checkMediaLibraryPermission(): Promise<boolean> {
+  if (permissionGrantedCache !== null) {
+    return permissionGrantedCache;
+  }
   try {
     const { status } = await MediaLibrary.getPermissionsAsync();
-    return status === 'granted';
+    permissionGrantedCache = status === 'granted';
+    return permissionGrantedCache;
   } catch (error) {
     console.error('Error checking media library permission:', error);
+    permissionGrantedCache = false;
     return false;
   }
 }

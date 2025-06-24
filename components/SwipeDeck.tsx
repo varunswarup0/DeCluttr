@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Dimensions, PixelRatio } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,9 +9,11 @@ import Animated, {
 import { SwipeCard } from './SwipeCard';
 import { cn } from '~/lib/cn';
 
+import { px } from '~/lib/pixelPerfect';
+
 const { width: screenWidth } = Dimensions.get('window');
-const DECK_WIDTH = PixelRatio.roundToNearestPixel(screenWidth * 0.9);
-const DECK_HEIGHT = PixelRatio.roundToNearestPixel(screenWidth * 1.2);
+const DECK_WIDTH = px(screenWidth * 0.9);
+const DECK_HEIGHT = px(screenWidth * 1.2);
 
 export interface SwipeDeckItem {
   id: string;

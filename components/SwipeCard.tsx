@@ -19,7 +19,7 @@ const CARD_WIDTH = px(screenWidth * 0.7);
 const CARD_HEIGHT = px(screenWidth * 0.8);
 const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
-const SWIPE_THRESHOLD = screenWidth * 0.25;
+const SWIPE_THRESHOLD = screenWidth * 0.2;
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -44,14 +44,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: () => {
       if (!disabled) {
-        scale.value = withSpring(0.8);
+        scale.value = withSpring(0.95);
         runOnJS(playTapSound)();
       }
     },
     onActive: (event) => {
       if (!disabled) {
         translateX.value = event.translationX;
-        translateY.value = event.translationY * 0.1; // Reduce vertical movement
+        translateY.value = event.translationY * 0.05; // Reduce vertical movement
       }
     },
     onEnd: (event) => {
@@ -138,8 +138,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     <PanGestureHandler
       onGestureEvent={gestureHandler}
       enabled={!disabled}
-      activeOffsetX={[-5, 5]}
-      failOffsetY={[-5, 5]}
+      activeOffsetX={[-8, 8]}
+      failOffsetY={[-8, 8]}
       shouldCancelWhenOutside={false}>
       <Animated.View
         style={[

@@ -42,6 +42,7 @@ export const useSwipeAudio = () => {
 
   const playTapSound = () => {
     audioService.playTapSound();
+    lightImpact();
   };
 
   return {

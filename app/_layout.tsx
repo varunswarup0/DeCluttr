@@ -43,7 +43,8 @@ export default function RootLayout() {
     }
   }, [loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded]);
 
-  // Check onboarding status on startup
+  // Check onboarding status only once on startup to avoid
+  // repeated AsyncStorage reads when navigating between screens
   useEffect(() => {
     checkOnboardingStatus().then((completed) => {
       if (completed) {
@@ -58,7 +59,8 @@ export default function RootLayout() {
         }
       }
     });
-  }, [checkOnboardingStatus, segments, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkOnboardingStatus, router]);
 
   // Start background music once fonts and storage are ready
   useEffect(() => {

@@ -15,8 +15,9 @@ const { width: screenWidth } = Dimensions.get('window');
 const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
 // Delay before the next card becomes interactive
-const ADVANCE_DELAY = 50;
-const STACK_DELAY = 60; // Faster stack animation for snappier feel
+// Shorter delays keep the deck feeling responsive
+const ADVANCE_DELAY = 30;
+const STACK_DELAY = 45; // Snappier stack animation
 
 export interface SwipeDeckItem {
   id: string;

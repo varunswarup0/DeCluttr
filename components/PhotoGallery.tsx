@@ -139,7 +139,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
     const prevState = useRecycleBinStore.getState();
     const prevXp = prevState.xp;
-    const prevTotal = prevState.totalDeleted;
 
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
     // Play a random voice clip for extra feedback
@@ -147,12 +146,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Keep count of deletes to occasionally show surprise messages
     deleteCountRef.current += 1;
 
-    const { xp: newXp, totalDeleted: newTotal } = useRecycleBinStore.getState();
+    const { xp: newXp } = useRecycleBinStore.getState();
     const prevLevel = Math.floor(prevXp / 100) + 1;
     const newLevel = Math.floor(newXp / 100) + 1;
 
-    // Combo check and level-up trigger
-    if (newLevel > prevLevel || newTotal % 50 === 0) {
+    // Trigger confetti only on level ups to keep it special
+    if (newLevel > prevLevel) {
       setConfettiKey((k) => k + 1);
     }
 

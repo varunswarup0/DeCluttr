@@ -12,17 +12,17 @@ jest.mock('../lib/useAudioSettings', () => ({
   }),
 }));
 
-const mockAudio = {
-  initialize: jest.fn().mockResolvedValue(undefined),
-  setVolume: jest.fn().mockResolvedValue(undefined),
-  setEnabled: jest.fn().mockResolvedValue(undefined),
-  playDeleteSound: jest.fn(),
-  playKeepSound: jest.fn(),
-};
-
-jest.mock('../lib/audioService', () => ({
-  audioService: mockAudio,
-}));
+var mockAudio: any;
+jest.mock('../lib/audioService', () => {
+  mockAudio = {
+    initialize: jest.fn().mockResolvedValue(undefined),
+    setVolume: jest.fn().mockResolvedValue(undefined),
+    setEnabled: jest.fn().mockResolvedValue(undefined),
+    playDeleteSound: jest.fn(),
+    playKeepSound: jest.fn(),
+  };
+  return { audioService: mockAudio };
+});
 
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn().mockResolvedValue(undefined),

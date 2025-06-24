@@ -17,6 +17,7 @@ import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
 import { useCustomFonts } from '~/lib/useCustomFonts';
 import { backgroundMusicService } from '~/lib/backgroundMusic';
+import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -63,6 +64,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded && isXpLoaded) {
       backgroundMusicService.play();
+      audioService.initialize().catch(() => {});
     }
     return () => {
       backgroundMusicService.stop();

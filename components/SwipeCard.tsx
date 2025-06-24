@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Dimensions, PixelRatio } from 'react-native';
+import { View, Image, Dimensions } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -12,11 +12,12 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useSwipeAudio } from '~/lib/useSwipeAudio';
+import { px } from '~/lib/pixelPerfect';
 
 const { width: screenWidth } = Dimensions.get('window');
-const CARD_WIDTH = PixelRatio.roundToNearestPixel(screenWidth * 0.7);
-const CARD_HEIGHT = PixelRatio.roundToNearestPixel(screenWidth * 0.8);
-const BORDER_RADIUS = PixelRatio.roundToNearestPixel(20);
+const CARD_WIDTH = px(screenWidth * 0.7);
+const CARD_HEIGHT = px(screenWidth * 0.8);
+const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
 const SWIPE_THRESHOLD = screenWidth * 0.25;
 
@@ -133,7 +134,12 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   });
 
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler} enabled={!disabled}>
+    <PanGestureHandler
+      onGestureEvent={gestureHandler}
+      enabled={!disabled}
+      activeOffsetX={[-10, 10]}
+      failOffsetY={[-10, 10]}
+      shouldCancelWhenOutside={false}>
       <Animated.View
         style={[
           {

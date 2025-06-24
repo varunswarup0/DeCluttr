@@ -31,6 +31,17 @@ interface PhotoGalleryProps {
 export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const isMounted = React.useRef(true);
 
+  // Use RecycleBin store
+  const {
+    deletedPhotos,
+    totalDeleted,
+    addDeletedPhoto,
+    xp,
+    resetGallery: resetRecycleBinStore,
+    isXpLoaded,
+    loadZenMode,
+  } = useRecycleBinStore();
+
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -65,17 +76,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const timeout = setTimeout(() => setShowSwipeHint(false), 3000);
     return () => clearTimeout(timeout);
   }, []);
-
-  // Use RecycleBin store
-  const {
-    deletedPhotos,
-    totalDeleted,
-    addDeletedPhoto,
-    xp,
-    resetGallery: resetRecycleBinStore,
-    isXpLoaded,
-    loadZenMode,
-  } = useRecycleBinStore();
 
   const loadPhotos = React.useCallback(async (cursor?: string): Promise<boolean> => {
     try {

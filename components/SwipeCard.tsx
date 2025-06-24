@@ -19,7 +19,7 @@ const CARD_WIDTH = px(screenWidth * 0.7);
 const CARD_HEIGHT = px(screenWidth * 0.8);
 const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
-const SWIPE_THRESHOLD = screenWidth * 0.2;
+const SWIPE_THRESHOLD = px(screenWidth * 0.2);
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -195,10 +195,18 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               deleteOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white p-4">
-              <View className="h-8 w-8 items-center justify-center">
-                <View className="absolute h-0.5 w-6 rotate-45 bg-red-500" />
-                <View className="absolute h-0.5 w-6 -rotate-45 bg-red-500" />
+            <View className="rounded-full bg-white" style={{ padding: px(4) }}>
+              <View
+                className="items-center justify-center"
+                style={{ height: px(32), width: px(32) }}>
+                <View
+                  className="absolute rotate-45 bg-red-500"
+                  style={{ height: px(2), width: px(24) }}
+                />
+                <View
+                  className="absolute -rotate-45 bg-red-500"
+                  style={{ height: px(2), width: px(24) }}
+                />
               </View>
             </View>
           </Animated.View>
@@ -218,9 +226,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               keepOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white p-4">
-              <View className="h-8 w-8 items-center justify-center">
-                <View className="-mt-1 h-4 w-2 rotate-45 border-b-2 border-r-2 border-green-500" />
+            <View className="rounded-full bg-white" style={{ padding: px(4) }}>
+              <View
+                className="items-center justify-center"
+                style={{ height: px(32), width: px(32) }}>
+                <View
+                  className="rotate-45 border-b-2 border-r-2 border-green-500"
+                  style={{ marginTop: -px(4), height: px(16), width: px(8) }}
+                />
               </View>
             </View>
           </Animated.View>

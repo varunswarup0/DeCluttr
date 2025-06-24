@@ -59,10 +59,10 @@ describe('RecycleBin store', () => {
     const { addDeletedPhoto, permanentlyDelete, clearRecycleBin } = useRecycleBinStore.getState();
     addDeletedPhoto(createPhoto('1'));
     addDeletedPhoto(createPhoto('2'));
-    await permanentlyDelete('1');
+    await expect(permanentlyDelete('1')).resolves.toBe(true);
     expect(mediaLibrary.deletePhotoAsset).toHaveBeenCalledWith('1');
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
-    await clearRecycleBin();
+    await expect(clearRecycleBin()).resolves.toBe(true);
     expect(mediaLibrary.deletePhotoAssets).toHaveBeenCalledWith(['2']);
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
     expect(useRecycleBinStore.getState().xp).toBe(
@@ -75,7 +75,7 @@ describe('RecycleBin store', () => {
     addDeletedPhoto(createPhoto('1'));
     (mediaLibrary.deletePhotoAsset as jest.Mock).mockResolvedValueOnce(false);
 
-    await permanentlyDelete('1');
+    await expect(permanentlyDelete('1')).resolves.toBe(false);
 
     // Photo should remain because deletion failed
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
@@ -102,7 +102,7 @@ describe('RecycleBin store', () => {
     addDeletedPhoto(createPhoto('2'));
     (mediaLibrary.deletePhotoAssets as jest.Mock).mockResolvedValueOnce(false);
 
-    await clearRecycleBin();
+    await expect(clearRecycleBin()).resolves.toBe(false);
 
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(2);
     // XP should only reflect initial deletes

@@ -46,8 +46,8 @@ export interface RecycleBinState {
   zenMode: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
-  permanentlyDelete: (photoId: string) => Promise<void>;
-  clearRecycleBin: () => Promise<void>;
+  permanentlyDelete: (photoId: string) => Promise<boolean>;
+  clearRecycleBin: () => Promise<boolean>;
   /**
    * Permanently remove photos that have been in the recycle bin for more than
    * 30 days. This does not award XP since it's an automatic cleanup.
@@ -213,10 +213,10 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     return null;
   },
 
-  permanentlyDelete: async (photoId: string) => {
+  permanentlyDelete: async (photoId: string): Promise<boolean> => {
     const photo = get().deletedPhotos.find((p) => p.id === photoId);
     if (!photo) {
-      return; // nothing to delete
+      return false; // nothing to delete
     }
 
     const success = await deletePhotoAsset(photo.id).catch((err) => {
@@ -225,7 +225,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     });
 
     if (!success) {
-      return; // keep photo if deletion failed
+      return false; // keep photo if deletion failed
     }
 
     const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
@@ -233,9 +233,10 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     await get().saveDeletedPhotos(updated);
     // Add XP for permanently deleting a photo
     await get().addXP(XP_CONFIG.PERMANENT_DELETE);
+    return true;
   },
 
-  clearRecycleBin: async () => {
+  clearRecycleBin: async (): Promise<boolean> => {
     const { deletedPhotos } = get();
     const photosCount = deletedPhotos.length;
     if (photosCount > 0) {
@@ -244,13 +245,14 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
         return false;
       });
       if (!success) {
-        return; // abort if deletion failed
+        return false; // abort if deletion failed
       }
     }
     set({ deletedPhotos: [] });
     await get().saveDeletedPhotos([]);
     // Add XP for clearing recycle bin (per photo)
     await get().addXP(XP_CONFIG.CLEAR_ALL * photosCount);
+    return true;
   },
 
   purgeExpiredPhotos: async () => {

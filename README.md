@@ -49,6 +49,15 @@ or
 expo run:android
 ```
 
+For a release build you'll need the EAS CLI installed (this repository includes
+`eas-cli` as a dev dependency). Log in and run the production build script:
+
+```bash
+npx eas login
+npm run build:prod
+```
+This executes `eas build --profile production`.
+
 XP and onboarding progress are stored using AsyncStorage. If storage is
 unavailable, an in-memory fallback ensures the app still works.
 

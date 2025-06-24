@@ -1,14 +1,14 @@
-jest.mock('react-native', () => ({
-  PixelRatio: { roundToNearestPixel: jest.fn((v) => Math.round(v)) },
-}));
-
 import { px } from '../lib/pixelPerfect';
 import { PixelRatio } from 'react-native';
 
+jest.mock('react-native', () => ({
+  PixelRatio: { get: jest.fn(() => 2) },
+}));
+
 describe('px helper', () => {
   it('rounds to nearest pixel', () => {
-    jest.spyOn(PixelRatio, 'roundToNearestPixel').mockReturnValueOnce(5);
-    expect(px(5.2)).toBe(5);
-    expect(PixelRatio.roundToNearestPixel).toHaveBeenCalledWith(5.2);
+    // px should use the mocked pixel scale of 2
+    expect(px(5.2)).toBe(Math.round(5.2 * 2) / 2);
+    expect(PixelRatio.get).toHaveBeenCalled();
   });
 });

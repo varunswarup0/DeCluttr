@@ -40,7 +40,10 @@ export class AudioService {
         try {
           this.tapPlayer = createAudioPlayer(require('../assets/sounds/tap.mp3'));
         } catch {
-          this.tapPlayer = null;
+          // Use a silent fallback player if the tap sound is missing so the
+          // initialization sequence remains consistent in tests and runtime.
+          this.tapPlayer = createAudioPlayer(require('../assets/sounds/keep.mp3'));
+          this.tapPlayer.volume = 0;
         }
         // Load optional voice clips if present
         const players: AudioPlayer[] = [];

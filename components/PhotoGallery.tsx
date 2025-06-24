@@ -4,6 +4,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
+import { SwipeHint } from './SwipeHint';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
@@ -53,11 +54,17 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
   const [xpToast, setXpToast] = useState<number | null>(null);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
   const deleteCountRef = React.useRef(0);
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowSwipeHint(false), 3000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Use RecycleBin store
   const {
@@ -148,6 +155,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
     setXpToast(XP_CONFIG.DELETE_PHOTO);
+    setShowSwipeHint(false);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
     // Track streaks and total delete count for surprise messages
@@ -182,6 +190,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
     // Swipe event - user keeps the current photo
     setKeptPhotos((prev) => [...prev, item.imageUri]);
+    setShowSwipeHint(false);
 
     // Reset streak when a photo is kept
     consecutiveDeleteRef.current = 0;
@@ -244,6 +253,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   };
 
   const handleDebugTap = () => {
+    setShowSwipeHint(false);
     const now = Date.now();
     tapTimesRef.current = tapTimesRef.current.filter((t) => now - t < 1000);
     tapTimesRef.current.push(now);
@@ -369,6 +379,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         maxVisibleCards={3}
         cardSpacing={px(12)}
       />
+
+      {showSwipeHint && <SwipeHint onDone={() => setShowSwipeHint(false)} />}
 
       {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}
 

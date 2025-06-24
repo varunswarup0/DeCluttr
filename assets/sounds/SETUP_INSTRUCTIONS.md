@@ -15,8 +15,8 @@ You can use online generators or audio software:
 1. **Online Tone Generators**:
 
    - Generate simple beeps/tones at different frequencies
-   - For delete: Lower frequency (200-400 Hz), 0.3-0.5 seconds
-   - For keep: Higher frequency (600-1000 Hz), 0.3-0.5 seconds
+   - For delete: Lower frequency (200-400 Hz), 0.15-0.3 seconds
+   - For keep: Higher frequency (600-1000 Hz), 0.15-0.3 seconds
 
 2. **Audio Software** (Audacity, GarageBand, etc.):
    - Create simple sine wave tones
@@ -32,7 +32,7 @@ Use built-in Android system sounds:
 
 ## Recommended Sound Characteristics:
 
-- **delete.mp3**: Subtle "whoosh" or low-pitched "thud" (300-500ms)
+- **delete.mp3**: Subtle "whoosh" or low-pitched "thud" (150-300ms)
 - **keep.mp3**: Pleasant "ding" or "chime" (200-400ms)
 - Consider using short 8-bit style blips for a retro Nintendo vibe
 - Both should be normalized to -6dB to prevent loud playback

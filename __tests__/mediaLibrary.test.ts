@@ -6,6 +6,7 @@ import {
   fetchAllPhotoAssets,
   getAssetInfo,
   deletePhotoAssets,
+  resetMediaLibraryPermissionCache,
 } from '../lib/mediaLibrary';
 
 jest.mock('expo-media-library', () => {
@@ -50,7 +51,10 @@ jest.mock('expo-media-library', () => {
 const MediaLibrary = require('expo-media-library');
 
 describe('mediaLibrary', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    resetMediaLibraryPermissionCache();
+  });
 
   it('requests and checks permissions', async () => {
     const granted = await requestMediaLibraryPermission();

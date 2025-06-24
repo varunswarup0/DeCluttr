@@ -54,6 +54,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
   const deleteCountRef = React.useRef(0);
+  const consecutiveDeleteRef = React.useRef(0);
+  const STREAK_THRESHOLD = 10;
 
   // Use RecycleBin store
   const {
@@ -146,16 +148,20 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     setXpToast(XP_CONFIG.DELETE_PHOTO);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
-    // Keep count of deletes to occasionally show surprise messages
+    // Track streaks and total delete count for surprise messages
     deleteCountRef.current += 1;
+    consecutiveDeleteRef.current += 1;
 
     const { xp: newXp } = useRecycleBinStore.getState();
     const prevLevel = Math.floor(prevXp / 100) + 1;
     const newLevel = Math.floor(newXp / 100) + 1;
 
-    // Trigger confetti only on level ups to keep it special
-    if (newLevel > prevLevel) {
+    // Trigger confetti on level ups or long delete streaks
+    if (newLevel > prevLevel || consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
       setConfettiKey((k) => k + 1);
+      if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
+        consecutiveDeleteRef.current = 0;
+      }
     }
 
     // Show surprise message roughly every 5 deletes
@@ -174,6 +180,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
     // Swipe event - user keeps the current photo
     setKeptPhotos((prev) => [...prev, item.imageUri]);
+
+    // Reset streak when a photo is kept
+    consecutiveDeleteRef.current = 0;
 
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);

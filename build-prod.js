@@ -1,13 +1,15 @@
-const { execSync, spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 
 function checkLogin() {
-  try {
-    const output = execSync('npx eas whoami', { encoding: 'utf8' }).trim();
-    if (output.includes('Not logged in')) {
-      console.error('EAS CLI is not logged in. Run "npx eas login" before building.');
-      process.exit(1);
-    }
-  } catch {
+  const result = spawnSync('npx', ['eas', 'whoami'], { encoding: 'utf8' });
+  const output = `${result.stdout || ''}${result.stderr || ''}`.trim();
+
+  if (output.includes('Not logged in')) {
+    console.error('EAS CLI is not logged in. Run "npx eas login" before building.');
+    process.exit(1);
+  }
+
+  if (result.error || result.status !== 0) {
     console.error('Failed to run "eas" command. Ensure eas-cli is installed.');
     process.exit(1);
   }

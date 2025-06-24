@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
+import { px } from '~/lib/pixelPerfect';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -58,7 +59,8 @@ const ProgressIndicator = React.forwardRef<
           now: value,
           text: getValueLabel(value, max),
         }}
-        className={cn('relative h-1 w-full overflow-hidden rounded-full', className)}
+        className={cn('relative w-full overflow-hidden', className)}
+        style={{ height: px(4), borderRadius: px(4) }}
         {...props}>
         <View className="absolute bottom-0 left-0 right-0 top-0 bg-muted opacity-20" />
         <Animated.View role="presentation" style={indicator} className={cn('h-full bg-primary')} />

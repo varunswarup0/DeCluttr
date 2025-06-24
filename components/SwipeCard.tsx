@@ -65,11 +65,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
       if (shouldSwipeLeft) {
         // Swipe left - delete
-        translateX.value = withTiming(-screenWidth * 1.5, {
+        translateX.value = withTiming(-px(screenWidth * 1.5), {
           duration: 250,
           easing: Easing.out(Easing.cubic),
         });
-        translateY.value = withTiming(0, {
+        translateY.value = withTiming(px(0), {
           duration: 250,
           easing: Easing.out(Easing.cubic),
         });
@@ -80,11 +80,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         }
       } else if (shouldSwipeRight) {
         // Swipe right - keep
-        translateX.value = withTiming(screenWidth * 1.5, {
+        translateX.value = withTiming(px(screenWidth * 1.5), {
           duration: 250,
           easing: Easing.out(Easing.cubic),
         });
-        translateY.value = withTiming(0, {
+        translateY.value = withTiming(px(0), {
           duration: 250,
           easing: Easing.out(Easing.cubic),
         });

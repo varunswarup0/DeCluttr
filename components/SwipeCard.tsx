@@ -19,7 +19,7 @@ const CARD_WIDTH = px(screenWidth * 0.7);
 const CARD_HEIGHT = px(screenWidth * 0.8);
 const BORDER_RADIUS = px(20);
 // Slightly easier swipe threshold for smoother feel
-const SWIPE_THRESHOLD = px(screenWidth * 0.2);
+const SWIPE_THRESHOLD = px(screenWidth * 0.15);
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -66,11 +66,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       if (shouldSwipeLeft) {
         // Swipe left - delete
         translateX.value = withTiming(-px(screenWidth * 1.5), {
-          duration: 250,
+          duration: 180,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 250,
+          duration: 180,
           easing: Easing.out(Easing.cubic),
         });
         // Play delete sound and trigger callback
@@ -81,11 +81,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       } else if (shouldSwipeRight) {
         // Swipe right - keep
         translateX.value = withTiming(px(screenWidth * 1.5), {
-          duration: 250,
+          duration: 180,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: 250,
+          duration: 180,
           easing: Easing.out(Easing.cubic),
         });
         // Play keep sound and trigger callback

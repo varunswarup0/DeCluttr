@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
+import { XPToast } from './XPToast';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 import { cn } from '~/lib/cn';
-import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
+import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
 import {
   SESSION_MESSAGES,
   END_MESSAGES,
@@ -49,6 +50,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const prefetchCursorRef = React.useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
+  const [xpToast, setXpToast] = useState<number | null>(null);
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
   const deleteCountRef = React.useRef(0);
@@ -141,6 +143,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const prevXp = prevState.xp;
 
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
+    setXpToast(XP_CONFIG.DELETE_PHOTO);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
     // Keep count of deletes to occasionally show surprise messages
@@ -354,6 +357,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         maxVisibleCards={3}
         cardSpacing={12}
       />
+
+      {xpToast && (
+        <XPToast amount={xpToast} onDone={() => setXpToast(null)} />
+      )}
 
       {/* Confetti burst when deleting */}
       {confettiKey > 0 && (

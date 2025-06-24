@@ -41,7 +41,7 @@ const ProgressIndicator = React.forwardRef<
     }, [value, progress]);
 
     const indicator = useAnimatedStyle(() => {
-      const width = interpolate(progress.value, [0, max], [1, 100], Extrapolation.CLAMP);
+      const width = interpolate(progress.value, [0, max], [0, 100], Extrapolation.CLAMP);
       return { width: `${width}%` };
     }, [max]);
 

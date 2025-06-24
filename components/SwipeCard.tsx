@@ -21,7 +21,10 @@ const BORDER_RADIUS = px(20);
 // Reduced threshold so even short drags register quickly
 const SWIPE_THRESHOLD = px(screenWidth * 0.1);
 // Shorter exit animation for snappier feedback
-const SWIPE_EXIT_DURATION = 100;
+const SWIPE_EXIT_DURATION = 80;
+const ICON_SIZE = px(36);
+const STROKE_WIDTH = px(3);
+const OVERLAY_PADDING = px(6);
 // Expand touch area to make starting swipes easier
 const HIT_SLOP = px(16);
 
@@ -200,17 +203,17 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               deleteOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white" style={{ padding: px(6) }}>
+            <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
               <View
                 className="items-center justify-center"
-                style={{ height: px(36), width: px(36) }}>
+                style={{ height: ICON_SIZE, width: ICON_SIZE }}>
                 <View
                   className="absolute rotate-45 bg-red-500"
-                  style={{ height: px(3), width: px(28) }}
+                  style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
                 />
                 <View
                   className="absolute -rotate-45 bg-red-500"
-                  style={{ height: px(3), width: px(28) }}
+                  style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
                 />
               </View>
             </View>
@@ -231,13 +234,13 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               },
               keepOverlayStyle,
             ]}>
-            <View className="rounded-full bg-white" style={{ padding: px(6) }}>
+            <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
               <View
                 className="items-center justify-center"
-                style={{ height: px(36), width: px(36) }}>
+                style={{ height: ICON_SIZE, width: ICON_SIZE }}>
                 <View
                   className="rotate-45 border-b-2 border-r-2 border-green-500"
-                  style={{ marginTop: -px(4), height: px(20), width: px(10) }}
+                  style={{ marginTop: -px(4), height: ICON_SIZE * 0.55, width: ICON_SIZE * 0.28 }}
                 />
               </View>
             </View>

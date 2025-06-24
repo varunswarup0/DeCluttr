@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { px } from '~/lib/pixelPerfect';
 
 type ButtonProps = {
   title?: string;
@@ -19,11 +20,11 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     backgroundColor: '#6366F1',
-    borderRadius: 24,
+    borderRadius: px(24),
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'center',
-    padding: 16,
+    padding: px(16),
     shadowColor: '#000',
     shadowOffset: {
       height: 2,

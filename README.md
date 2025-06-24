@@ -4,7 +4,8 @@ Minimal photo clean-up game built with Expo React Native.
 It features a small bird mascot inspired by **Flappy Bird** that celebrates your progress.
 **Android only** – other platforms are not supported.
 The interface now uses pixel-perfect scaling and preloaded sounds for
-immediate feedback when swiping photos.
+immediate feedback when swiping photos. Swipes trigger a short tap sound right
+as you start dragging so the game feels instantly responsive.
 
 ## Prerequisites
 

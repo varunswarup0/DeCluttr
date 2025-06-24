@@ -39,12 +39,13 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
-  const { playDeleteSound, playKeepSound } = useSwipeAudio();
+  const { playDeleteSound, playKeepSound, playTapSound } = useSwipeAudio();
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: () => {
       if (!disabled) {
         scale.value = withSpring(0.8);
+        runOnJS(playTapSound)();
       }
     },
     onActive: (event) => {
@@ -137,8 +138,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     <PanGestureHandler
       onGestureEvent={gestureHandler}
       enabled={!disabled}
-      activeOffsetX={[-10, 10]}
-      failOffsetY={[-10, 10]}
+      activeOffsetX={[-5, 5]}
+      failOffsetY={[-5, 5]}
       shouldCancelWhenOutside={false}>
       <Animated.View
         style={[

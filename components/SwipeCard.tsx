@@ -12,6 +12,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useSwipeAudio } from '~/lib/useSwipeAudio';
+import { lightImpact } from '~/lib/haptics';
 import { px } from '~/lib/pixelPerfect';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -46,13 +47,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
-  const { playDeleteSound, playKeepSound, playTapSound } = useSwipeAudio();
+  const { playDeleteSound, playKeepSound } = useSwipeAudio();
+  const onTap = () => lightImpact();
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: () => {
       if (!disabled) {
         scale.value = withSpring(0.95);
-        runOnJS(playTapSound)();
+        runOnJS(onTap)();
       }
     },
     onActive: (event) => {

@@ -344,28 +344,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
       <LevelHeader className="mb-6" />
-      {/* Stats displayed as progress bars */}
-      <View className="mb-6 w-3/4 space-y-2">
-        <View>
-          <ProgressIndicator value={Math.min(deletedPhotos.length, 100)} className="bg-red-500" />
-          <Text variant="caption1" color="secondary" className="mt-1 text-center">
-            In Bin
-          </Text>
-        </View>
-        <View>
-          <ProgressIndicator value={Math.min(keptPhotos.length, 100)} className="bg-green-500" />
-          <Text variant="caption1" color="secondary" className="mt-1 text-center">
-            Kept
-          </Text>
-        </View>
-        <View>
-          <ProgressIndicator value={Math.min(totalDeleted % 100, 100)} className="bg-yellow-500" />
-          <Text variant="caption1" color="secondary" className="mt-1 text-center">
-            All-Time Deleted
-          </Text>
-        </View>
-      </View>
-
       {/* Swipe Instructions */}
       <View className="mb-6 px-8">
         <Text variant="subhead" color="secondary" className="text-center">

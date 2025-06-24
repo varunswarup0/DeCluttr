@@ -12,7 +12,6 @@ These sample clips are short (~0.5–1s) MP3s. Replace them with your own before
 ## Optional Files
 
 - `voice1.mp3` and `voice2.mp3` - short voice clips that occasionally play after deleting a photo
-- `tap.mp3` - quick blip that plays when tapping buttons
 
 The included files are silent placeholders. Provide your own voice clips to use this feature.
 

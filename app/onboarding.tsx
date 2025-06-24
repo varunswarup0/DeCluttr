@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useRecycleBinStore } from '~/store/store';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Text } from '~/components/nativewindui/Text';
-import { useSwipeAudio } from '~/lib/useSwipeAudio';
+import { lightImpact } from '~/lib/haptics';
 import { px } from '~/lib/pixelPerfect';
 
 // Screen images
@@ -36,7 +36,6 @@ export default function OnboardingScreen() {
   const { completeOnboarding, onboardingCompleted } = useRecycleBinStore();
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
-  const { playTapSound } = useSwipeAudio();
 
   // Check if onboarding is already completed
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function OnboardingScreen() {
     return (
       <TouchableOpacity
         onPress={() => {
-          playTapSound();
+          lightImpact();
           onPress();
         }}
         style={[styles.buttonContainer, { backgroundColor: '#000' }]}>
@@ -75,7 +74,7 @@ export default function OnboardingScreen() {
     return (
       <TouchableOpacity
         onPress={() => {
-          playTapSound();
+          lightImpact();
           onPress();
         }}
         style={[styles.buttonContainer, { backgroundColor: '#E2E8F0' }]}>
@@ -96,7 +95,7 @@ export default function OnboardingScreen() {
     return (
       <TouchableOpacity
         onPress={() => {
-          playTapSound();
+          lightImpact();
           onPress();
         }}
         style={[styles.buttonContainer, { backgroundColor: '#4F46E5' }]}>

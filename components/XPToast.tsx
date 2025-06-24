@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  withSpring,
   runOnJS,
 } from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
@@ -17,10 +17,12 @@ interface XPToastProps {
 export const XPToast: React.FC<XPToastProps> = ({ amount, onDone }) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(px(20));
+  const scale = useSharedValue(0.6);
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 100 });
     translateY.value = withTiming(0, { duration: 100 });
+    scale.value = withSpring(1, { damping: 8, stiffness: 200 });
 
     const timeout = setTimeout(() => {
       opacity.value = withTiming(0, { duration: 300 }, () => {
@@ -31,11 +33,11 @@ export const XPToast: React.FC<XPToastProps> = ({ amount, onDone }) => {
     }, 600);
 
     return () => clearTimeout(timeout);
-  }, [onDone, opacity, translateY]);
+  }, [onDone, opacity, translateY, scale]);
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
+    transform: [{ translateY: translateY.value }, { scale: scale.value }],
   }));
 
   return (
@@ -52,8 +54,7 @@ export const XPToast: React.FC<XPToastProps> = ({ amount, onDone }) => {
         },
         style,
       ]}
-      pointerEvents="none"
-    >
+      pointerEvents="none">
       <Text className="font-arcade text-white">+{amount} XP</Text>
     </Animated.View>
   );

@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import Onboarding from 'react-native-onboarding-swiper';
 import { StatusBar } from 'expo-status-bar';
 
 import { useRecycleBinStore } from '~/store/store';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { Text } from '~/components/nativewindui/Text';
+import { useSwipeAudio } from '~/lib/useSwipeAudio';
+import { px } from '~/lib/pixelPerfect';
 
 // Screen images
 const screens = [
@@ -33,6 +36,7 @@ export default function OnboardingScreen() {
   const { completeOnboarding, onboardingCompleted } = useRecycleBinStore();
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
+  const { playTapSound } = useSwipeAudio();
 
   // Check if onboarding is already completed
   useEffect(() => {
@@ -51,7 +55,10 @@ export default function OnboardingScreen() {
   const DoneButton = ({ isLight, onPress }: { isLight: boolean; onPress: () => void }) => {
     return (
       <TouchableOpacity
-        onPress={onPress}
+        onPress={() => {
+          playTapSound();
+          onPress();
+        }}
         style={[styles.buttonContainer, { backgroundColor: '#000' }]}>
         <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>{`Let's Go!`}</Text>
       </TouchableOpacity>
@@ -67,7 +74,10 @@ export default function OnboardingScreen() {
   }) => {
     return (
       <TouchableOpacity
-        onPress={onPress}
+        onPress={() => {
+          playTapSound();
+          onPress();
+        }}
         style={[styles.buttonContainer, { backgroundColor: '#E2E8F0' }]}>
         <Text style={styles.skipButtonText}>
           {typeof skipLabel === 'string' ? skipLabel : 'Skip'}
@@ -85,7 +95,10 @@ export default function OnboardingScreen() {
   }) => {
     return (
       <TouchableOpacity
-        onPress={onPress}
+        onPress={() => {
+          playTapSound();
+          onPress();
+        }}
         style={[styles.buttonContainer, { backgroundColor: '#4F46E5' }]}>
         <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>Next</Text>
       </TouchableOpacity>
@@ -117,42 +130,42 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   onboardingContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: px(20),
   },
   title: {
-    fontSize: 28,
+    fontSize: px(28),
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: px(10),
     color: '#1A202C',
   },
   subtitle: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: px(18),
+    lineHeight: px(26),
     color: '#4A5568',
-    paddingHorizontal: 20,
+    paddingHorizontal: px(20),
     textAlign: 'center',
   },
   imageContainer: {
-    paddingBottom: 20,
+    paddingBottom: px(20),
   },
   buttonContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    marginHorizontal: 20,
+    paddingHorizontal: px(24),
+    paddingVertical: px(12),
+    borderRadius: px(24),
+    marginHorizontal: px(20),
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: px(16),
     fontWeight: '600',
   },
   skipButtonContainer: {
     backgroundColor: '#E2E8F0',
-    marginHorizontal: 20,
+    marginHorizontal: px(20),
   },
   skipButtonText: {
-    fontSize: 16,
+    fontSize: px(16),
     color: '#4A5568',
   },
 });

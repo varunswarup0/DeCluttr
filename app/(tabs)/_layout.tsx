@@ -67,21 +67,21 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
+        headerTitle: '',
         headerRight: () => <XPDisplay />,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="recycle-bin"
         options={{
-          title: 'Recycle Bin',
           tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,
         }}
       />

@@ -5,6 +5,7 @@ import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
 import { SwipeHint } from './SwipeHint';
+import { BackgroundOptimizer } from './BackgroundOptimizer';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
@@ -344,12 +345,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
       <LevelHeader className="mb-6" />
-      {/* Swipe Instructions */}
-      <View className="mb-6 px-8">
-        <Text variant="subhead" color="secondary" className="text-center">
-          Swipe left to delete, right to keep
-        </Text>
-      </View>
 
       {/* Swipe Deck */}
       <SwipeDeck
@@ -381,6 +376,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           <Text className="text-white">Reset Gallery & XP</Text>
         </Button>
       </View>
+      <BackgroundOptimizer />
     </Pressable>
   );
 };

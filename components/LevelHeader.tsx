@@ -34,13 +34,14 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
     <Animated.View
       style={animatedStyle}
       className={cn(
-        'items-center rounded-full bg-[rgb(var(--android-xp)/0.2)] px-3 py-1 dark:bg-[rgb(var(--android-xp)/0.3)]',
+        'items-center rounded-2xl bg-[rgb(var(--android-card))] px-4 py-2 shadow-md dark:bg-[rgb(var(--android-card))]',
         className
       )}>
-      <Text className="font-arcade text-xs text-[rgb(var(--android-xp))]">
-        ⭐ Lv {level} • {xp} XP
-      </Text>
-      <ProgressIndicator value={progress} className="mt-1 bg-[rgb(var(--android-xp))]" />
+      <Text className="font-arcade text-lg text-[rgb(var(--android-primary))]">Lv {level}</Text>
+      <ProgressIndicator
+        value={progress}
+        className="mt-1 h-1 w-16 bg-[rgb(var(--android-primary))]"
+      />
     </Animated.View>
   );
-};
+}; 

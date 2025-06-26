@@ -4,18 +4,18 @@
 
 @layer base {
   :root {
-    --background: 255 255 255;
-    --foreground: 0 0 0;
-    --card: 240 240 240;
-    --card-foreground: 0 0 0;
+    --background: 250 248 239;
+    --foreground: 119 110 101;
+    --card: 237 228 218;
+    --card-foreground: 119 110 101;
     --popover: 255 255 255;
     --popover-foreground: 0 0 0;
-    --primary: 0 0 0;
+    --primary: 119 110 101;
     --primary-foreground: 255 255 255;
-    --secondary: 0 0 0;
+    --secondary: 119 110 101;
     --secondary-foreground: 255 255 255;
-    --muted: 200 200 200;
-    --muted-foreground: 0 0 0;
+    --muted: 187 173 160;
+    --muted-foreground: 119 110 101;
     --accent: 120 120 120;
     --accent-foreground: 255 255 255;
     --destructive: 255 0 0;
@@ -25,18 +25,18 @@
     --input: 230 230 230;
     --ring: 120 120 120;
 
-    --android-background: 255 255 255;
-    --android-foreground: 0 0 0;
-    --android-card: 255 255 255;
-    --android-card-foreground: 0 0 0;
+    --android-background: 250 248 239;
+    --android-foreground: 119 110 101;
+    --android-card: 237 228 218;
+    --android-card-foreground: 119 110 101;
     --android-popover: 255 255 255;
     --android-popover-foreground: 0 0 0;
-    --android-primary: 0 0 0;
+    --android-primary: 119 110 101;
     --android-primary-foreground: 255 255 255;
-    --android-secondary: 0 0 0;
+    --android-secondary: 119 110 101;
     --android-secondary-foreground: 255 255 255;
-    --android-muted: 200 200 200;
-    --android-muted-foreground: 0 0 0;
+    --android-muted: 187 173 160;
+    --android-muted-foreground: 119 110 101;
     --android-accent: 120 120 120;
     --android-accent-foreground: 255 255 255;
     --android-destructive: 255 0 0;

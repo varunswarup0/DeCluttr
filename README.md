@@ -22,7 +22,7 @@ give instant feedback as soon as you start swiping so the game feels snappy and 
    ```bash
    npm install && npx patch-package
    ```
-2. The Inter font and a retro "Press Start 2P" font are bundled and load automatically on startup. Update `lib/useCustomFonts.ts` and `tailwind.config.js` if you prefer different typefaces.
+2. The Inter font and a retro "Press Start 2P" font are bundled and load automatically on startup. See the **Fonts and Typography** section in `GAME_CUSTOMIZATION.md` for a code snippet showing how these fonts are loaded and how to swap them for alternatives.
 3. Add sound effects by following the instructions in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 4. (Optional) Place a music file at `assets/music/background.mp3` to enable looping background music. The app starts this track automatically.
 5. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.

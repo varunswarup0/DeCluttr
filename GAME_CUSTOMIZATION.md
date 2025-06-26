@@ -3,8 +3,51 @@
 This guide summarizes the key files to modify when you want to personalize the game experience.
 
 ## Fonts and Typography
-- **`lib/useCustomFonts.ts`** – defines the Google Fonts loaded at runtime. Swap these imports with your preferred fonts and update the font names in `tailwind.config.js`.
-- **`tailwind.config.js`** – tailwind typography settings. Make sure the `fontFamily` section matches the fonts you load.
+
+DeCluttr ships with the classic arcade typeface **"Press Start 2P"** alongside Inter.
+The fonts are loaded with Expo's font utilities and exposed via Tailwind so you can
+easily reference them in your components.
+
+### Loading fonts
+
+- **`lib/useCustomFonts.ts`** imports `PressStart2P_400Regular` from
+  `@expo-google-fonts/press-start-2p` and passes it to `useFonts` together with the
+  other Google Fonts. The snippet below shows the relevant section:
+
+  ```ts
+  import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
+
+  export function useCustomFonts() {
+    const [loaded] = useFonts({
+      Inter_400Regular,
+      Inter_700Bold,
+      PressStart2P_400Regular,
+      VT323_400Regular,
+      Bungee_400Regular,
+      UnifrakturCook_700Bold,
+    });
+    return loaded;
+  }
+  ```
+
+### Tailwind configuration
+
+- **`tailwind.config.js`** maps a `fontFamily` entry called `arcade` to
+  `"Press Start 2P"` so you can apply it with the class `font-arcade`:
+
+  ```js
+  fontFamily: {
+    sans: ['Inter', 'System', 'sans-serif'],
+    arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
+    celeste: ['"VT323"', 'monospace'],
+    funky: ['"Bungee"', 'sans-serif'],
+    medieval: ['"UnifrakturCook"', 'serif'],
+  },
+  ```
+
+To use different fonts, install them from `@expo-google-fonts`, replace the imports
+in `lib/useCustomFonts.ts` and update the `fontFamily` entries in
+`tailwind.config.js` accordingly.
 
 ## Sounds
 - Place your own effects under `assets/sounds/` following `assets/sounds/SETUP_INSTRUCTIONS.md`.

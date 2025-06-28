@@ -23,14 +23,10 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
   const [imageError, setImageError] = useState(false);
 
   const handlePermanentDelete = () => {
-    Alert.alert(
-      'Permanently Delete',
-      'This photo will be permanently deleted and cannot be recovered. Are you sure?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: onPermanentDelete },
-      ]
-    );
+    Alert.alert('Permanently Delete', 'Remove this photo forever?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: onPermanentDelete },
+    ]);
   };
 
   return (
@@ -136,29 +132,22 @@ export default function RecycleBin() {
   const handleClearAll = () => {
     if (deletedPhotos.length === 0) return;
 
-    Alert.alert(
-      'Clear Recycle Bin',
-      `This will permanently delete all ${deletedPhotos.length} photos and cannot be undone. Are you sure?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear All',
-          style: 'destructive',
-          onPress: async () => {
-            const photosCount = deletedPhotos.length;
-            const success = await clearRecycleBin();
-            if (success) {
-              Alert.alert(
-                'Recycle Bin Cleared',
-                `All photos have been permanently deleted.\n\n⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`
-              );
-            } else {
-              Alert.alert('Error', 'Failed to clear recycle bin.');
-            }
-          },
+    Alert.alert('Clear Recycle Bin', `Delete all ${deletedPhotos.length} photos forever?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Clear All',
+        style: 'destructive',
+        onPress: async () => {
+          const photosCount = deletedPhotos.length;
+          const success = await clearRecycleBin();
+          if (success) {
+            Alert.alert('Recycle Bin Cleared', `Gone! ⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`);
+          } else {
+            Alert.alert('Error', 'Failed to clear recycle bin.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -183,10 +172,10 @@ export default function RecycleBin() {
             <View className="mb-8 items-center">
               <Text className="mb-4 text-6xl">🗑️</Text>
               <Text variant="title2" className="mb-2">
-                Recycle Bin is Empty
+                No Deleted Photos
               </Text>
               <Text color="secondary" className="text-center">
-                Photos you delete will appear here. You can restore them or permanently delete them.
+                Deleted shots show up here. Restore or wipe them.
               </Text>
             </View>
 
@@ -195,13 +184,12 @@ export default function RecycleBin() {
                 💡 Tip
               </Text>
               <Text variant="caption1" className="text-blue-600 dark:text-blue-400">
-                Deleted photos are temporarily stored here for 30 days before being automatically
-                removed.
+                Items stay for 30 days then vanish.
               </Text>
             </View>
             <View className="mt-6">
               <Text variant="caption2" color="secondary" className="text-center">
-                {totalDeleted} photos deleted overall
+                Total deleted: {totalDeleted}
               </Text>
             </View>
           </View>
@@ -241,10 +229,10 @@ export default function RecycleBin() {
             {/* Bottom Info */}
             <View className="border-t border-border bg-gray-50 px-4 py-3 dark:bg-gray-900">
               <Text variant="caption2" color="secondary" className="text-center">
-                Photos will be automatically deleted after 30 days
+                Auto deletion after 30 days
               </Text>
               <Text variant="caption2" color="secondary" className="mt-1 text-center">
-                {totalDeleted} photos deleted overall
+                Total deleted: {totalDeleted}
               </Text>
             </View>
           </View>

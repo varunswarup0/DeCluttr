@@ -93,3 +93,9 @@
     }
   }
 }
+
+@layer components {
+  .tile {
+    @apply rounded-md bg-[rgb(var(--android-card))] shadow-md;
+  }
+}

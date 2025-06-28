@@ -271,46 +271,42 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
   const resetGallery = async () => {
     // First, confirm the action with the user
-    Alert.alert(
-      'Reset Gallery',
-      'This will reset your gallery progress, clear all deleted photos, and reset your XP to 0. Are you sure?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Reset the RecycleBin store (clears deletedPhotos and resets XP)
-              await resetRecycleBinStore();
+    Alert.alert('Reset Gallery', 'Reset progress and XP? This also clears deleted photos.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Reset',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            // Reset the RecycleBin store (clears deletedPhotos and resets XP)
+            await resetRecycleBinStore();
 
-              // Reset local component state
-              setKeptPhotos([]);
-              setConfettiKey(0);
-              setPhotos([]);
-              setCurrentPhotoIndex(0);
-              setSessionStartXp(0);
-              setSessionDeletedStart(0);
-              nextCursorRef.current = undefined;
-              prefetchCursorRef.current = undefined;
-              setPrefetchedPhotos([]);
-              setHasMore(true);
+            // Reset local component state
+            setKeptPhotos([]);
+            setConfettiKey(0);
+            setPhotos([]);
+            setCurrentPhotoIndex(0);
+            setSessionStartXp(0);
+            setSessionDeletedStart(0);
+            nextCursorRef.current = undefined;
+            prefetchCursorRef.current = undefined;
+            setPrefetchedPhotos([]);
+            setHasMore(true);
 
-              // Reload photos from the start and wait until done
-              const loaded = await loadPhotos(undefined);
+            // Reload photos from the start and wait until done
+            const loaded = await loadPhotos(undefined);
 
-              if (loaded) {
-                // Notify the user only if photos reloaded successfully
-                Alert.alert('Gallery Reset', 'Your gallery has been reset successfully.');
-              }
-            } catch (error) {
-              console.error('Failed to reset gallery:', error);
-              Alert.alert('Error', 'Failed to reset gallery. Please try again.');
+            if (loaded) {
+              // Notify the user only if photos reloaded successfully
+              Alert.alert('Gallery Reset', 'All set!');
             }
-          },
+          } catch (error) {
+            console.error('Failed to reset gallery:', error);
+            Alert.alert('Error', 'Failed to reset gallery. Please try again.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading) {
@@ -328,10 +324,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     return (
       <View className={cn('flex-1 items-center justify-center px-8', className)}>
         <Text variant="title3" className="mb-4 text-center">
-          No Photos Found
+          No Photos
         </Text>
         <Text color="secondary" className="mb-6 text-center">
-          Make sure you have photos in your gallery and have granted permission.
+          Check gallery & permissions.
         </Text>
         <Button onPress={() => loadPhotos()}>
           <Text>Try Again</Text>

@@ -22,15 +22,21 @@ export const BackgroundOptimizer: React.FC = () => {
   }));
 
   return (
-    <View className="mt-4 items-center justify-center opacity-80">
-      <View className="flex-row items-center">
-        <Ionicons name="hardware-chip" size={px(18)} color="rgb(var(--android-muted-foreground))" />
-        <Text className="ml-2 font-arcade text-xs" color="secondary">
-          Optimizing
-        </Text>
-      </View>
-      <View className="mt-1 h-1 w-20 overflow-hidden rounded-full bg-muted/20">
-        <Animated.View style={[style]} className="h-full bg-primary" />
+    <View className="mt-4 items-center justify-center opacity-90">
+      <View className="tile px-3 py-2">
+        <View className="flex-row items-center">
+          <Ionicons
+            name="hardware-chip"
+            size={px(18)}
+            color="rgb(var(--android-card-foreground))"
+          />
+          <Text className="ml-2 font-arcade text-xs" color="secondary">
+            Optimizing
+          </Text>
+        </View>
+        <View className="mt-1 h-1 w-24 overflow-hidden rounded-full bg-white/20 dark:bg-white/30">
+          <Animated.View style={[style]} className="h-full bg-white" />
+        </View>
       </View>
     </View>
   );

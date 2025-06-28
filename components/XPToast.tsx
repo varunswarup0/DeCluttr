@@ -4,6 +4,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSpring,
+  withSequence,
   runOnJS,
 } from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
@@ -22,7 +23,10 @@ export const XPToast: React.FC<XPToastProps> = ({ amount, onDone }) => {
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 100 });
     translateY.value = withTiming(0, { duration: 100 });
-    scale.value = withSpring(1, { damping: 8, stiffness: 200 });
+    scale.value = withSequence(
+      withTiming(1.2, { duration: 150 }),
+      withSpring(1, { damping: 8, stiffness: 200 })
+    );
 
     const timeout = setTimeout(() => {
       opacity.value = withTiming(0, { duration: 300 }, () => {

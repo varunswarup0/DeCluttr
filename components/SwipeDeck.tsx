@@ -14,8 +14,8 @@ import { px } from '~/lib/pixelPerfect';
 const { width: screenWidth } = Dimensions.get('window');
 const DECK_WIDTH = px(screenWidth * 0.9);
 const DECK_HEIGHT = px(screenWidth * 1.2);
-// Delay before the next card becomes interactive
-// Reduced delays for a snappier feel
+// Delay before the next card becomes interactive (ms)
+// Lower values reduce perceived lag after swipes
 const ADVANCE_DELAY = 20;
 const STACK_DELAY = 20;
 

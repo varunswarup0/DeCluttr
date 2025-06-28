@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Text } from '~/components/nativewindui/Text';
 import { px } from '~/lib/pixelPerfect';
 
 type ButtonProps = {
@@ -36,7 +37,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    // Use the arcade font
+    fontFamily: 'Press Start 2P',
     textAlign: 'center',
   },
 });

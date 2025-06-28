@@ -52,7 +52,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-store-review": "~8.1.5",
     "expo-system-ui": "~5.0.6",
-    "firebase": "^10.5.2",
+    "firebase": "^11.9.1",
     "nativewind": "latest",
     "react": "19.0.0",
     "react-native": "0.79.2",

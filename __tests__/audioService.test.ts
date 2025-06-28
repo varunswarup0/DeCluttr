@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { audioService } from '../lib/audioService';
+import { createAudioPlayer } from 'expo-audio';
 
 // mock expo-audio createAudioPlayer
 const mockPlayer = () => ({
@@ -34,8 +35,6 @@ jest.mock('../lib/asyncStorageWrapper', () => ({
     },
   }),
 }));
-
-const { createAudioPlayer } = require('expo-audio');
 
 beforeEach(async () => {
   Object.keys(memory).forEach((k) => delete memory[k]);
@@ -73,7 +72,8 @@ test('setVolume updates players and storage', async () => {
   const players = (createAudioPlayer as jest.Mock).mock.results.map((r) => r.value as any);
   expect(players[0].volume).toBe(0.3);
   expect(players[1].volume).toBe(0.3);
-  const storage = require('../lib/asyncStorageWrapper').getAsyncStorage();
+  const { getAsyncStorage } = await import('../lib/asyncStorageWrapper');
+  const storage = getAsyncStorage();
   expect(await storage.getItem('decluttr_audio_settings')).toContain('0.3');
 });
 

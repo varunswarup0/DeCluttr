@@ -1,5 +1,3 @@
-import { getAsyncStorage } from '../lib/asyncStorageWrapper';
-
 describe('getAsyncStorage', () => {
   it('returns AsyncStorage when available', async () => {
     jest.resetModules();

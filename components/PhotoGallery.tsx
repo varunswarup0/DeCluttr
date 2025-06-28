@@ -5,6 +5,7 @@ import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
 import { LevelUpOverlay } from './LevelUpOverlay';
+import { SwipeFlash } from './SwipeFlash';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
@@ -37,7 +38,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   // Use RecycleBin store
   const {
     deletedPhotos,
-    totalDeleted,
     addDeletedPhoto,
     xp,
     resetGallery: resetRecycleBinStore,
@@ -68,6 +68,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
   const [xpToast, setXpToast] = useState<number | null>(null);
+  const [swipeFlash, setSwipeFlash] = useState<string | null>(null);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [showStart, setShowStart] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -166,6 +167,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
     setXpToast(XP_CONFIG.DELETE_PHOTO);
+    setSwipeFlash('DELETED!');
     setShowSwipeHint(false);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
@@ -204,6 +206,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
     // Swipe event - user keeps the current photo
     setKeptPhotos((prev) => [...prev, item.imageUri]);
+    setSwipeFlash('KEPT!');
     setShowSwipeHint(false);
 
     // Reset streak when a photo is kept
@@ -216,7 +219,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const handleDeckEmpty = () => {
     const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
     const totalXpEarned = xp - sessionStartXp;
-    const totalDeletedCount = totalDeleted;
     if (hasMore) {
       // If a prefetched batch exists use it to avoid a loading pause
       if (prefetchedPhotos.length > 0) {
@@ -373,6 +375,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       {showSwipeHint && <SwipeHint onDone={() => setShowSwipeHint(false)} />}
 
       {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}
+
+      {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 
       {/* Confetti burst when deleting */}
       {confettiKey > 0 && (

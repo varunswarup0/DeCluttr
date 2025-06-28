@@ -7,7 +7,7 @@ Organized backlog of issues and ideas:
 - Tests failed because dev dependencies weren't installed. Running `npm install` resolves the missing Jest and ESLint modules.
 - `npm run lint` fails with `Cannot find module 'eslint/config'` and missing `es-abstract/2024/ToIntegerOrInfinity`. Pin the package versions and fix the ESLint config.
 - Confetti animations linger after resetting the gallery. Clear the confetti key when the gallery is reset. ✔️
-- `tsc --noEmit` reports `Cannot find type definition file for 'react-native'`. Investigate the tsconfig and type packages.
+- `tsc --noEmit` reports `Cannot find type definition file for 'react-native'`. The missing types were resolved by installing `expo-linear-gradient` and ensuring `@types/react-native` is present. ✔️
 
 ## Gameplay Improvements
 

@@ -10,8 +10,8 @@ export const MotivationBanner: React.FC = () => {
   const message = useMemo(() => pickMessage(), []);
 
   return (
-    <View className="mb-4 rounded-xl bg-green-50 px-4 py-2 dark:bg-green-900">
-      <Text className="text-center" color="secondary">
+    <View className="mb-4 rounded-lg bg-[rgb(var(--android-card))] px-3 py-1 shadow-md dark:bg-[rgb(var(--android-card))]">
+      <Text className="text-center font-arcade text-sm" color="secondary">
         {message}
       </Text>
     </View>

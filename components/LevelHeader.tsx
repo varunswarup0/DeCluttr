@@ -44,4 +44,4 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
       />
     </Animated.View>
   );
-}; 
+};

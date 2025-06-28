@@ -172,24 +172,10 @@ export default function RecycleBin() {
             <View className="mb-8 items-center">
               <Text className="mb-4 text-6xl">🗑️</Text>
               <Text variant="title2" className="mb-2">
-                No Deleted Photos
+                All Clear
               </Text>
               <Text color="secondary" className="text-center">
-                Deleted shots show up here. Restore or wipe them.
-              </Text>
-            </View>
-
-            <View className="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
-              <Text variant="subhead" className="mb-2 text-blue-700 dark:text-blue-300">
-                💡 Tip
-              </Text>
-              <Text variant="caption1" className="text-blue-600 dark:text-blue-400">
-                Items stay for 30 days then vanish.
-              </Text>
-            </View>
-            <View className="mt-6">
-              <Text variant="caption2" color="secondary" className="text-center">
-                Total deleted: {totalDeleted}
+                Nothing in the bin
               </Text>
             </View>
           </View>
@@ -226,15 +212,6 @@ export default function RecycleBin() {
               </View>
             </ScrollView>
 
-            {/* Bottom Info */}
-            <View className="border-t border-border bg-gray-50 px-4 py-3 dark:bg-gray-900">
-              <Text variant="caption2" color="secondary" className="text-center">
-                Auto deletion after 30 days
-              </Text>
-              <Text variant="caption2" color="secondary" className="mt-1 text-center">
-                Total deleted: {totalDeleted}
-              </Text>
-            </View>
           </View>
         )}
       </Container>

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
+import { Text } from '~/components/nativewindui/Text';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -31,6 +32,9 @@ export const BackgroundOptimizer: React.FC = () => {
             color="rgb(var(--android-card-foreground))"
           />
         </View>
+        <Text className="mt-1 font-arcade text-xs text-[rgb(var(--android-card-foreground))]">
+          OPTIMIZING
+        </Text>
         <View className="mt-2 h-2 w-28 overflow-hidden rounded-full bg-white/20 dark:bg-white/30">
           <Animated.View style={[style]} className="h-full bg-white" />
         </View>

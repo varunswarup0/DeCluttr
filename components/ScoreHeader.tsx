@@ -31,11 +31,11 @@ export const ScoreHeader: React.FC = () => {
     <Animated.View
       style={[{ flexDirection: 'row', gap: px(6), alignItems: 'center' }, animatedStyle]}>
       <GameTile className="min-w-[60px] items-center px-2 py-1">
-        <Text className="font-arcade text-sm text-[rgb(var(--android-primary))]">Lv {level}</Text>
+        <Text className="font-arcade text-base text-[rgb(var(--android-primary))]">{level}</Text>
       </GameTile>
       <GameTile className="min-w-[60px] flex-row items-center justify-center gap-1 px-2 py-1">
         <Ionicons name="star" size={px(14)} color="rgb(var(--android-primary))" />
-        <Text className="font-arcade text-sm text-[rgb(var(--android-primary))]">{xp}</Text>
+        <Text className="font-arcade text-base text-[rgb(var(--android-primary))]">{xp}</Text>
       </GameTile>
     </Animated.View>
   );

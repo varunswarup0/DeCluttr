@@ -236,24 +236,19 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         const msg = pickSessionMessage();
         Alert.alert(
           msg,
-          `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
+          `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`
         );
       } else {
         loadPhotos().then(() => {
           const msg = pickSessionMessage();
-          Alert.alert(
-            msg,
-            `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`
-          );
+          Alert.alert(msg, `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`);
         });
       }
     } else {
       const endMsg = pickEndMessage();
-      Alert.alert(
-        endMsg,
-        `Deleted: ${deletedThisSession} (this session)\nKept: ${keptPhotos.length}\nTotal Deleted: ${totalDeletedCount}\n\n⭐ Current XP: ${xp}\n🎉 XP earned this session: +${totalXpEarned}`,
-        [{ text: 'OK', style: 'default' }]
-      );
+      Alert.alert(endMsg, `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`, [
+        { text: 'OK', style: 'default' },
+      ]);
     }
   };
 

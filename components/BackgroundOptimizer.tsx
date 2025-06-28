@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '~/components/nativewindui/Text';
+import { GameTile } from './GameTile';
 import { px } from '~/lib/pixelPerfect';
 
 export const BackgroundOptimizer: React.FC = () => {
@@ -23,21 +24,21 @@ export const BackgroundOptimizer: React.FC = () => {
 
   return (
     <View className="mt-4 items-center justify-center opacity-90">
-      <View className="tile px-3 py-2">
+      <GameTile className="px-4 py-3">
         <View className="flex-row items-center">
           <Ionicons
             name="hardware-chip"
-            size={px(18)}
+            size={px(20)}
             color="rgb(var(--android-card-foreground))"
           />
           <Text className="ml-2 font-arcade text-xs" color="secondary">
-            Optimizing
+            OPTIMIZING…
           </Text>
         </View>
-        <View className="mt-1 h-1 w-24 overflow-hidden rounded-full bg-white/20 dark:bg-white/30">
+        <View className="mt-2 h-2 w-28 overflow-hidden rounded-full bg-white/20 dark:bg-white/30">
           <Animated.View style={[style]} className="h-full bg-white" />
         </View>
-      </View>
+      </GameTile>
     </View>
   );
 };

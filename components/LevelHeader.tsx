@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
+import { GameTile } from './GameTile';
 import { useRecycleBinStore } from '~/store/store';
 import { cn } from '~/lib/cn';
 
@@ -31,17 +32,11 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
   }));
 
   return (
-    <Animated.View
-      style={animatedStyle}
-      className={cn(
-        'items-center rounded-2xl bg-[rgb(var(--android-card))] px-4 py-2 shadow-md dark:bg-[rgb(var(--android-card))]',
-        className
-      )}>
-      <Text className="font-arcade text-lg text-[rgb(var(--android-primary))]">Lv {level}</Text>
-      <ProgressIndicator
-        value={progress}
-        className="mt-1 h-1 w-16 bg-[rgb(var(--android-primary))]"
-      />
+    <Animated.View style={animatedStyle}>
+      <GameTile className={cn('px-4 py-3', className)}>
+        <Text className="font-arcade text-lg text-[rgb(var(--android-primary))]">Lv {level}</Text>
+        <ProgressIndicator value={progress} className="mt-1 h-2 w-20 bg-[rgb(var(--android-primary))]" />
+      </GameTile>
     </Animated.View>
   );
 };

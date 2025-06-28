@@ -241,14 +241,19 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       } else {
         loadPhotos().then(() => {
           const msg = pickSessionMessage();
-          Alert.alert(msg, `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`);
+          Alert.alert(
+            msg,
+            `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`
+          );
         });
       }
     } else {
       const endMsg = pickEndMessage();
-      Alert.alert(endMsg, `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`, [
-        { text: 'OK', style: 'default' },
-      ]);
+      Alert.alert(
+        endMsg,
+        `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`,
+        [{ text: 'OK', style: 'default' }]
+      );
     }
   };
 

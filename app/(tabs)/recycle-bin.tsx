@@ -211,7 +211,6 @@ export default function RecycleBin() {
                 ))}
               </View>
             </ScrollView>
-
           </View>
         )}
       </Container>

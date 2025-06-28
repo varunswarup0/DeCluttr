@@ -35,6 +35,7 @@ test('loads defaults and toggles', async () => {
     hook!.toggleAudio();
   });
   expect(hook!.settings.enabled).toBe(false);
-  const storage = require('../lib/asyncStorageWrapper').getAsyncStorage();
+  const { getAsyncStorage } = await import('../lib/asyncStorageWrapper');
+  const storage = getAsyncStorage();
   expect(await storage.getItem('decluttr_audio_settings')).toContain('false');
 });

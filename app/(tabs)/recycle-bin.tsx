@@ -94,14 +94,8 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
 };
 
 export default function RecycleBin() {
-  const {
-    deletedPhotos,
-    restorePhoto,
-    permanentlyDelete,
-    clearRecycleBin,
-    purgeExpiredPhotos,
-    totalDeleted,
-  } = useRecycleBinStore();
+  const { deletedPhotos, restorePhoto, permanentlyDelete, clearRecycleBin, purgeExpiredPhotos } =
+    useRecycleBinStore();
 
   useEffect(() => {
     purgeExpiredPhotos();

@@ -1,3 +1,4 @@
+import * as MediaLibrary from 'expo-media-library';
 import {
   requestMediaLibraryPermission,
   checkMediaLibraryPermission,
@@ -47,8 +48,6 @@ jest.mock('expo-media-library', () => {
     SortBy: { creationTime: 'creationTime' },
   };
 });
-
-const MediaLibrary = require('expo-media-library');
 
 describe('mediaLibrary', () => {
   beforeEach(() => {

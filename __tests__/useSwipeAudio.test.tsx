@@ -2,6 +2,7 @@
 import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { jest } from '@jest/globals';
+import * as Haptics from 'expo-haptics';
 
 import { useSwipeAudio } from '../lib/useSwipeAudio';
 
@@ -47,7 +48,6 @@ test('useSwipeAudio triggers audio and haptics', async () => {
     hook!.playKeepSound();
   });
 
-  const Haptics = require('expo-haptics');
   expect(mockAudio.playDeleteSound).toHaveBeenCalled();
   expect(mockAudio.playKeepSound).toHaveBeenCalled();
   expect(Haptics.impactAsync).toHaveBeenCalledWith('heavy');

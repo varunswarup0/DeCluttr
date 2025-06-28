@@ -1,4 +1,5 @@
 import { useRecycleBinStore, XP_CONFIG, DeletedPhoto } from '../store/store';
+import * as mediaLibrary from '../lib/mediaLibrary';
 
 jest.mock('../lib/asyncStorageWrapper', () => {
   const memory: Record<string, string> = {};
@@ -19,8 +20,6 @@ jest.mock('../lib/mediaLibrary', () => ({
   deletePhotoAsset: jest.fn().mockResolvedValue(true),
   deletePhotoAssets: jest.fn().mockResolvedValue(true),
 }));
-
-const mediaLibrary = require('../lib/mediaLibrary');
 
 const createPhoto = (id: string): DeletedPhoto => ({
   id,
@@ -131,7 +130,8 @@ describe('RecycleBin store', () => {
     expect(useRecycleBinStore.getState().onboardingCompleted).toBe(false);
   });
   it('loads xp and deleted photos from storage', async () => {
-    const storage = require('../lib/asyncStorageWrapper').getAsyncStorage();
+    const { getAsyncStorage } = await import('../lib/asyncStorageWrapper');
+    const storage = getAsyncStorage();
     await storage.setItem('@decluttr_xp', '15');
     await storage.setItem('@decluttr_deleted_photos', JSON.stringify([createPhoto('a')]));
     await storage.setItem('@decluttr_total_deleted', '5');

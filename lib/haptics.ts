@@ -1,5 +1,6 @@
 let Haptics: typeof import('expo-haptics') | null = null;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   Haptics = require('expo-haptics');
 } catch {
   // Haptics module not available

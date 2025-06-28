@@ -47,6 +47,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
+  const rotateZ = useSharedValue(0);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
   const onTap = () => lightImpact();
 
@@ -61,12 +62,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       if (!disabled) {
         translateX.value = event.translationX;
         translateY.value = event.translationY * 0.05; // Reduce vertical movement
+        rotateZ.value = event.translationX * 0.001;
       }
     },
     onEnd: (event) => {
       if (disabled) return;
 
       scale.value = withSpring(1);
+      rotateZ.value = withSpring(0);
 
       const velocityX = event.velocityX;
       const shouldSwipeLeft = translateX.value < -SWIPE_THRESHOLD || velocityX < -1000;
@@ -82,6 +85,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
+        rotateZ.value = withTiming(-20, { duration: SWIPE_EXIT_DURATION });
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
@@ -97,6 +101,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           duration: SWIPE_EXIT_DURATION,
           easing: Easing.out(Easing.cubic),
         });
+        rotateZ.value = withTiming(20, { duration: SWIPE_EXIT_DURATION });
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
@@ -107,6 +112,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         const springConfig = { damping: 15, stiffness: 200 };
         translateX.value = withSpring(0, springConfig);
         translateY.value = withSpring(0, springConfig);
+        rotateZ.value = withSpring(0, springConfig);
       }
     },
   });
@@ -118,6 +124,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
+        { rotateZ: `${rotateZ.value}deg` },
         { scale: scale.value },
       ],
       opacity,

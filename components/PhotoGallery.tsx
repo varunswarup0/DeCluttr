@@ -4,6 +4,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
+import { LevelUpOverlay } from './LevelUpOverlay';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
@@ -11,7 +12,6 @@ import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
-import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 import { Ionicons } from '@expo/vector-icons';
 import { cn } from '~/lib/cn';
 import { px } from '~/lib/pixelPerfect';
@@ -70,6 +70,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [xpToast, setXpToast] = useState<number | null>(null);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [showStart, setShowStart] = useState(false);
+  const [showLevelUp, setShowLevelUp] = useState(false);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
@@ -179,6 +180,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Trigger confetti on level ups or long delete streaks
     if (newLevel > prevLevel || consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
       setConfettiKey((k) => k + 1);
+      if (newLevel > prevLevel) {
+        setShowLevelUp(true);
+      }
       if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
         consecutiveDeleteRef.current = 0;
       }
@@ -379,6 +383,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           origin={{ x: Dimensions.get('window').width / 2, y: 0 }}
         />
       )}
+
+      {showLevelUp && <LevelUpOverlay onDone={() => setShowLevelUp(false)} />}
 
       {/* Reset Button */}
       <View className="mt-6">

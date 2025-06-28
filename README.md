@@ -27,11 +27,12 @@ give instant feedback as soon as you start swiping so the game feels snappy and 
 4. (Optional) Place a music file at `assets/music/background.mp3` to enable looping background music. The app starts this track automatically.
 5. Use fun, game‑inspired sounds: a quick "zap" for delete and a cheerful "coin" for keep.
 6. For a nostalgic feel, pick short 8-bit style clips reminiscent of retro Nintendo games. A confetti burst celebrates each level up.
-7. The `audioService` will load these sounds automatically and handle failures gracefully.
-8. Subtle haptic feedback triggers on each swipe for extra game feel.
-9. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.
-10. The file `assets/favicon.png` serves as the favicon when running on the web. Replace it with your own image to customize the icon.
-11. Enable **Zen Mode** from the gallery screen to hide stats and confetti for a stress-free experience.
+7. Level ups display a bold "LEVEL UP!" overlay with a quick retro bounce.
+8. The `audioService` will load these sounds automatically and handle failures gracefully.
+9. Subtle haptic feedback triggers on each swipe for extra game feel.
+10. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.
+11. The file `assets/favicon.png` serves as the favicon when running on the web. Replace it with your own image to customize the icon.
+12. Enable **Zen Mode** from the gallery screen to hide stats and confetti for a stress-free experience.
 
 ## Running the App on Android
 

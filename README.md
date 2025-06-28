@@ -54,6 +54,11 @@ or
 expo run:android
 ```
 
+If you install new Expo modules (for example `expo-linear-gradient`) and see an
+error like `ViewManagerResolver returned null for ExpoLinearGradient`, rebuild
+the development client using `expo run:android` or `eas build --profile
+development` to include the native code.
+
 For a release build you'll need the EAS CLI installed (this repository includes
 `eas-cli` as a dev dependency). Log in and run the production build script,
 which checks your login status automatically:

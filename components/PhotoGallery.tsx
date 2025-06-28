@@ -373,7 +373,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       {/* Reset Button */}
       <View className="mt-6">
         <Button variant="primary" onPress={resetGallery} className="bg-red-500">
-          <Text className="text-white">Reset Gallery & XP</Text>
+          <Text className="font-arcade text-sm text-white">Reset</Text>
         </Button>
       </View>
       <BackgroundOptimizer />

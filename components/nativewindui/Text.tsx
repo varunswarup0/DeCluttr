@@ -50,8 +50,8 @@ const fontSizes = {
   caption2: px(11),
 } as const;
 
-// Use a clean sans-serif font by default for a modern look
-const TextClassContext = React.createContext<string | undefined>('font-sans');
+// Use a pixel style font by default for a retro look
+const TextClassContext = React.createContext<string | undefined>('font-celeste');
 
 function Text({
   className,

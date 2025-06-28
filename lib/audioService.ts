@@ -183,7 +183,6 @@ export class AudioService {
     });
   }
 
-
   /**
    * Clean up resources
    */
@@ -198,7 +197,6 @@ export class AudioService {
         this.keepPlayer.remove();
         this.keepPlayer = null;
       }
-
 
       this.voicePlayers.forEach((p) => p.remove && p.remove());
       this.voicePlayers = [];

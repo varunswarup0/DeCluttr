@@ -2,25 +2,15 @@
 export const MAX_MESSAGE_LENGTH = 30 as const;
 
 export const MOTIVATION_MESSAGES = [
-  'Great job!',
-  'Every swipe counts!',
-  'Keep it up!',
-  'Nice work!',
-  'Clutter\u2011free gallery!',
-  'Room for joy!',
-  "You're in control!",
-  'Clear mind!',
-  'Inspiring progress!',
-  'Looking cool!',
-  'Swipe power!',
+  'Great!',
+  'Swipe on!',
+  'Keep going!',
+  'Nice!',
+  'Look sharp!',
+  'Power up!',
 ] as const;
 
-export const SESSION_MESSAGES = [
-  'Ready for more?',
-  'Gallery cleaner!',
-  'New photos arrived!',
-  'Great declutter!',
-] as const;
+export const SESSION_MESSAGES = ['More to clean!', 'Fresh batch!', 'Ready for action!'] as const;
 
 export const END_MESSAGES = ['All caught up!', 'Gallery clean!', 'No more photos!'] as const;
 

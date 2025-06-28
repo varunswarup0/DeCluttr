@@ -19,6 +19,7 @@ import { useCustomFonts } from '~/lib/useCustomFonts';
 import { backgroundMusicService } from '~/lib/backgroundMusic';
 import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
+import RetroOverlay from '~/components/RetroOverlay';
 
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
@@ -100,6 +101,7 @@ export default function RootLayout() {
       </GestureHandlerRootView>
 
       {/* </ExampleProvider> */}
+      <RetroOverlay />
     </>
   );
 }

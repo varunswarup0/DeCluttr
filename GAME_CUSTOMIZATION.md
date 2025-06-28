@@ -33,12 +33,12 @@ easily reference them in your components.
 ### Tailwind configuration
 
 - **`tailwind.config.js`** maps a `fontFamily` entry called `arcade` to
-  `"Press Start 2P"` so you can apply it with the class `font-arcade`:
+  `"PressStart2P_400Regular"` so you can apply it with the class `font-arcade`:
 
   ```js
   fontFamily: {
     sans: ['Inter', 'System', 'sans-serif'],
-    arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
+    arcade: ['"PressStart2P_400Regular"', 'Inter', 'System', 'sans-serif'],
     celeste: ['"VT323"', 'monospace'],
     funky: ['"Bungee"', 'sans-serif'],
     medieval: ['"UnifrakturCook"', 'serif'],

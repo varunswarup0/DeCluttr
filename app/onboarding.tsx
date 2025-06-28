@@ -133,14 +133,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: px(28),
-    fontFamily: 'Press Start 2P',
+    // Use Expo's font name for Press Start 2P
+    fontFamily: 'PressStart2P_400Regular',
     marginBottom: px(10),
     color: '#1A202C',
   },
   subtitle: {
     fontSize: px(18),
     lineHeight: px(26),
-    fontFamily: 'Press Start 2P',
+    fontFamily: 'PressStart2P_400Regular',
     color: '#4A5568',
     paddingHorizontal: px(20),
     textAlign: 'center',
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: px(16),
-    fontFamily: 'Press Start 2P',
+    fontFamily: 'PressStart2P_400Regular',
   },
   skipButtonContainer: {
     backgroundColor: '#E2E8F0',
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
   },
   skipButtonText: {
     fontSize: px(16),
-    fontFamily: 'Press Start 2P',
+    fontFamily: 'PressStart2P_400Regular',
     color: '#4A5568',
   },
 });

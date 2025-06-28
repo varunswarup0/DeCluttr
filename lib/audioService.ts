@@ -134,7 +134,8 @@ export class AudioService {
     } catch (error) {
       console.warn('Audio playback failed:', error);
     }
-    setTimeout(() => this.processQueue(), 150);
+    // Shorter delay so queued sounds play sooner
+    setTimeout(() => this.processQueue(), 80);
   }
 
   /**

@@ -5,6 +5,7 @@ import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
 import { SwipeHint } from './SwipeHint';
+import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
 import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
 import { Text } from '~/components/nativewindui/Text';
@@ -68,6 +69,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [confettiKey, setConfettiKey] = useState(0);
   const [xpToast, setXpToast] = useState<number | null>(null);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [showStart, setShowStart] = useState(false);
+  const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
   const deleteCountRef = React.useRef(0);
@@ -78,6 +81,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     const timeout = setTimeout(() => setShowSwipeHint(false), 3000);
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    if (photos.length > 0 && !startShownRef.current) {
+      setShowStart(true);
+      startShownRef.current = true;
+    }
+  }, [photos.length]);
 
   const loadPhotos = React.useCallback(async (cursor?: string): Promise<boolean> => {
     try {
@@ -293,6 +303,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             prefetchCursorRef.current = undefined;
             setPrefetchedPhotos([]);
             setHasMore(true);
+            startShownRef.current = false;
+            setShowStart(false);
 
             // Reload photos from the start and wait until done
             const loaded = await loadPhotos(undefined);
@@ -341,6 +353,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     <Pressable
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
+      {showStart && <RetroStart onDone={() => setShowStart(false)} />}
       <LevelHeader className="mb-6" />
 
       {/* Swipe Deck */}

@@ -33,9 +33,12 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
 
   return (
     <Animated.View style={animatedStyle}>
-      <GameTile className={cn('px-4 py-3', className)}>
-        <Text className="font-arcade text-lg text-[rgb(var(--android-primary))]">Lv {level}</Text>
-        <ProgressIndicator value={progress} className="mt-1 h-2 w-20 bg-[rgb(var(--android-primary))]" />
+      <GameTile className={cn('px-5 py-3', className)}>
+        <Text className="font-arcade text-xl text-[rgb(var(--android-primary))]">Lv {level}</Text>
+        <ProgressIndicator
+          value={progress}
+          className="mt-1 h-2 w-24 bg-[rgb(var(--android-primary))]"
+        />
       </GameTile>
     </Animated.View>
   );

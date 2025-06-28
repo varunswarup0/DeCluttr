@@ -1,11 +1,8 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
-import { useEffect, useRef } from 'react';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useRecycleBinStore } from '~/store/store';
-import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
-import { successNotification } from '~/lib/haptics';
+import { ScoreHeader } from '~/components/ScoreHeader';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   const { deletedPhotos } = useRecycleBinStore();
@@ -24,51 +21,13 @@ function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   );
 }
 
-function XPDisplay() {
-  const { xp } = useRecycleBinStore();
-  const scale = useSharedValue(1);
-  const rotate = useSharedValue(0);
-  const prevLevel = useRef(Math.floor(xp / 100) + 1);
-
-  const level = Math.floor(xp / 100) + 1;
-  const progress = xp % 100;
-
-  // Animate XP display only when leveling up
-  useEffect(() => {
-    const leveledUp = level > prevLevel.current;
-    if (leveledUp) {
-      scale.value = 1.8;
-      rotate.value = 15;
-      scale.value = withTiming(1, { duration: 300 });
-      rotate.value = withTiming(0, { duration: 300 });
-      successNotification();
-    }
-    prevLevel.current = level;
-  }, [xp, level, scale, rotate]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { rotate: `${rotate.value}deg` }],
-  }));
-
-  return (
-    <Animated.View
-      style={animatedStyle}
-      className="items-center rounded-full bg-[rgb(var(--android-xp)/0.2)] px-3 py-1 dark:bg-[rgb(var(--android-xp)/0.3)]">
-      <Text className="font-arcade text-xs text-[rgb(var(--android-xp))]">
-        ⭐ Lv {level} • {xp} XP
-      </Text>
-      <ProgressIndicator value={progress} className="mt-1 bg-[rgb(var(--android-xp))]" />
-    </Animated.View>
-  );
-}
-
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
         headerTitle: '',
-        headerRight: () => <XPDisplay />,
+        headerRight: () => <ScoreHeader />,
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',

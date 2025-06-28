@@ -315,7 +315,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       <View className={cn('flex-1 items-center justify-center', className)}>
         <ActivityIndicator size="large" />
         <Text className="mt-4" color="secondary">
-          Loading your photos...
+          Loading…
         </Text>
       </View>
     );
@@ -328,7 +328,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           No Photos
         </Text>
         <Text color="secondary" className="mb-6 text-center">
-          Check gallery & permissions.
+          Check gallery access.
         </Text>
         <Button onPress={() => loadPhotos()}>
           <Text>Try Again</Text>

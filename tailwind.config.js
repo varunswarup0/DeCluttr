@@ -8,13 +8,14 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
-      fontFamily: {
-  sans: ['Inter', 'System', 'sans-serif'],
-  arcade: ['"Press Start 2P"', 'Inter', 'System', 'sans-serif'],
-  celeste: ['"VT323"', 'monospace'],
-  funky: ['"Bungee"', 'sans-serif'],
-  medieval: ['"UnifrakturCook"', 'serif'],
-},
+  fontFamily: {
+        sans: ['Inter', 'System', 'sans-serif'],
+        // Use the Expo font name for Press Start 2P
+        arcade: ['"PressStart2P_400Regular"', 'Inter', 'System', 'sans-serif'],
+        celeste: ['"VT323"', 'monospace'],
+        funky: ['"Bungee"', 'sans-serif'],
+        medieval: ['"UnifrakturCook"', 'serif'],
+      },
       colors: {
         border: withOpacity('border'),
         input: withOpacity('input'),

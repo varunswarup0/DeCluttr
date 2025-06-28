@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     // Use the arcade font
-    fontFamily: 'Press Start 2P',
+    fontFamily: 'PressStart2P_400Regular',
     textAlign: 'center',
   },
 });

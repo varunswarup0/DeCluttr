@@ -1,8 +1,18 @@
 diff --git a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
-index 13a3c24..cac20be 100644
+index 13a3c24..6af6b69 100644
 --- a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
 +++ b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
-@@ -63,7 +63,7 @@ class AudioModule : Module() {
+@@ -38,6 +38,9 @@ import kotlinx.coroutines.launch
+ import kotlinx.coroutines.runBlocking
+ import okhttp3.OkHttpClient
+ import java.io.File
++import android.os.Handler
++import android.os.Looper
++import java.util.concurrent.CountDownLatch
+ import kotlin.math.min
+ 
+ @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+@@ -63,7 +66,7 @@ class AudioModule : Module() {
        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
          focusAcquired = false
          players.values.forEach {
@@ -11,7 +21,7 @@ index 13a3c24..cac20be 100644
          }
        }
  
-@@ -71,7 +71,7 @@ class AudioModule : Module() {
+@@ -71,7 +74,7 @@ class AudioModule : Module() {
          focusAcquired = false
          if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
            players.values.forEach {
@@ -20,7 +30,7 @@ index 13a3c24..cac20be 100644
            }
          }
        }
-@@ -79,7 +79,7 @@ class AudioModule : Module() {
+@@ -79,7 +82,7 @@ class AudioModule : Module() {
        AudioManager.AUDIOFOCUS_GAIN -> {
          focusAcquired = true
          players.values.forEach {
@@ -29,7 +39,7 @@ index 13a3c24..cac20be 100644
          }
        }
      }
-@@ -150,7 +150,7 @@ class AudioModule : Module() {
+@@ -150,7 +153,7 @@ class AudioModule : Module() {
          appContext.mainQueue.launch {
            players.values.forEach {
              if (it.player.isPlaying) {
@@ -38,7 +48,7 @@ index 13a3c24..cac20be 100644
              }
              releaseAudioFocus()
            }
-@@ -174,7 +174,7 @@ class AudioModule : Module() {
+@@ -174,7 +177,7 @@ class AudioModule : Module() {
            players.values.forEach { player ->
              if (player.player.isPlaying) {
                player.isPaused = true
@@ -47,7 +57,7 @@ index 13a3c24..cac20be 100644
              }
            }
  
-@@ -195,7 +195,7 @@ class AudioModule : Module() {
+@@ -195,7 +198,7 @@ class AudioModule : Module() {
            players.values.forEach { player ->
              if (player.isPaused) {
                player.isPaused = false
@@ -56,7 +66,7 @@ index 13a3c24..cac20be 100644
              }
            }
  
-@@ -216,7 +216,7 @@ class AudioModule : Module() {
+@@ -216,7 +219,7 @@ class AudioModule : Module() {
        appContext.mainQueue.launch {
          releaseAudioFocus()
          players.values.forEach {
@@ -65,3 +75,29 @@ index 13a3c24..cac20be 100644
          }
  
          recorders.values.forEach {
+@@ -518,8 +521,23 @@ class AudioModule : Module() {
+     }.createMediaSource(mediaItem)
+   }
+ 
+-  private fun <T> runOnMain(block: () -> T): T =
+-    runBlocking(appContext.mainQueue.coroutineContext) { block() }
++  private fun <T> runOnMain(block: () -> T): T {
++    if (Looper.myLooper() == Looper.getMainLooper()) {
++      return block()
++    }
++    var result: T? = null
++    val latch = CountDownLatch(1)
++    Handler(Looper.getMainLooper()).post {
++      try {
++        result = block()
++      } finally {
++        latch.countDown()
++      }
++    }
++    latch.await()
++    @Suppress("UNCHECKED_CAST")
++    return result as T
++  }
+ 
+   private fun checkRecordingPermission() {
+     val permission = ContextCompat.checkSelfPermission(appContext.throwingActivity.applicationContext, Manifest.permission.RECORD_AUDIO)

@@ -262,7 +262,7 @@ index 002601f262ff54be496d3601e02aecd2781b792a..8c135d1d70d52599b99357d0b8757587
  
  type AndroidOnlyButtonProps = {
    /**
-    * ANDROID ONLY: The class name of root responsible for hidding the ripple overflow.
+    * ANDROID ONLY: The class name of root responsible for hiding the ripple overflow.
     */
    androidRootClassName?: string;
  };

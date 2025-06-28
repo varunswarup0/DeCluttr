@@ -110,7 +110,7 @@ type ButtonVariantProps = Omit<VariantProps<typeof buttonVariants>, 'variant'> &
 
 type AndroidOnlyButtonProps = {
   /**
-   * ANDROID ONLY: The class name of root responsible for hidding the ripple overflow.
+   * ANDROID ONLY: The class name of root responsible for hiding the ripple overflow.
    */
   androidRootClassName?: string;
 };

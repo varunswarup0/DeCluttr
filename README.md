@@ -111,14 +111,14 @@ the `patch-package` script can apply fixes to expo-audio.
 
 ## Swipe Cooldown and Test Mode
 
-Each swipe briefly blocks input for about 20&nbsp;milliseconds while the next card loads. You can tweak this delay by editing `ADVANCE_DELAY` in `components/SwipeDeck.tsx`.
+Each swipe briefly blocks input for about 10&nbsp;milliseconds while the next card loads. You can tweak this delay by editing `ADVANCE_DELAY` in `components/SwipeDeck.tsx`.
 Tap anywhere five times quickly to simulate a left swipe for debugging.
 
 ### Audio Fallback
 
 Sound playback can fail if audio files are missing or the device blocks audio initialization. When that happens a default chime is used instead. See `lib/audioService.ts` for implementation details.
 
-The audio service queues rapid playback requests so quick swipes never overlap. By default each sound waits around 40&nbsp;milliseconds before the next begins. Lower the delay in `lib/audioService.ts` if you need even snappier feedback. Delete actions sometimes play one of two short voice clips for extra charm.
+The audio service queues rapid playback requests so quick swipes never overlap. By default each sound waits around 25&nbsp;milliseconds before the next begins. Lower the delay in `lib/audioService.ts` if you need even snappier feedback. Delete actions sometimes play one of two short voice clips for extra charm.
 These clips are processed through the same queue so they won't overlap even if you swipe rapidly. To enable the clips, add `voice1.mp3` and `voice2.mp3` under `assets/sounds/` as described in `assets/sounds/SETUP_INSTRUCTIONS.md`.
 
 ## Performance Tips

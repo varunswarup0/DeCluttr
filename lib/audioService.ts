@@ -136,7 +136,7 @@ export class AudioService {
     }
     // Delay before playing the next queued sound
     // Lower value means snappier audio but may overlap if too small
-    setTimeout(() => this.processQueue(), 40);
+    setTimeout(() => this.processQueue(), 25);
   }
 
   /**

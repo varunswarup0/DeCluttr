@@ -133,13 +133,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: px(28),
-    fontWeight: 'bold',
+    fontFamily: 'Press Start 2P',
     marginBottom: px(10),
     color: '#1A202C',
   },
   subtitle: {
     fontSize: px(18),
     lineHeight: px(26),
+    fontFamily: 'Press Start 2P',
     color: '#4A5568',
     paddingHorizontal: px(20),
     textAlign: 'center',
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: px(16),
-    fontWeight: '600',
+    fontFamily: 'Press Start 2P',
   },
   skipButtonContainer: {
     backgroundColor: '#E2E8F0',
@@ -165,6 +166,7 @@ const styles = StyleSheet.create({
   },
   skipButtonText: {
     fontSize: px(16),
+    fontFamily: 'Press Start 2P',
     color: '#4A5568',
   },
 });

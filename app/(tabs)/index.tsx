@@ -6,7 +6,7 @@ import { PhotoGallery } from '~/components/PhotoGallery';
 export default function Home() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Declutter Photos' }} />
+      <Stack.Screen options={{ headerShown: false }} />
       <Container>
         <PhotoGallery />
       </Container>

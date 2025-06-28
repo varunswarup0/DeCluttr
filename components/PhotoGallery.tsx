@@ -11,6 +11,7 @@ import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
+import { Ionicons } from '@expo/vector-icons';
 import { cn } from '~/lib/cn';
 import { px } from '~/lib/pixelPerfect';
 import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
@@ -368,8 +369,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
       {/* Reset Button */}
       <View className="mt-6">
-        <Button variant="primary" onPress={resetGallery} className="bg-red-500">
-          <Text className="font-arcade text-sm text-white">Reset</Text>
+        <Button variant="primary" size="icon" onPress={resetGallery} className="bg-red-500">
+          <Ionicons name="refresh" size={px(18)} color="white" />
+          <Text className="sr-only">Reset</Text>
         </Button>
       </View>
       <BackgroundOptimizer />

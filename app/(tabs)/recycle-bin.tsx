@@ -104,20 +104,14 @@ export default function RecycleBin() {
   const handleRestore = (photoId: string) => {
     const restoredPhoto = restorePhoto(photoId);
     if (restoredPhoto) {
-      Alert.alert(
-        'Photo Restored',
-        `The photo has been restored successfully.\n\n🔄 -${Math.abs(XP_CONFIG.RESTORE_PHOTO)} XP`
-      );
+      Alert.alert('Photo Restored', 'The photo has been restored.');
     }
   };
 
   const handlePermanentDelete = async (photoId: string) => {
     const success = await permanentlyDelete(photoId);
     if (success) {
-      Alert.alert(
-        'Photo Deleted',
-        `The photo has been permanently deleted.\n\n⭐ +${XP_CONFIG.PERMANENT_DELETE} XP`
-      );
+      Alert.alert('Photo Deleted', 'Removed forever.');
     } else {
       Alert.alert('Error', 'Failed to delete photo. Please try again.');
     }
@@ -126,16 +120,15 @@ export default function RecycleBin() {
   const handleClearAll = () => {
     if (deletedPhotos.length === 0) return;
 
-    Alert.alert('Clear Recycle Bin', `Delete all ${deletedPhotos.length} photos forever?`, [
+    Alert.alert('Clear Recycle Bin', 'Delete all photos forever?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Clear All',
         style: 'destructive',
         onPress: async () => {
-          const photosCount = deletedPhotos.length;
           const success = await clearRecycleBin();
           if (success) {
-            Alert.alert('Recycle Bin Cleared', `Gone! ⭐ +${XP_CONFIG.CLEAR_ALL * photosCount} XP`);
+            Alert.alert('Recycle Bin Cleared', 'All gone!');
           } else {
             Alert.alert('Error', 'Failed to clear recycle bin.');
           }

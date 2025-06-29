@@ -59,7 +59,7 @@ export const XPToast: React.FC<XPToastProps> = ({ amount, onDone }) => {
         style,
       ]}
       pointerEvents="none">
-      <Text className="font-arcade text-white">+{amount} XP</Text>
+      <Text className="font-arcade text-white">BONUS!</Text>
     </Animated.View>
   );
 };

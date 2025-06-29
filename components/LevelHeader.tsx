@@ -2,9 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
+import { Ionicons } from '@expo/vector-icons';
 import { GameTile } from './GameTile';
 import { useRecycleBinStore } from '~/store/store';
 import { cn } from '~/lib/cn';
+import { px } from '~/lib/pixelPerfect';
 
 interface LevelHeaderProps {
   className?: string;
@@ -34,7 +36,10 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
   return (
     <Animated.View style={animatedStyle}>
       <GameTile className={cn('px-5 py-3', className)}>
-        <Text className="font-arcade text-xl text-[rgb(var(--android-primary))]">Lv {level}</Text>
+        <Animated.View className="mb-1 flex-row items-center justify-center gap-1">
+          <Text className="font-arcade text-xl text-[rgb(var(--android-primary))]">LEVEL</Text>
+          <Ionicons name="star" size={px(14)} color="rgb(var(--android-primary))" />
+        </Animated.View>
         <ProgressIndicator
           value={progress}
           className="mt-1 h-2 w-24 bg-[rgb(var(--android-primary))]"

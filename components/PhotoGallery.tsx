@@ -254,26 +254,16 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           setHasMore(false);
         }
         const msg = pickSessionMessage();
-        Alert.alert(
-          msg,
-          `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`
-        );
+        Alert.alert(msg, 'Keep it up!');
       } else {
         loadPhotos().then(() => {
           const msg = pickSessionMessage();
-          Alert.alert(
-            msg,
-            `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`
-          );
+          Alert.alert(msg, 'Keep it up!');
         });
       }
     } else {
       const endMsg = pickEndMessage();
-      Alert.alert(
-        endMsg,
-        `⭐ ${xp} (+${totalXpEarned})\n🗑 ${deletedThisSession}  📷 ${keptPhotos.length}`,
-        [{ text: 'OK', style: 'default' }]
-      );
+      Alert.alert(endMsg, 'Gallery clean!', [{ text: 'OK', style: 'default' }]);
     }
   };
 

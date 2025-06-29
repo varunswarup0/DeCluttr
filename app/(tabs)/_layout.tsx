@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
 import { ScoreHeader } from '~/components/ScoreHeader';
 
@@ -11,11 +11,7 @@ function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
     <View className="relative">
       <Ionicons name="trash" size={size} color={color} />
       {deletedPhotos.length > 0 && (
-        <View className="absolute -right-1 -top-1 h-4 min-w-4 items-center justify-center rounded-full bg-red-500">
-          <Text className="text-xs font-bold text-white" style={{ fontSize: 10 }}>
-            {deletedPhotos.length > 99 ? '99+' : deletedPhotos.length}
-          </Text>
-        </View>
+        <View className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
       )}
     </View>
   );

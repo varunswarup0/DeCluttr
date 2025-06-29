@@ -6,6 +6,7 @@ import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
 import { LevelUpOverlay } from './LevelUpOverlay';
 import { SwipeFlash } from './SwipeFlash';
+import { PixelBurst } from './PixelBurst';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
@@ -72,6 +73,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [showStart, setShowStart] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [burstColor, setBurstColor] = useState<string | null>(null);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   // Track total deletes this session for surprise messages
@@ -168,6 +170,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
     setXpToast(XP_CONFIG.DELETE_PHOTO);
     setSwipeFlash('DELETED!');
+    setBurstColor('rgb(255,59,48)');
     setShowSwipeHint(false);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
@@ -207,6 +210,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Swipe event - user keeps the current photo
     setKeptPhotos((prev) => [...prev, item.imageUri]);
     setSwipeFlash('KEPT!');
+    setBurstColor('rgb(52,199,89)');
     setShowSwipeHint(false);
 
     // Reset streak when a photo is kept
@@ -377,6 +381,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}
 
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
+
+      {burstColor && <PixelBurst color={burstColor} onDone={() => setBurstColor(null)} />}
 
       {/* Confetti burst when deleting */}
       {confettiKey > 0 && (

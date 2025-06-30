@@ -74,20 +74,11 @@ Bundle can be uploaded to the Google Play Console or installed locally.
 
 ### Installing the build
 
-1. Download the `.aab` file from the link shown in the terminal.
-2. To distribute through Google Play, upload it to the internal testing or
-   production track in the Play Console.
-3. To install directly on a device, convert the bundle into a universal APK using
-   [bundletool](https://developer.android.com/studio/command-line/bundletool):
-
-   ```bash
-   java -jar bundletool-all.jar build-apks \
-     --bundle=decluttr.aab --output=decluttr.apks --mode=universal
-   unzip decluttr.apks universal.apk
-   adb install universal.apk
-   ```
-   Replace `decluttr.aab` with your downloaded file path and ensure `bundletool`
-   is installed.
+- Download the `bundletool` jar from Google.
+- Run `java -jar bundletool-all.jar build-apks --bundle path/to/file.aab --output my_app.apks --mode=universal`.
+- Unzip `my_app.apks` to get `universal.apk`.
+- Install with `adb install universal.apk`.
+- You can also upload the `.aab` directly to Google Play instead of installing manually.
 
 XP and onboarding progress are stored using AsyncStorage. If storage is
 unavailable, an in-memory fallback ensures the app still works.

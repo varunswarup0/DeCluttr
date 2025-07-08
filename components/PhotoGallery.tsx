@@ -5,6 +5,7 @@ import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 import { XPToast } from './XPToast';
 import { LevelHeader } from './LevelHeader';
 import { LevelUpOverlay } from './LevelUpOverlay';
+import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
 import { PixelBurst } from './PixelBurst';
 import { SwipeHint } from './SwipeHint';
@@ -73,6 +74,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [showStart, setShowStart] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [combo, setCombo] = useState<number | null>(null);
   const [burstColor, setBurstColor] = useState<string | null>(null);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
@@ -177,6 +179,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     // Track streaks and total delete count for surprise messages
     deleteCountRef.current += 1;
     consecutiveDeleteRef.current += 1;
+    if (consecutiveDeleteRef.current >= 3) {
+      setCombo(consecutiveDeleteRef.current);
+    }
 
     const { xp: newXp } = useRecycleBinStore.getState();
     const prevLevel = Math.floor(prevXp / 100) + 1;
@@ -190,6 +195,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       }
       if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
         consecutiveDeleteRef.current = 0;
+        setCombo(null);
       }
     }
 
@@ -215,12 +221,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
     // Reset streak when a photo is kept
     consecutiveDeleteRef.current = 0;
+    setCombo(null);
 
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
   };
 
   const handleDeckEmpty = () => {
+    setCombo(null);
     const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
     const totalXpEarned = xp - sessionStartXp;
     if (hasMore) {
@@ -305,6 +313,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             setHasMore(true);
             startShownRef.current = false;
             setShowStart(false);
+            setCombo(null);
 
             // Reload photos from the start and wait until done
             const loaded = await loadPhotos(undefined);
@@ -385,6 +394,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       )}
 
       {showLevelUp && <LevelUpOverlay onDone={() => setShowLevelUp(false)} />}
+      {combo && <ComboOverlay count={combo} onDone={() => setCombo(null)} />}
 
       {/* Reset Button */}
       <View className="mt-6">

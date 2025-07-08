@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -15,6 +15,7 @@ import Animated, {
   interpolate,
   runOnJS,
   Easing,
+  FadeIn,
 } from 'react-native-reanimated';
 import { useSwipeAudio } from '~/lib/useSwipeAudio';
 import { lightImpact } from '~/lib/haptics';
@@ -193,7 +194,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               animatedStyle,
               style,
             ]}>
-        <Image
+        <Animated.Image
+          entering={FadeIn.duration(200)}
           source={{ uri: imageUri }}
           style={{
             width: '100%',

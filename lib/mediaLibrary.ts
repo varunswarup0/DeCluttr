@@ -190,7 +190,12 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
       }
     }
 
-    // Validate that each asset exists before attempting deletion
+    if (assetIds.length === 0) {
+      console.log('No photo assets to delete.');
+      return true;
+    }
+
+    // Validate each asset exists. Android resolves with false when any id is invalid.
     const validIds: string[] = [];
     for (const id of assetIds) {
       try {
@@ -202,11 +207,13 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
     }
 
     if (validIds.length === 0) {
-      console.log('No photo assets to delete.');
+      console.log('No valid photo assets to delete.');
       return true;
     }
 
-    const success = await MediaLibrary.deleteAssetsAsync(validIds);
+    const result = await MediaLibrary.deleteAssetsAsync(validIds);
+    const success = result === undefined ? true : result;
+
     if (success) {
       console.log(`Deleted ${validIds.length} photo asset(s).`);
     } else {

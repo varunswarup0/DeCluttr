@@ -1,11 +1,26 @@
 import { StyleSheet, SafeAreaView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { COLORS } from '~/theme/colors';
 import { px } from '~/lib/pixelPerfect';
 
 export const Container = ({ children }: { children: React.ReactNode }) => {
-  return <SafeAreaView style={styles.container}>{children}</SafeAreaView>;
+  const { colorScheme } = useColorScheme();
+  const colors =
+    colorScheme === 'dark'
+      ? [COLORS.dark.background, COLORS.dark.grey6]
+      : [COLORS.light.background, COLORS.light.grey5];
+  return (
+    <LinearGradient colors={colors} style={styles.gradient}>
+      <SafeAreaView style={styles.container}>{children}</SafeAreaView>
+    </LinearGradient>
+  );
 };
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: px(18),

@@ -1,6 +1,11 @@
 import React from 'react';
 import { View, Image, Dimensions } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  LongPressGestureHandler,
+  State as GestureState,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -47,9 +52,22 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
+  const zoomScale = useSharedValue(1);
   const rotateZ = useSharedValue(0);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
   const onTap = () => lightImpact();
+
+  const handleLongPress = ({ nativeEvent }: { nativeEvent: { state: number } }) => {
+    if (nativeEvent.state === GestureState.ACTIVE) {
+      zoomScale.value = withTiming(1.5);
+    } else if (
+      nativeEvent.state === GestureState.END ||
+      nativeEvent.state === GestureState.CANCELLED ||
+      nativeEvent.state === GestureState.FAILED
+    ) {
+      zoomScale.value = withTiming(1);
+    }
+  };
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: () => {
@@ -125,7 +143,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         { translateX: translateX.value },
         { translateY: translateY.value },
         { rotateZ: `${rotateZ.value}deg` },
-        { scale: scale.value },
+        { scale: scale.value * zoomScale.value },
       ],
       opacity,
     };
@@ -151,28 +169,30 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   });
 
   return (
-    <PanGestureHandler
-      onGestureEvent={gestureHandler}
-      enabled={!disabled}
-      activeOffsetX={[-6, 6]}
-      failOffsetY={[-6, 6]}
-      shouldCancelWhenOutside={false}
-      hitSlop={{ horizontal: HIT_SLOP, vertical: HIT_SLOP }}>
-      <Animated.View
-        style={[
-          {
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
-            borderRadius: BORDER_RADIUS,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          },
-          animatedStyle,
-          style,
-        ]}>
+    <LongPressGestureHandler onHandlerStateChange={handleLongPress} minDurationMs={200}>
+      <Animated.View>
+        <PanGestureHandler
+          onGestureEvent={gestureHandler}
+          enabled={!disabled}
+          activeOffsetX={[-6, 6]}
+          failOffsetY={[-6, 6]}
+          shouldCancelWhenOutside={false}
+          hitSlop={{ horizontal: HIT_SLOP, vertical: HIT_SLOP }}>
+          <Animated.View
+            style={[
+              {
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                borderRadius: BORDER_RADIUS,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+              },
+              animatedStyle,
+              style,
+            ]}>
         <Image
           source={{ uri: imageUri }}
           style={{
@@ -255,7 +275,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
             </View>
           </Animated.View>
         </Animated.View>
+      </PanGestureHandler>
       </Animated.View>
-    </PanGestureHandler>
+    </LongPressGestureHandler>
   );
 };

@@ -71,6 +71,6 @@ in `lib/useCustomFonts.ts` and update the `fontFamily` entries in
 - See `MASCOT_README.md` for sprite guidelines. Swap the assets in `assets/mascot/` to replace the bird.
 
 ## App Icon and Favicon
-- Replace `assets/favicon.png` for the web icon. Android/iOS icons are defined in `app.json`.
+- Specify a favicon path in `app.json` under `expo.web.favicon` for the web icon. Android/iOS icons are also defined in `app.json`.
 
 Refer back to this guide whenever you want to change the look and feel of the game.

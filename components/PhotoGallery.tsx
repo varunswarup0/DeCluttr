@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
-import { XPToast } from './XPToast';
-import { LevelHeader } from './LevelHeader';
-import { LevelUpOverlay } from './LevelUpOverlay';
+// Toast and achievement overlays removed for a cleaner interface
 import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
 import { PixelBurst } from './PixelBurst';
@@ -18,7 +16,7 @@ import { Button } from '~/components/nativewindui/Button';
 import { Ionicons } from '@expo/vector-icons';
 import { cn } from '~/lib/cn';
 import { px } from '~/lib/pixelPerfect';
-import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
+import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 import {
   SESSION_MESSAGES,
   END_MESSAGES,
@@ -41,7 +39,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const {
     deletedPhotos,
     addDeletedPhoto,
-    xp,
     resetGallery: resetRecycleBinStore,
     isXpLoaded,
     loadZenMode,
@@ -62,18 +59,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [loading, setLoading] = useState(true);
   const [keptPhotos, setKeptPhotos] = useState<string[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const [sessionStartXp, setSessionStartXp] = useState(0);
-  const [sessionDeletedStart, setSessionDeletedStart] = useState(0);
   // Keep a ref to the cursor so callbacks always access the latest value
   const nextCursorRef = React.useRef<string | undefined>(undefined);
   const prefetchCursorRef = React.useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [confettiKey, setConfettiKey] = useState(0);
-  const [xpToast, setXpToast] = useState<number | null>(null);
   const [swipeFlash, setSwipeFlash] = useState<string | null>(null);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [showStart, setShowStart] = useState(false);
-  const [showLevelUp, setShowLevelUp] = useState(false);
   const [combo, setCombo] = useState<number | null>(null);
   const [burstColor, setBurstColor] = useState<string | null>(null);
   const startShownRef = React.useRef(false);
@@ -100,10 +93,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       if (!isMounted.current) return false;
       setLoading(true);
 
-      // Capture session start stats for every new batch
-      const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
-      setSessionStartXp(currentXp);
-      setSessionDeletedStart(currentDeleted.length);
 
       const result = await fetchPhotoAssetsWithPagination(cursor ?? nextCursorRef.current, 50);
       const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
@@ -166,11 +155,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       originalIndex: currentPhotoIndex + index,
     };
 
-    const prevState = useRecycleBinStore.getState();
-    const prevXp = prevState.xp;
-
-    addDeletedPhoto(deletedPhoto); // XP assignment happens in the store
-    setXpToast(XP_CONFIG.DELETE_PHOTO);
+    addDeletedPhoto(deletedPhoto);
     setSwipeFlash('DELETED!');
     setBurstColor('rgb(255,59,48)');
     setShowSwipeHint(false);
@@ -183,20 +168,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       setCombo(consecutiveDeleteRef.current);
     }
 
-    const { xp: newXp } = useRecycleBinStore.getState();
-    const prevLevel = Math.floor(prevXp / 100) + 1;
-    const newLevel = Math.floor(newXp / 100) + 1;
-
-    // Trigger confetti on level ups or long delete streaks
-    if (newLevel > prevLevel || consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
+    // Trigger confetti on long delete streaks
+    if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
       setConfettiKey((k) => k + 1);
-      if (newLevel > prevLevel) {
-        setShowLevelUp(true);
-      }
-      if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
-        consecutiveDeleteRef.current = 0;
-        setCombo(null);
-      }
+      consecutiveDeleteRef.current = 0;
+      setCombo(null);
     }
 
     // Show surprise message roughly every 5 deletes
@@ -229,16 +205,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
   const handleDeckEmpty = () => {
     setCombo(null);
-    const deletedThisSession = deletedPhotos.length - sessionDeletedStart;
-    const totalXpEarned = xp - sessionStartXp;
     if (hasMore) {
       // If a prefetched batch exists use it to avoid a loading pause
       if (prefetchedPhotos.length > 0) {
-        // New batch: record session start stats
-        const { xp: currentXp, deletedPhotos: currentDeleted } = useRecycleBinStore.getState();
-        setSessionStartXp(currentXp);
-        setSessionDeletedStart(currentDeleted.length);
-
         setPhotos(prefetchedPhotos);
         setPrefetchedPhotos([]);
         setKeptPhotos([]);
@@ -305,8 +274,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             setConfettiKey(0);
             setPhotos([]);
             setCurrentPhotoIndex(0);
-            setSessionStartXp(0);
-            setSessionDeletedStart(0);
             nextCursorRef.current = undefined;
             prefetchCursorRef.current = undefined;
             setPrefetchedPhotos([]);
@@ -363,7 +330,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       onPress={handleDebugTap}
       className={cn('flex-1 items-center justify-center', className)}>
       {showStart && <RetroStart onDone={() => setShowStart(false)} />}
-      <LevelHeader className="mb-6" />
 
       {/* Swipe Deck */}
       <SwipeDeck
@@ -377,7 +343,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
       {showSwipeHint && <SwipeHint onDone={() => setShowSwipeHint(false)} />}
 
-      {xpToast && <XPToast amount={xpToast} onDone={() => setXpToast(null)} />}
 
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 
@@ -393,7 +358,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         />
       )}
 
-      {showLevelUp && <LevelUpOverlay onDone={() => setShowLevelUp(false)} />}
       {combo && <ComboOverlay count={combo} onDone={() => setCombo(null)} />}
 
       {/* Reset Button */}

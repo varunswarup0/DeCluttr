@@ -2,7 +2,6 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
-import { ScoreHeader } from '~/components/ScoreHeader';
 import { AudioToggle } from '~/components/AudioToggle';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
@@ -27,7 +26,6 @@ export default function TabLayout() {
         headerRight: () => (
           <View className="flex-row items-center gap-2 mr-1">
             <AudioToggle />
-            <ScoreHeader />
           </View>
         ),
         tabBarShowLabel: false,

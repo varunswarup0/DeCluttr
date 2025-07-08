@@ -37,7 +37,9 @@ export const LevelHeader: React.FC<LevelHeaderProps> = ({ className }) => {
     <Animated.View style={animatedStyle}>
       <GameTile className={cn('px-5 py-3', className)}>
         <Animated.View className="mb-1 flex-row items-center justify-center gap-1">
-          <Text className="font-arcade text-xl text-[rgb(var(--android-primary))]">LEVEL</Text>
+          <Text className="font-arcade text-xl text-[rgb(var(--android-primary))]">
+            LEVEL {level}
+          </Text>
           <Ionicons name="star" size={px(14)} color="rgb(var(--android-primary))" />
         </Animated.View>
         <ProgressIndicator

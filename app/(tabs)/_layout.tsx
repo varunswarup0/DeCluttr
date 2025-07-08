@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
 import { ScoreHeader } from '~/components/ScoreHeader';
+import { AudioToggle } from '~/components/AudioToggle';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   const { deletedPhotos } = useRecycleBinStore();
@@ -23,7 +24,12 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: true,
         headerTitle: '',
-        headerRight: () => <ScoreHeader />,
+        headerRight: () => (
+          <View className="flex-row items-center gap-2 mr-1">
+            <AudioToggle />
+            <ScoreHeader />
+          </View>
+        ),
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',

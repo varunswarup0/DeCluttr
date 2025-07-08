@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { GameTile } from './GameTile';
+import { Text } from '~/components/nativewindui/Text';
 import { useRecycleBinStore } from '~/store/store';
 import { px } from '~/lib/pixelPerfect';
 import { successNotification } from '~/lib/haptics';
@@ -28,8 +29,11 @@ export const ScoreHeader: React.FC = () => {
 
   return (
     <Animated.View style={[{ alignItems: 'center' }, animatedStyle]}>
-      <GameTile className="min-w-[32px] items-center px-2 py-1">
+      <GameTile className="min-w-[40px] flex-row items-center justify-center gap-1 px-2 py-1">
         <Ionicons name="star" size={px(16)} color="rgb(var(--android-primary))" />
+        <Text className="font-arcade text-sm text-[rgb(var(--android-primary))]">
+          {level}
+        </Text>
       </GameTile>
     </Animated.View>
   );

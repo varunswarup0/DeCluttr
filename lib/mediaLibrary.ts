@@ -27,8 +27,9 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const { status, accessPrivileges } =
-      await MediaLibrary.requestPermissionsAsync({ accessPrivileges: 'all' });
+    const { status, accessPrivileges } = await MediaLibrary.requestPermissionsAsync({
+      accessPrivileges: 'all',
+    });
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
   } catch (error) {
@@ -142,16 +143,27 @@ export async function fetchPhotoAssetsWithPagination(
 export async function fetchAllPhotoAssets(batchSize: number = 100): Promise<PhotoAsset[]> {
   try {
     const all: PhotoAsset[] = [];
+
+    let hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      hasPermission = await requestMediaLibraryPermission();
+      if (!hasPermission) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+
     let after: string | undefined = undefined;
     let hasNext = true;
     while (hasNext) {
-      const { assets, hasNextPage, endCursor } = await fetchPhotoAssetsWithPagination(
+      const result = await MediaLibrary.getAssetsAsync({
+        first: batchSize,
         after,
-        batchSize
-      );
-      all.push(...assets);
-      after = endCursor;
-      hasNext = hasNextPage;
+        mediaType: MediaLibrary.MediaType.photo,
+        sortBy: MediaLibrary.SortBy.creationTime,
+      });
+      all.push(...result.assets.map((a) => ({ id: a.id, uri: a.uri })));
+      after = result.endCursor;
+      hasNext = result.hasNextPage;
     }
     return all;
   } catch (error) {
@@ -295,10 +307,7 @@ export async function fetchAlbums(): Promise<MediaAlbum[]> {
 /**
  * Move a photo asset to the specified album. Creates the album if missing.
  */
-export async function moveAssetToAlbum(
-  assetId: string,
-  albumName: string
-): Promise<boolean> {
+export async function moveAssetToAlbum(assetId: string, albumName: string): Promise<boolean> {
   try {
     const hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {

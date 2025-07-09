@@ -23,7 +23,10 @@ export default function AnalysisScreen() {
     candidates.forEach((asset) => {
       addDeletedPhoto({ id: asset.id, imageUri: asset.uri, deletedAt: new Date() });
     });
-    Alert.alert('Quick Clean Complete', `${candidates.length} photo${candidates.length === 1 ? '' : 's'} moved to recycle bin.`);
+    Alert.alert(
+      'Quick Clean Complete',
+      `${candidates.length} photo${candidates.length === 1 ? '' : 's'} moved to recycle bin.`
+    );
   };
 
   const handleScan = async () => {
@@ -51,21 +54,11 @@ export default function AnalysisScreen() {
             <Text variant="title3" className="mb-4">
               Results
             </Text>
-            <Text className="mb-1">
-              Portrait: {result.byOrientation.portrait.length}
-            </Text>
-            <Text className="mb-1">
-              Landscape: {result.byOrientation.landscape.length}
-            </Text>
-            <Text className="mb-1">
-              Square: {result.byOrientation.square.length}
-            </Text>
-            <Text className="mb-1">
-              Screenshots: {result.screenshots.length}
-            </Text>
-            <Text className="mb-1">
-              Selfies: {result.selfies.length}
-            </Text>
+            <Text className="mb-1">Portrait: {result.byOrientation.portrait.length}</Text>
+            <Text className="mb-1">Landscape: {result.byOrientation.landscape.length}</Text>
+            <Text className="mb-1">Square: {result.byOrientation.square.length}</Text>
+            <Text className="mb-1">Screenshots: {result.screenshots.length}</Text>
+            <Text className="mb-1">Selfies: {result.selfies.length}</Text>
             <Text className="mb-1">Old photos: {result.oldPhotos.length}</Text>
             <Text className="mb-1">Low res: {result.lowRes.length}</Text>
             <Text>Duplicate groups: {result.duplicates.length}</Text>
@@ -76,7 +69,7 @@ export default function AnalysisScreen() {
           </Text>
         )}
         {loading && (
-          <View className="w-full my-4">
+          <View className="my-4 w-full">
             <ProgressIndicator value={progress} />
             <Text className="mt-2 text-center">Scanning: {progress}%</Text>
           </View>

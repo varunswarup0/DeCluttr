@@ -10,11 +10,7 @@ import { PixelBurst } from './PixelBurst';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
-import {
-  fetchPhotoAssetsWithPagination,
-  fetchAlbums,
-  moveAssetToAlbum,
-} from '~/lib/mediaLibrary';
+import { fetchPhotoAssetsWithPagination, fetchAlbums, moveAssetToAlbum } from '~/lib/mediaLibrary';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
@@ -44,7 +40,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
   // Use RecycleBin store
   const {
-    deletedPhotos,
     addDeletedPhoto,
     resetGallery: resetRecycleBinStore,
     isXpLoaded,
@@ -64,7 +59,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
   const [prefetchedPhotos, setPrefetchedPhotos] = useState<SwipeDeckItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [keptPhotos, setKeptPhotos] = useState<string[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   // Keep a ref to the cursor so callbacks always access the latest value
   const nextCursorRef = React.useRef<string | undefined>(undefined);
@@ -100,7 +94,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       if (!isMounted.current) return false;
       setLoading(true);
 
-
       const result = await fetchPhotoAssetsWithPagination(cursor ?? nextCursorRef.current, 50);
       const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
         id: asset.id,
@@ -111,7 +104,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
       if (!isMounted.current) return false;
       setPhotos(photoItems);
-      setKeptPhotos([]); // reset kept list for the new session
       // Start swiping from the beginning whenever a new set is loaded
       setCurrentPhotoIndex(0);
 
@@ -197,7 +189,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
     // Swipe event - user keeps the current photo
-    setKeptPhotos((prev) => [...prev, item.imageUri]);
     setSwipeFlash('KEPT!');
     setBurstColor('rgb(52,199,89)');
     setShowSwipeHint(false);
@@ -217,7 +208,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       if (prefetchedPhotos.length > 0) {
         setPhotos(prefetchedPhotos);
         setPrefetchedPhotos([]);
-        setKeptPhotos([]);
         setCurrentPhotoIndex(0);
         nextCursorRef.current = prefetchCursorRef.current;
         // Prefetch the subsequent batch
@@ -277,7 +267,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             await resetRecycleBinStore();
 
             // Reset local component state
-            setKeptPhotos([]);
             setConfettiKey(0);
             setPhotos([]);
             setCurrentPhotoIndex(0);
@@ -329,7 +318,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           if (moved) {
             Alert.alert('Moved', `Photo moved to ${albumName}`);
             setPhotos((prev) => prev.filter((_, i) => i !== currentPhotoIndex));
-            setKeptPhotos((prev) => [...prev, current.imageUri]);
             setShowSwipeHint(false);
             consecutiveDeleteRef.current = 0;
             setCombo(null);
@@ -388,7 +376,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       />
 
       {showSwipeHint && <SwipeHint onDone={() => setShowSwipeHint(false)} />}
-
 
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 

@@ -32,19 +32,13 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
   const now = Date.now();
 
   // Fetch detailed info for all assets concurrently for faster scanning
-  const infos = await Promise.all(
-    assets.map((asset) => getAssetInfo(asset.id))
-  );
+  const infos = await Promise.all(assets.map((asset) => getAssetInfo(asset.id)));
 
   infos.forEach((info, idx) => {
     if (!info) return;
     const asset = assets[idx];
     const orientation: Orientation =
-      info.width > info.height
-        ? 'landscape'
-        : info.width < info.height
-        ? 'portrait'
-        : 'square';
+      info.width > info.height ? 'landscape' : info.width < info.height ? 'portrait' : 'square';
     byOrientation[orientation].push(asset);
 
     if (info.width < 800 || info.height < 800) {
@@ -54,10 +48,7 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
       oldPhotos.push(asset);
     }
 
-    if (
-      info.mediaSubtypes?.includes('screenshot') ||
-      /screenshot/i.test(info.filename)
-    ) {
+    if (info.mediaSubtypes?.includes('screenshot') || /screenshot/i.test(info.filename)) {
       screenshots.push(asset);
     } else if (/img_|pxl_|selfie/i.test(info.filename) && orientation === 'portrait') {
       selfies.push(asset);
@@ -119,11 +110,7 @@ export async function analyzePhotosWithProgress(
       if (!info) return;
       const asset = batch[idx];
       const orientation: Orientation =
-        info.width > info.height
-          ? 'landscape'
-          : info.width < info.height
-          ? 'portrait'
-          : 'square';
+        info.width > info.height ? 'landscape' : info.width < info.height ? 'portrait' : 'square';
       byOrientation[orientation].push(asset);
 
       if (info.width < 800 || info.height < 800) {
@@ -133,10 +120,7 @@ export async function analyzePhotosWithProgress(
         oldPhotos.push(asset);
       }
 
-      if (
-        info.mediaSubtypes?.includes('screenshot') ||
-        /screenshot/i.test(info.filename)
-      ) {
+      if (info.mediaSubtypes?.includes('screenshot') || /screenshot/i.test(info.filename)) {
         screenshots.push(asset);
       } else if (/img_|pxl_|selfie/i.test(info.filename) && orientation === 'portrait') {
         selfies.push(asset);

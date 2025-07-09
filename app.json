@@ -6,7 +6,7 @@
     "scheme": "decluttr",
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "static"
     },
     "plugins": [
       "expo-router",

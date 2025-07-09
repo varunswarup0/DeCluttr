@@ -6,13 +6,25 @@ import { Text } from '~/components/nativewindui/Text';
 import {
   analyzePhotosWithProgress,
   PhotoAnalysisResult,
+  getDeletionCandidates,
 } from '~/lib/photoAnalyzer';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
+import { useRecycleBinStore } from '~/store/store';
 
 export default function AnalysisScreen() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PhotoAnalysisResult | null>(null);
   const [progress, setProgress] = useState(0);
+  const addDeletedPhoto = useRecycleBinStore((s) => s.addDeletedPhoto);
+
+  const handleQuickClean = () => {
+    if (!result) return;
+    const candidates = getDeletionCandidates(result);
+    candidates.forEach((asset) => {
+      addDeletedPhoto({ id: asset.id, imageUri: asset.uri, deletedAt: new Date() });
+    });
+    Alert.alert('Quick Clean Complete', `${candidates.length} photo${candidates.length === 1 ? '' : 's'} moved to recycle bin.`);
+  };
 
   const handleScan = async () => {
     setLoading(true);
@@ -69,9 +81,14 @@ export default function AnalysisScreen() {
             <Text className="mt-2 text-center">Scanning: {progress}%</Text>
           </View>
         )}
-        <Button onPress={handleScan} variant="primary" disabled={loading}>
+        <Button onPress={handleScan} variant="primary" disabled={loading} className="mb-2">
           <Text>{loading ? 'Scanning…' : 'Start Scan'}</Text>
         </Button>
+        {result && !loading && (
+          <Button onPress={handleQuickClean} variant="secondary">
+            <Text>Quick Clean</Text>
+          </Button>
+        )}
       </View>
     </>
   );

@@ -168,3 +168,55 @@ export async function analyzePhotosWithProgress(
     lowRes,
   };
 }
+
+export interface DeletionOptions {
+  screenshots?: boolean;
+  duplicates?: boolean;
+  oldPhotos?: boolean;
+  lowRes?: boolean;
+  selfies?: boolean;
+}
+
+/**
+ * Determine which photos are good candidates for deletion based on the
+ * analysis result. Duplicate groups return all but the first photo in each
+ * group so at least one copy is preserved.
+ */
+export function getDeletionCandidates(
+  result: PhotoAnalysisResult,
+  options: DeletionOptions = {}
+): PhotoAsset[] {
+  const {
+    screenshots = true,
+    duplicates = true,
+    oldPhotos = true,
+    lowRes = true,
+    selfies = false,
+  } = options;
+
+  const map = new Map<string, PhotoAsset>();
+
+  if (screenshots) {
+    result.screenshots.forEach((a) => map.set(a.id, a));
+  }
+
+  if (duplicates) {
+    result.duplicates.forEach((group) => {
+      group.slice(1).forEach((a) => map.set(a.id, a));
+    });
+  }
+
+  if (oldPhotos) {
+    result.oldPhotos.forEach((a) => map.set(a.id, a));
+  }
+
+  if (lowRes) {
+    result.lowRes.forEach((a) => map.set(a.id, a));
+  }
+
+  if (selfies) {
+    result.selfies.forEach((a) => map.set(a.id, a));
+  }
+
+  return Array.from(map.values());
+}

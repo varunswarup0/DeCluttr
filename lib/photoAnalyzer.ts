@@ -5,6 +5,8 @@ export type Orientation = 'portrait' | 'landscape' | 'square';
 export interface PhotoAnalysisResult {
   byOrientation: Record<Orientation, PhotoAsset[]>;
   duplicates: PhotoAsset[][];
+  screenshots: PhotoAsset[];
+  selfies: PhotoAsset[];
 }
 
 /**
@@ -19,6 +21,8 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
     square: [],
   };
   const dupMap: Record<string, PhotoAsset[]> = {};
+  const screenshots: PhotoAsset[] = [];
+  const selfies: PhotoAsset[] = [];
 
   // Fetch detailed info for all assets concurrently for faster scanning
   const infos = await Promise.all(
@@ -36,6 +40,15 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
         : 'square';
     byOrientation[orientation].push(asset);
 
+    if (
+      info.mediaSubtypes?.includes('screenshot') ||
+      /screenshot/i.test(info.filename)
+    ) {
+      screenshots.push(asset);
+    } else if (/img_|pxl_|selfie/i.test(info.filename) && orientation === 'portrait') {
+      selfies.push(asset);
+    }
+
     const key = `${info.width}x${info.height}_${info.size ?? 0}`;
     if (!dupMap[key]) {
       dupMap[key] = [];
@@ -50,7 +63,7 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
     }
   });
 
-  return { byOrientation, duplicates };
+  return { byOrientation, duplicates, screenshots, selfies };
 }
 
 /**
@@ -70,6 +83,8 @@ export async function analyzePhotosWithProgress(
     square: [],
   };
   const dupMap: Record<string, PhotoAsset[]> = {};
+  const screenshots: PhotoAsset[] = [];
+  const selfies: PhotoAsset[] = [];
 
   for (let i = 0; i < assets.length; i += batchSize) {
     const batch = assets.slice(i, i + batchSize);
@@ -84,6 +99,15 @@ export async function analyzePhotosWithProgress(
           ? 'portrait'
           : 'square';
       byOrientation[orientation].push(asset);
+
+      if (
+        info.mediaSubtypes?.includes('screenshot') ||
+        /screenshot/i.test(info.filename)
+      ) {
+        screenshots.push(asset);
+      } else if (/img_|pxl_|selfie/i.test(info.filename) && orientation === 'portrait') {
+        selfies.push(asset);
+      }
 
       const key = `${info.width}x${info.height}_${info.size ?? 0}`;
       if (!dupMap[key]) {
@@ -102,5 +126,5 @@ export async function analyzePhotosWithProgress(
     }
   });
 
-  return { byOrientation, duplicates };
+  return { byOrientation, duplicates, screenshots, selfies };
 }

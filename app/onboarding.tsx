@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import Onboarding from 'react-native-onboarding-swiper';
 import { StatusBar } from 'expo-status-bar';
@@ -15,19 +15,19 @@ const screens = [
   {
     title: 'Declutter Photos',
     subtitle: 'Swipe left to delete, right to keep.',
-    image: <Image source={require('../assets/onboarding/step-1.png')} />,
+    image: <View style={{ height: px(180) }} />,
     backgroundColor: '#025CBD',
   },
   {
     title: 'Recycle Bin',
     subtitle: 'Restore deleted photos anytime.',
-    image: <Image source={require('../assets/onboarding/step-2.png')} />,
+    image: <View style={{ height: px(180) }} />,
     backgroundColor: '#E33131',
   },
   {
     title: 'Earn XP',
     subtitle: 'Gain points as you clean.',
-    image: <Image source={require('../assets/onboarding/step-3.png')} />,
+    image: <View style={{ height: px(180) }} />,
     backgroundColor: '#025CBD',
   },
 ];

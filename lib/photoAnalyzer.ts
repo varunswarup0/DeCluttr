@@ -52,3 +52,55 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
 
   return { byOrientation, duplicates };
 }
+
+/**
+ * Analyze photos with progress updates. Calls onProgress after each batch
+ * of assets is processed so the UI can show a progress indicator.
+ * @param onProgress optional callback receiving processed count and total
+ */
+export async function analyzePhotosWithProgress(
+  onProgress?: (processed: number, total: number) => void,
+  batchSize: number = 20
+): Promise<PhotoAnalysisResult> {
+  const assets = await fetchAllPhotoAssets(batchSize);
+  const total = assets.length;
+  const byOrientation: Record<Orientation, PhotoAsset[]> = {
+    portrait: [],
+    landscape: [],
+    square: [],
+  };
+  const dupMap: Record<string, PhotoAsset[]> = {};
+
+  for (let i = 0; i < assets.length; i += batchSize) {
+    const batch = assets.slice(i, i + batchSize);
+    const infos = await Promise.all(batch.map((a) => getAssetInfo(a.id)));
+    infos.forEach((info, idx) => {
+      if (!info) return;
+      const asset = batch[idx];
+      const orientation: Orientation =
+        info.width > info.height
+          ? 'landscape'
+          : info.width < info.height
+          ? 'portrait'
+          : 'square';
+      byOrientation[orientation].push(asset);
+
+      const key = `${info.width}x${info.height}_${info.size ?? 0}`;
+      if (!dupMap[key]) {
+        dupMap[key] = [];
+      }
+      dupMap[key].push(asset);
+    });
+
+    onProgress?.(Math.min(i + batch.length, total), total);
+  }
+
+  const duplicates: PhotoAsset[][] = [];
+  Object.values(dupMap).forEach((group) => {
+    if (group.length > 1) {
+      duplicates.push(group);
+    }
+  });
+
+  return { byOrientation, duplicates };
+}

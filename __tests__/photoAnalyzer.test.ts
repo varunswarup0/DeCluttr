@@ -1,4 +1,4 @@
-import { analyzePhotos } from '../lib/photoAnalyzer';
+import { analyzePhotos, analyzePhotosWithProgress } from '../lib/photoAnalyzer';
 import * as media from '../lib/mediaLibrary';
 
 jest.mock('../lib/mediaLibrary', () => ({
@@ -34,5 +34,28 @@ describe('photoAnalyzer', () => {
     // photos 1 and 2 have same dimensions and size -> duplicate group
     expect(result.duplicates).toHaveLength(1);
     expect(result.duplicates[0]).toHaveLength(2);
+  });
+
+  it('reports progress during analysis', async () => {
+    (media.fetchAllPhotoAssets as jest.Mock).mockResolvedValue([
+      { id: '1', uri: 'u1' },
+      { id: '2', uri: 'u2' },
+    ]);
+    (media.getAssetInfo as jest.Mock).mockResolvedValue({
+      id: '1',
+      uri: 'u1',
+      filename: 'a.jpg',
+      width: 100,
+      height: 200,
+      size: 5,
+    });
+
+    const progress: number[] = [];
+    await analyzePhotosWithProgress((p, t) => {
+      progress.push(p / t);
+    }, 1);
+
+    expect(progress.length).toBeGreaterThan(0);
+    expect(progress[progress.length - 1]).toBe(1);
   });
 });

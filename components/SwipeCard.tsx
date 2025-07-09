@@ -94,17 +94,24 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       const shouldSwipeLeft = translateX.value < -SWIPE_THRESHOLD || velocityX < -1000;
       const shouldSwipeRight = translateX.value > SWIPE_THRESHOLD || velocityX > 1000;
 
+      const velocityFactor = Math.min(Math.abs(velocityX) / 2000, 1);
+      const exitDistance = px(screenWidth * (1.5 + velocityFactor));
+      const exitDuration = SWIPE_EXIT_DURATION * (1 - velocityFactor * 0.5);
+      const extraRotation = 10 * velocityFactor;
+
       if (shouldSwipeLeft) {
         // Swipe left - delete
-        translateX.value = withTiming(-px(screenWidth * 1.5), {
-          duration: SWIPE_EXIT_DURATION,
+        translateX.value = withTiming(-exitDistance, {
+          duration: exitDuration,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: SWIPE_EXIT_DURATION,
+          duration: exitDuration,
           easing: Easing.out(Easing.cubic),
         });
-        rotateZ.value = withTiming(-20, { duration: SWIPE_EXIT_DURATION });
+        rotateZ.value = withTiming(-(20 + extraRotation), {
+          duration: exitDuration,
+        });
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
@@ -112,15 +119,17 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         }
       } else if (shouldSwipeRight) {
         // Swipe right - keep
-        translateX.value = withTiming(px(screenWidth * 1.5), {
-          duration: SWIPE_EXIT_DURATION,
+        translateX.value = withTiming(exitDistance, {
+          duration: exitDuration,
           easing: Easing.out(Easing.cubic),
         });
         translateY.value = withTiming(px(0), {
-          duration: SWIPE_EXIT_DURATION,
+          duration: exitDuration,
           easing: Easing.out(Easing.cubic),
         });
-        rotateZ.value = withTiming(20, { duration: SWIPE_EXIT_DURATION });
+        rotateZ.value = withTiming(20 + extraRotation, {
+          duration: exitDuration,
+        });
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
@@ -194,90 +203,95 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               animatedStyle,
               style,
             ]}>
-        <Animated.Image
-          entering={FadeIn.duration(200)}
-          source={{ uri: imageUri }}
-          style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: BORDER_RADIUS,
-          }}
-          resizeMode="cover"
-        />
-
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: BORDER_RADIUS,
-              justifyContent: 'center',
-              alignItems: 'center',
-            },
-            overlayStyle,
-          ]}>
-          <Animated.View
-            style={[
-              {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 59, 48, 0.8)',
+            <Animated.Image
+              entering={FadeIn.duration(200)}
+              source={{ uri: imageUri }}
+              style={{
+                width: '100%',
+                height: '100%',
                 borderRadius: BORDER_RADIUS,
-                justifyContent: 'center',
-                alignItems: 'center',
-              },
-              deleteOverlayStyle,
-            ]}>
-            <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
-              <View
-                className="items-center justify-center"
-                style={{ height: ICON_SIZE, width: ICON_SIZE }}>
-                <View
-                  className="absolute rotate-45 bg-red-500"
-                  style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
-                />
-                <View
-                  className="absolute -rotate-45 bg-red-500"
-                  style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
-                />
-              </View>
-            </View>
-          </Animated.View>
+              }}
+              resizeMode="cover"
+            />
 
-          <Animated.View
-            style={[
-              {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(52, 199, 89, 0.8)',
-                borderRadius: BORDER_RADIUS,
-                justifyContent: 'center',
-                alignItems: 'center',
-              },
-              keepOverlayStyle,
-            ]}>
-            <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
-              <View
-                className="items-center justify-center"
-                style={{ height: ICON_SIZE, width: ICON_SIZE }}>
-                <View
-                  className="rotate-45 border-b-2 border-r-2 border-green-500"
-                  style={{ marginTop: -px(4), height: ICON_SIZE * 0.55, width: ICON_SIZE * 0.28 }}
-                />
-              </View>
-            </View>
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: BORDER_RADIUS,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+                overlayStyle,
+              ]}>
+              <Animated.View
+                style={[
+                  {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(255, 59, 48, 0.8)',
+                    borderRadius: BORDER_RADIUS,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                  deleteOverlayStyle,
+                ]}>
+                <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
+                  <View
+                    className="items-center justify-center"
+                    style={{ height: ICON_SIZE, width: ICON_SIZE }}>
+                    <View
+                      className="absolute rotate-45 bg-red-500"
+                      style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
+                    />
+                    <View
+                      className="absolute -rotate-45 bg-red-500"
+                      style={{ height: STROKE_WIDTH, width: ICON_SIZE * 0.8 }}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
+
+              <Animated.View
+                style={[
+                  {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(52, 199, 89, 0.8)',
+                    borderRadius: BORDER_RADIUS,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                  keepOverlayStyle,
+                ]}>
+                <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
+                  <View
+                    className="items-center justify-center"
+                    style={{ height: ICON_SIZE, width: ICON_SIZE }}>
+                    <View
+                      className="rotate-45 border-b-2 border-r-2 border-green-500"
+                      style={{
+                        marginTop: -px(4),
+                        height: ICON_SIZE * 0.55,
+                        width: ICON_SIZE * 0.28,
+                      }}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-      </PanGestureHandler>
+        </PanGestureHandler>
       </Animated.View>
     </LongPressGestureHandler>
   );

@@ -7,6 +7,8 @@ export interface PhotoAnalysisResult {
   duplicates: PhotoAsset[][];
   screenshots: PhotoAsset[];
   selfies: PhotoAsset[];
+  oldPhotos: PhotoAsset[];
+  lowRes: PhotoAsset[];
 }
 
 /**
@@ -23,6 +25,11 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
   const dupMap: Record<string, PhotoAsset[]> = {};
   const screenshots: PhotoAsset[] = [];
   const selfies: PhotoAsset[] = [];
+  const oldPhotos: PhotoAsset[] = [];
+  const lowRes: PhotoAsset[] = [];
+
+  const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
 
   // Fetch detailed info for all assets concurrently for faster scanning
   const infos = await Promise.all(
@@ -39,6 +46,13 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
         ? 'portrait'
         : 'square';
     byOrientation[orientation].push(asset);
+
+    if (info.width < 800 || info.height < 800) {
+      lowRes.push(asset);
+    }
+    if (info.creationTime && now - info.creationTime > ONE_YEAR_MS) {
+      oldPhotos.push(asset);
+    }
 
     if (
       info.mediaSubtypes?.includes('screenshot') ||
@@ -63,7 +77,14 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
     }
   });
 
-  return { byOrientation, duplicates, screenshots, selfies };
+  return {
+    byOrientation,
+    duplicates,
+    screenshots,
+    selfies,
+    oldPhotos,
+    lowRes,
+  };
 }
 
 /**
@@ -85,6 +106,11 @@ export async function analyzePhotosWithProgress(
   const dupMap: Record<string, PhotoAsset[]> = {};
   const screenshots: PhotoAsset[] = [];
   const selfies: PhotoAsset[] = [];
+  const oldPhotos: PhotoAsset[] = [];
+  const lowRes: PhotoAsset[] = [];
+
+  const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
 
   for (let i = 0; i < assets.length; i += batchSize) {
     const batch = assets.slice(i, i + batchSize);
@@ -99,6 +125,13 @@ export async function analyzePhotosWithProgress(
           ? 'portrait'
           : 'square';
       byOrientation[orientation].push(asset);
+
+      if (info.width < 800 || info.height < 800) {
+        lowRes.push(asset);
+      }
+      if (info.creationTime && now - info.creationTime > ONE_YEAR_MS) {
+        oldPhotos.push(asset);
+      }
 
       if (
         info.mediaSubtypes?.includes('screenshot') ||
@@ -126,5 +159,12 @@ export async function analyzePhotosWithProgress(
     }
   });
 
-  return { byOrientation, duplicates, screenshots, selfies };
+  return {
+    byOrientation,
+    duplicates,
+    screenshots,
+    selfies,
+    oldPhotos,
+    lowRes,
+  };
 }

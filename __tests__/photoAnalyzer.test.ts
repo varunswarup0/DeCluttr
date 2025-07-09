@@ -29,6 +29,7 @@ describe('photoAnalyzer', () => {
             height: 200,
             size: 10,
             mediaSubtypes: ['screenshot'],
+            creationTime: Date.now(),
           });
         case '2':
           return Promise.resolve({
@@ -38,11 +39,28 @@ describe('photoAnalyzer', () => {
             width: 100,
             height: 200,
             size: 10,
+            creationTime: Date.now() - 366 * 24 * 60 * 60 * 1000,
           });
         case '3':
-          return Promise.resolve({ id: '3', uri: 'u3', filename: 'c.jpg', width: 200, height: 100, size: 5 });
+          return Promise.resolve({
+            id: '3',
+            uri: 'u3',
+            filename: 'c.jpg',
+            width: 200,
+            height: 100,
+            size: 5,
+            creationTime: Date.now(),
+          });
         default:
-          return Promise.resolve({ id: '4', uri: 'u4', filename: 'd.jpg', width: 100, height: 100, size: 3 });
+          return Promise.resolve({
+            id: '4',
+            uri: 'u4',
+            filename: 'd.jpg',
+            width: 100,
+            height: 100,
+            size: 3,
+            creationTime: Date.now(),
+          });
       }
     });
 
@@ -55,6 +73,8 @@ describe('photoAnalyzer', () => {
     expect(result.duplicates[0]).toHaveLength(2);
     expect(result.screenshots).toHaveLength(1);
     expect(result.selfies).toHaveLength(1);
+    expect(result.oldPhotos).toHaveLength(1);
+    expect(result.lowRes).toHaveLength(4);
   });
 
   it('reports progress during analysis', async () => {
@@ -69,6 +89,7 @@ describe('photoAnalyzer', () => {
       width: 100,
       height: 200,
       size: 5,
+      creationTime: Date.now(),
     });
 
     const progress: number[] = [];

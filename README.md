@@ -6,6 +6,12 @@ It features a small bird mascot inspired by **Flappy Bird** that celebrates your
 Pixel-accurate fonts and icons keep the UI razor sharp. Preloaded sounds and haptics
 give instant feedback as soon as you start swiping so the game feels snappy and fun.
 
+## Highlights
+
+- Smart categorization reduces manual effort.
+- Fast and accurate scanning.
+- User-friendly interface suitable for all users.
+
 ## Prerequisites
 
 - Node.js 18+

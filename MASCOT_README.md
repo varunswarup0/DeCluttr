@@ -1,26 +1,7 @@
 # Mascot Design
 
-The game features a playful mascot that appears during level-up events and onboarding screens. The style should evoke the simplicity and charm of **Flappy Bird**, using chunky pixels and a bright color palette.
+A tiny bird cheers players whenever they level up. Keep each sprite sheet small and colorful so animations stay snappy on low-end devices.
 
-## Inspiration
+Sprite frames live in `assets/mascot/<theme>/` with folders for `default`, `amusement`, and `horror`. Swap PNG sequences in these folders and toggle `APP_THEME` to change the look.
 
-- Short, looping flapping animation similar to Flappy Bird
-- Rounded beak and simple eyes so expression is easy to read
-- Keep the sprite small enough to fit next to score and XP displays
-
-## Usage
-
-- Trigger a quick flap animation when the user levels up
-- Optionally display the mascot on the home screen or while loading photos
-- Keep the sprite sheet minimal (3–4 frames) so it performs well on low-end devices
-
-The mascot does not need to match Flappy Bird exactly—use it as a baseline for proportions and movement. A few color tweaks or accessories can help it feel unique to DeCluttr.
-
-## Themed Variations
-
-Feel free to reskin the bird for different moods:
-
-- **Carnival Barker** – add a little hat and bright stripes for a friendly, inviting feel.
-- **Spooky Ghost** – replace the bird with a simple ghost sprite for a cult horror vibe.
-
-When you change the mascot, consider swapping the sound effects in `assets/sounds/` as well. Cheerful splashes or eerie beeps help sell each theme.
+When you switch themes, consider using matching sound effects under `assets/sounds/<theme>/` to complete the vibe.

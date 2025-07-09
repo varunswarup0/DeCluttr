@@ -1,4 +1,8 @@
-import { analyzePhotos, analyzePhotosWithProgress } from '../lib/photoAnalyzer';
+import {
+  analyzePhotos,
+  analyzePhotosWithProgress,
+  getDeletionCandidates,
+} from '../lib/photoAnalyzer';
 import * as media from '../lib/mediaLibrary';
 
 jest.mock('../lib/mediaLibrary', () => ({
@@ -99,5 +103,54 @@ describe('photoAnalyzer', () => {
 
     expect(progress.length).toBeGreaterThan(0);
     expect(progress[progress.length - 1]).toBe(1);
+  });
+
+  it('suggests deletion candidates', async () => {
+    (media.fetchAllPhotoAssets as jest.Mock).mockResolvedValue([
+      { id: '1', uri: 'u1' },
+      { id: '2', uri: 'u2' },
+      { id: '3', uri: 'u3' },
+    ]);
+
+    (media.getAssetInfo as jest.Mock).mockImplementation((id: string) => {
+      switch (id) {
+        case '1':
+          return Promise.resolve({
+            id: '1',
+            uri: 'u1',
+            filename: 'Screenshot_1.png',
+            width: 100,
+            height: 200,
+            size: 10,
+            mediaSubtypes: ['screenshot'],
+            creationTime: Date.now(),
+          });
+        case '2':
+          return Promise.resolve({
+            id: '2',
+            uri: 'u2',
+            filename: 'b.jpg',
+            width: 100,
+            height: 200,
+            size: 10,
+            creationTime: Date.now(),
+          });
+        default:
+          return Promise.resolve({
+            id: '3',
+            uri: 'u3',
+            filename: 'b.jpg',
+            width: 100,
+            height: 200,
+            size: 10,
+            creationTime: Date.now(),
+          });
+      }
+    });
+
+    const result = await analyzePhotos();
+    const candidates = getDeletionCandidates(result);
+    // screenshot and two duplicate images should be suggested
+    expect(candidates).toHaveLength(3);
   });
 });

@@ -10,7 +10,12 @@ import { PixelBurst } from './PixelBurst';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
-import { fetchPhotoAssetsWithPagination } from '~/lib/mediaLibrary';
+import {
+  fetchPhotoAssetsWithPagination,
+  fetchAlbums,
+  moveAssetToAlbum,
+} from '~/lib/mediaLibrary';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
 import { Button } from '~/components/nativewindui/Button';
@@ -35,6 +40,7 @@ interface PhotoGalleryProps {
 
 export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const isMounted = React.useRef(true);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   // Use RecycleBin store
   const {
@@ -299,6 +305,45 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     ]);
   };
 
+  const moveCurrentPhoto = async () => {
+    const current = photos[currentPhotoIndex];
+    if (!current) return;
+    try {
+      const albums = await fetchAlbums();
+      if (albums.length === 0) {
+        Alert.alert('No albums found');
+        return;
+      }
+      const options = [...albums.map((a) => a.title), 'Cancel'];
+      showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: options.length - 1,
+        },
+        async (selected) => {
+          if (selected === undefined || selected >= albums.length) {
+            return;
+          }
+          const albumName = albums[selected].title;
+          const moved = await moveAssetToAlbum(current.id, albumName);
+          if (moved) {
+            Alert.alert('Moved', `Photo moved to ${albumName}`);
+            setPhotos((prev) => prev.filter((_, i) => i !== currentPhotoIndex));
+            setKeptPhotos((prev) => [...prev, current.imageUri]);
+            setShowSwipeHint(false);
+            consecutiveDeleteRef.current = 0;
+            setCombo(null);
+          } else {
+            Alert.alert('Error', 'Failed to move photo');
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Failed to move photo:', error);
+      Alert.alert('Error', 'Failed to move photo');
+    }
+  };
+
   if (loading) {
     return (
       <View className={cn('flex-1 items-center justify-center', className)}>
@@ -362,8 +407,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
       {combo && <ComboOverlay count={combo} onDone={() => setCombo(null)} />}
 
-      {/* Reset Button */}
-      <View className="mt-6">
+      {/* Action Buttons */}
+      <View className="mt-6 flex-row gap-4">
+        <Button variant="secondary" size="icon" onPress={moveCurrentPhoto}>
+          <Ionicons name="folder-outline" size={px(18)} color="white" />
+          <Text className="sr-only">Move</Text>
+        </Button>
         <Button variant="primary" size="icon" onPress={resetGallery} className="bg-red-500">
           <Ionicons name="refresh" size={px(18)} color="white" />
           <Text className="sr-only">Reset</Text>

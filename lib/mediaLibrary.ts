@@ -266,3 +266,58 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
 export async function deletePhotoAsset(assetId: string): Promise<boolean> {
   return deletePhotoAssets([assetId]);
 }
+
+export interface MediaAlbum {
+  id: string;
+  title: string;
+}
+
+/**
+ * Get available media library albums.
+ */
+export async function fetchAlbums(): Promise<MediaAlbum[]> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+    const albums = await MediaLibrary.getAlbumsAsync();
+    return albums.map((a) => ({ id: a.id, title: a.title }));
+  } catch (error) {
+    console.error('Error fetching albums:', error);
+    return [];
+  }
+}
+
+/**
+ * Move a photo asset to the specified album. Creates the album if missing.
+ */
+export async function moveAssetToAlbum(
+  assetId: string,
+  albumName: string
+): Promise<boolean> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        console.warn('Media library permission not granted.');
+        return false;
+      }
+    }
+
+    let album = await MediaLibrary.getAlbumAsync(albumName);
+    if (!album) {
+      album = await MediaLibrary.createAlbumAsync(albumName, assetId, false);
+      return !!album;
+    }
+    await MediaLibrary.addAssetsToAlbumAsync([assetId], album.id, false);
+    return true;
+  } catch (error) {
+    console.error('Failed to move asset to album:', error);
+    return false;
+  }
+}

@@ -54,6 +54,8 @@ export default function AnalysisScreen() {
             <Text className="mb-1">
               Selfies: {result.selfies.length}
             </Text>
+            <Text className="mb-1">Old photos: {result.oldPhotos.length}</Text>
+            <Text className="mb-1">Low res: {result.lowRes.length}</Text>
             <Text>Duplicate groups: {result.duplicates.length}</Text>
           </View>
         ) : (
@@ -64,7 +66,7 @@ export default function AnalysisScreen() {
         {loading && (
           <View className="w-full my-4">
             <ProgressIndicator value={progress} />
-            <Text className="mt-2 text-center">{progress}%</Text>
+            <Text className="mt-2 text-center">Scanning: {progress}%</Text>
           </View>
         )}
         <Button onPress={handleScan} variant="primary" disabled={loading}>

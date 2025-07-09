@@ -48,6 +48,12 @@ export default function AnalysisScreen() {
             <Text className="mb-1">
               Square: {result.byOrientation.square.length}
             </Text>
+            <Text className="mb-1">
+              Screenshots: {result.screenshots.length}
+            </Text>
+            <Text className="mb-1">
+              Selfies: {result.selfies.length}
+            </Text>
             <Text>Duplicate groups: {result.duplicates.length}</Text>
           </View>
         ) : (

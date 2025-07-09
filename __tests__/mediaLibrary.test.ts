@@ -1,4 +1,5 @@
 import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
 import {
   requestMediaLibraryPermission,
   checkMediaLibraryPermission,
@@ -9,6 +10,10 @@ import {
   deletePhotoAssets,
   resetMediaLibraryPermissionCache,
 } from '../lib/mediaLibrary';
+
+jest.mock('expo-file-system', () => ({
+  deleteAsync: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock('expo-media-library', () => {
   const getAssetsAsync = jest
@@ -39,10 +44,14 @@ jest.mock('expo-media-library', () => {
     }));
 
   return {
-    requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
-    getPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+    requestPermissionsAsync: jest
+      .fn()
+      .mockResolvedValue({ status: 'granted', accessPrivileges: 'all' }),
+    getPermissionsAsync: jest
+      .fn()
+      .mockResolvedValue({ status: 'granted', accessPrivileges: 'all' }),
     getAssetsAsync,
-    getAssetInfoAsync: jest.fn().mockResolvedValue({ id: '1', uri: 'uri1' }),
+    getAssetInfoAsync: jest.fn(),
     deleteAssetsAsync: jest.fn().mockResolvedValue(true),
     MediaType: { photo: 'photo' },
     SortBy: { creationTime: 'creationTime' },
@@ -58,8 +67,15 @@ describe('mediaLibrary', () => {
   it('requests and checks permissions', async () => {
     const granted = await requestMediaLibraryPermission();
     expect(granted).toBe(true);
+    resetMediaLibraryPermissionCache();
     const check = await checkMediaLibraryPermission();
     expect(check).toBe(true);
+    expect(MediaLibrary.requestPermissionsAsync).toHaveBeenCalledWith({
+      accessPrivileges: 'all',
+    });
+    expect(MediaLibrary.getPermissionsAsync).toHaveBeenCalledWith({
+      accessPrivileges: 'all',
+    });
   });
 
   it('fetches photo assets', async () => {
@@ -82,12 +98,33 @@ describe('mediaLibrary', () => {
   });
 
   it('gets asset info', async () => {
+    (MediaLibrary.getAssetInfoAsync as jest.Mock).mockResolvedValueOnce({
+      id: '1',
+      uri: 'uri1',
+    });
     const info = await getAssetInfo('1');
     expect(info).toEqual({ id: '1', uri: 'uri1' });
   });
 
   it('deletes photo assets', async () => {
-    await deletePhotoAssets(['1']);
+    (MediaLibrary.getAssetInfoAsync as jest.Mock)
+      .mockResolvedValueOnce({ id: '1', uri: 'uri1' }) // initial check
+      .mockRejectedValueOnce(new Error('Not found')); // verify after delete
+
+    const success = await deletePhotoAssets(['1']);
     expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['1']);
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalled();
+    expect(success).toBe(true);
+  });
+
+  it('returns false when asset still exists after delete', async () => {
+    (MediaLibrary.getAssetInfoAsync as jest.Mock)
+      .mockResolvedValueOnce({ id: '2', uri: 'uri2' }) // initial check
+      .mockResolvedValueOnce({ id: '2', uri: 'uri2' }); // still exists after delete
+
+    const success = await deletePhotoAssets(['2']);
+    expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['2']);
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith('uri2', { idempotent: true });
+    expect(success).toBe(false);
   });
 });

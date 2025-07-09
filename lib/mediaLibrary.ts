@@ -1,5 +1,14 @@
 import * as MediaLibrary from 'expo-media-library';
 
+// Lazy loaded to avoid bundling unless needed
+let FileSystem: typeof import('expo-file-system') | null = null;
+async function loadFileSystem() {
+  if (!FileSystem) {
+    FileSystem = await import('expo-file-system');
+  }
+  return FileSystem;
+}
+
 // Cache permission status to avoid extra async calls
 let permissionGrantedCache: boolean | null = null;
 
@@ -18,8 +27,9 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    permissionGrantedCache = status === 'granted';
+    const { status, accessPrivileges } =
+      await MediaLibrary.requestPermissionsAsync({ accessPrivileges: 'all' });
+    permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
   } catch (error) {
     console.error('Error requesting media library permission:', error);
@@ -37,8 +47,10 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
     return permissionGrantedCache;
   }
   try {
-    const { status } = await MediaLibrary.getPermissionsAsync();
-    permissionGrantedCache = status === 'granted';
+    const { status, accessPrivileges } = await MediaLibrary.getPermissionsAsync({
+      accessPrivileges: 'all',
+    });
+    permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
   } catch (error) {
     console.error('Error checking media library permission:', error);
@@ -195,24 +207,45 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
       return true;
     }
 
-    // Validate each asset exists. Android resolves with false when any id is invalid.
-    const validIds: string[] = [];
+    // Validate each asset exists and collect URIs for fallback deletion.
+    const validAssets: { id: string; uri: string }[] = [];
     for (const id of assetIds) {
       try {
-        await MediaLibrary.getAssetInfoAsync(id);
-        validIds.push(id);
+        const info = await MediaLibrary.getAssetInfoAsync(id);
+        validAssets.push({ id: info.id, uri: info.uri });
       } catch {
         console.warn(`Asset ${id} not found. Skipping.`);
       }
     }
 
-    if (validIds.length === 0) {
+    if (validAssets.length === 0) {
       console.log('No valid photo assets to delete.');
       return true;
     }
 
+    const validIds = validAssets.map((a) => a.id);
     const result = await MediaLibrary.deleteAssetsAsync(validIds);
-    const success = result === undefined ? true : result;
+    let success = result === undefined ? true : result;
+
+    if (success) {
+      // Verify deletion because some platforms return void
+      for (const asset of validAssets) {
+        try {
+          await MediaLibrary.getAssetInfoAsync(asset.id);
+          // Asset still exists
+          success = false;
+          console.warn(`Asset ${asset.id} still exists after deletion attempt.`);
+          try {
+            const FS = await loadFileSystem();
+            await FS.deleteAsync(asset.uri, { idempotent: true });
+          } catch (fsError) {
+            console.warn('Fallback file removal failed:', fsError);
+          }
+        } catch {
+          // Asset no longer exists
+        }
+      }
+    }
 
     if (success) {
       console.log(`Deleted ${validIds.length} photo asset(s).`);

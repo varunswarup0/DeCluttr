@@ -8,8 +8,8 @@ export const Container = ({ children }: { children: React.ReactNode }) => {
   const { colorScheme } = useColorScheme();
   const colors =
     colorScheme === 'dark'
-      ? [COLORS.dark.background, COLORS.dark.grey6]
-      : [COLORS.light.background, COLORS.light.grey5];
+      ? [COLORS.dark.primary, COLORS.dark.background]
+      : [COLORS.light.primary, COLORS.light.background];
   return (
     <LinearGradient colors={colors} style={styles.gradient}>
       <SafeAreaView style={styles.container}>{children}</SafeAreaView>

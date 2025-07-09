@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { CONFETTI_COLORS } from '~/theme/colors';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
 // Toast and achievement overlays removed for a cleaner interface
 import { ComboOverlay } from './ComboOverlay';
@@ -354,6 +355,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           key={confettiKey}
           count={30}
           fadeOut
+          colors={CONFETTI_COLORS}
           origin={{ x: Dimensions.get('window').width / 2, y: 0 }}
         />
       )}

@@ -6,7 +6,7 @@ import { Container } from '~/components/Container';
 import { Text } from '~/components/nativewindui/Text';
 import { Button } from '~/components/nativewindui/Button';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRecycleBinStore, DeletedPhoto, XP_CONFIG } from '~/store/store';
+import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
 
 const { width: screenWidth } = Dimensions.get('window');
 const GRID_SPACING = 12;

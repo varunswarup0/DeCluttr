@@ -37,25 +37,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="analysis"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="recycle-bin"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <RecycleBinTabIcon color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,
         }}
       />
       {/**

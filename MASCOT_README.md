@@ -15,3 +15,12 @@ The game features a playful mascot that appears during level-up events and onboa
 - Keep the sprite sheet minimal (3–4 frames) so it performs well on low-end devices
 
 The mascot does not need to match Flappy Bird exactly—use it as a baseline for proportions and movement. A few color tweaks or accessories can help it feel unique to DeCluttr.
+
+## Themed Variations
+
+Feel free to reskin the bird for different moods:
+
+- **Carnival Barker** – add a little hat and bright stripes for a friendly, inviting feel.
+- **Spooky Ghost** – replace the bird with a simple ghost sprite for a cult horror vibe.
+
+When you change the mascot, consider swapping the sound effects in `assets/sounds/` as well. Cheerful splashes or eerie beeps help sell each theme.

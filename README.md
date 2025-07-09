@@ -39,7 +39,7 @@ give instant feedback as soon as you start swiping so the game feels snappy and 
 10. Subtle haptic feedback triggers on each swipe for extra game feel.
 11. A small header widget shows your **level** and XP with a progress bar that fills as you get closer to leveling up.
 12. Specify a favicon path for the web in `app.json` under `expo.web.favicon`.
-13. Enable **Zen Mode** from the gallery screen to hide stats and confetti for a stress-free experience.
+13. Enable **Zen Mode** from the gallery screen to hide XP and other stats while still showing confetti for a more immersive vibe.
 
 ## Running the App on Android
 

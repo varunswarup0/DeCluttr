@@ -27,6 +27,7 @@ The included files are silent placeholders. Provide your own voice clips to use 
 - **delete.mp3**: Short "zap" or "whoosh" effect for a playful feel
 - **keep.mp3**: Pleasant "ding" or "chime" that rewards the swipe
 - For a retro vibe, keep the clips under half a second and use 8‑bit samples reminiscent of classic Nintendo games
+- When customizing mascot themes (see `MASCOT_README.md`), adjust the sounds to match. A carnival style might use water splashes or whistles, while a ghost theme could feature eerie beeps.
 
 ## How to Add Sounds:
 

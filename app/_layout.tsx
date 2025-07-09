@@ -30,8 +30,14 @@ export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const fontsLoaded = useCustomFonts();
-  const { loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded, checkOnboardingStatus } =
-    useRecycleBinStore();
+  const {
+    loadXP,
+    loadDeletedPhotos,
+    loadTotalDeleted,
+    isXpLoaded,
+    checkOnboardingStatus,
+    loadZenMode,
+  } = useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -41,8 +47,9 @@ export default function RootLayout() {
       loadXP();
       loadDeletedPhotos();
       loadTotalDeleted();
+      loadZenMode();
     }
-  }, [loadXP, loadDeletedPhotos, loadTotalDeleted, isXpLoaded]);
+  }, [loadXP, loadDeletedPhotos, loadTotalDeleted, loadZenMode, isXpLoaded]);
 
   // Check onboarding status only once on startup to avoid
   // repeated AsyncStorage reads when navigating between screens

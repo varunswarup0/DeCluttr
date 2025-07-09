@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
 import { AudioToggle } from '~/components/AudioToggle';
+import { ZenToggle } from '~/components/ZenToggle';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   const { deletedPhotos } = useRecycleBinStore();
@@ -24,7 +25,8 @@ export default function TabLayout() {
         headerShown: true,
         headerTitle: '',
         headerRight: () => (
-          <View className="flex-row items-center gap-2 mr-1">
+          <View className="mr-1 flex-row items-center gap-2">
+            <ZenToggle />
             <AudioToggle />
           </View>
         ),

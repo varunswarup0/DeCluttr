@@ -27,8 +27,9 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const response: MediaLibrary.PermissionResponse =
-      await MediaLibrary.requestPermissionsAsync({ accessPrivileges: 'all' });
+    const response: MediaLibrary.PermissionResponse = await MediaLibrary.requestPermissionsAsync({
+      accessPrivileges: 'all',
+    });
     const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
@@ -48,8 +49,9 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
     return permissionGrantedCache;
   }
   try {
-    const response: MediaLibrary.PermissionResponse =
-      await MediaLibrary.getPermissionsAsync({ accessPrivileges: 'all' });
+    const response: MediaLibrary.PermissionResponse = await MediaLibrary.getPermissionsAsync({
+      accessPrivileges: 'all',
+    });
     const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
@@ -357,5 +359,74 @@ export async function openPhotoAsset(assetId: string): Promise<boolean> {
   } catch (error) {
     console.error('Failed to open photo asset:', error);
     return false;
+  }
+}
+
+/**
+ * Fetch video assets with pagination support
+ */
+export async function fetchVideoAssetsWithPagination(
+  after?: string,
+  first: number = 20
+): Promise<{
+  assets: PhotoAsset[];
+  hasNextPage: boolean;
+  endCursor?: string;
+}> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const permissionGranted = await requestMediaLibraryPermission();
+      if (!permissionGranted) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+    const result = await MediaLibrary.getAssetsAsync({
+      first,
+      after,
+      mediaType: MediaLibrary.MediaType.video,
+      sortBy: MediaLibrary.SortBy.creationTime,
+    });
+    return {
+      assets: result.assets.map((asset) => ({ id: asset.id, uri: asset.uri })),
+      hasNextPage: result.hasNextPage,
+      endCursor: result.endCursor,
+    };
+  } catch (error) {
+    console.error('Error fetching video assets with pagination:', error);
+    return {
+      assets: [],
+      hasNextPage: false,
+    };
+  }
+}
+
+export async function fetchAllVideoAssets(batchSize: number = 100): Promise<PhotoAsset[]> {
+  try {
+    const all: PhotoAsset[] = [];
+    let hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      hasPermission = await requestMediaLibraryPermission();
+      if (!hasPermission) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+    let after: string | undefined = undefined;
+    let hasNext = true;
+    while (hasNext) {
+      const result = await MediaLibrary.getAssetsAsync({
+        first: batchSize,
+        after,
+        mediaType: MediaLibrary.MediaType.video,
+        sortBy: MediaLibrary.SortBy.creationTime,
+      });
+      all.push(...result.assets.map((a) => ({ id: a.id, uri: a.uri })));
+      after = result.endCursor;
+      hasNext = result.hasNextPage;
+    }
+    return all;
+  } catch (error) {
+    console.error('Error fetching all video assets:', error);
+    return [];
   }
 }

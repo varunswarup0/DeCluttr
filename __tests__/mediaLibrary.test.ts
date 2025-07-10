@@ -6,6 +6,8 @@ import {
   fetchPhotoAssets,
   fetchPhotoAssetsWithPagination,
   fetchAllPhotoAssets,
+  fetchVideoAssetsWithPagination,
+  fetchAllVideoAssets,
   getAssetInfo,
   deletePhotoAssets,
   resetMediaLibraryPermissionCache,
@@ -41,6 +43,24 @@ jest.mock('expo-media-library', () => {
       assets: Array.from({ length: first }, (_, i) => ({ id: `id3${i}`, uri: `uri3${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'cursor3',
+    }))
+    // fetchVideoAssetsWithPagination
+    .mockImplementationOnce(({ after, first }) => ({
+      assets: Array.from({ length: first }, (_, i) => ({ id: `vid${i}`, uri: `vuri${i}` })),
+      hasNextPage: false,
+      endCursor: after ? `${after}-end` : 'vcursor0',
+    }))
+    // fetchAllVideoAssets first page
+    .mockImplementationOnce(({ after, first }) => ({
+      assets: Array.from({ length: first }, (_, i) => ({ id: `vidA${i}`, uri: `vuriA${i}` })),
+      hasNextPage: true,
+      endCursor: after ? `${after}-end` : 'vcursor1',
+    }))
+    // fetchAllVideoAssets second page
+    .mockImplementationOnce(({ after, first }) => ({
+      assets: Array.from({ length: first }, (_, i) => ({ id: `vidB${i}`, uri: `vuriB${i}` })),
+      hasNextPage: false,
+      endCursor: after ? `${after}-end` : 'vcursor2',
     }));
 
   return {
@@ -53,7 +73,7 @@ jest.mock('expo-media-library', () => {
     getAssetsAsync,
     getAssetInfoAsync: jest.fn(),
     deleteAssetsAsync: jest.fn().mockResolvedValue(true),
-    MediaType: { photo: 'photo' },
+    MediaType: { photo: 'photo', video: 'video' },
     SortBy: { creationTime: 'creationTime' },
   };
 });
@@ -93,6 +113,19 @@ describe('mediaLibrary', () => {
   it('fetches all photo assets across pages', async () => {
     const assets = await fetchAllPhotoAssets(1);
     // two calls mocked above -> 2 assets
+    expect(assets).toHaveLength(2);
+    expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('fetches video assets with pagination', async () => {
+    const result = await fetchVideoAssetsWithPagination('start', 1);
+    expect(result.assets).toHaveLength(1);
+    expect(result.endCursor).toBe('start-end');
+    expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('fetches all video assets across pages', async () => {
+    const assets = await fetchAllVideoAssets(1);
     expect(assets).toHaveLength(2);
     expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(2);
   });

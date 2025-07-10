@@ -6,12 +6,11 @@ import { px } from '~/lib/pixelPerfect';
 
 export const Container = ({ children }: { children: React.ReactNode }) => {
   const { colorScheme } = useColorScheme();
-  const colors =
-    colorScheme === 'dark'
-      ? [COLORS.dark.primary, COLORS.dark.background]
-      : [COLORS.light.primary, COLORS.light.background];
+  const darkColors = [COLORS.dark.primary, COLORS.dark.background] as const;
+  const lightColors = [COLORS.light.primary, COLORS.light.background] as const;
+  const colors = colorScheme === 'dark' ? darkColors : lightColors;
   return (
-    <LinearGradient colors={colors} style={styles.gradient}>
+    <LinearGradient colors={[...colors]} style={styles.gradient}>
       <SafeAreaView style={styles.container}>{children}</SafeAreaView>
     </LinearGradient>
   );

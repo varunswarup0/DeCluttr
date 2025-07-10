@@ -10,7 +10,12 @@ import { PixelBurst } from './PixelBurst';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
-import { fetchPhotoAssetsWithPagination, fetchAlbums, moveAssetToAlbum } from '~/lib/mediaLibrary';
+import {
+  fetchPhotoAssetsWithPagination,
+  fetchAlbums,
+  moveAssetToAlbum,
+  openPhotoAsset,
+} from '~/lib/mediaLibrary';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Text } from '~/components/nativewindui/Text';
 import { ActivityIndicator } from '~/components/nativewindui/ActivityIndicator';
@@ -332,6 +337,15 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     }
   };
 
+  const openCurrentPhoto = async () => {
+    const current = photos[currentPhotoIndex];
+    if (!current) return;
+    const opened = await openPhotoAsset(current.id);
+    if (!opened) {
+      Alert.alert('Error', 'Failed to open photo');
+    }
+  };
+
   if (loading) {
     return (
       <View className={cn('flex-1 items-center justify-center', className)}>
@@ -387,7 +401,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
           key={confettiKey}
           count={30}
           fadeOut
-          colors={CONFETTI_COLORS}
+          colors={[...CONFETTI_COLORS]}
           origin={{ x: Dimensions.get('window').width / 2, y: 0 }}
         />
       )}
@@ -399,6 +413,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         <Button variant="secondary" size="icon" onPress={moveCurrentPhoto}>
           <Ionicons name="folder-outline" size={px(18)} color="white" />
           <Text className="sr-only">Move</Text>
+        </Button>
+        <Button variant="secondary" size="icon" onPress={openCurrentPhoto}>
+          <Ionicons name="open-outline" size={px(18)} color="white" />
+          <Text className="sr-only">Open</Text>
         </Button>
         <Button variant="primary" size="icon" onPress={resetGallery} className="bg-red-500">
           <Ionicons name="refresh" size={px(18)} color="white" />

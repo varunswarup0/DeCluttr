@@ -27,9 +27,9 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const { status, accessPrivileges } = await MediaLibrary.requestPermissionsAsync({
-      accessPrivileges: 'all',
-    });
+    const response: MediaLibrary.PermissionResponse =
+      await MediaLibrary.requestPermissionsAsync({ accessPrivileges: 'all' });
+    const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
   } catch (error) {
@@ -48,9 +48,9 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
     return permissionGrantedCache;
   }
   try {
-    const { status, accessPrivileges } = await MediaLibrary.getPermissionsAsync({
-      accessPrivileges: 'all',
-    });
+    const response: MediaLibrary.PermissionResponse =
+      await MediaLibrary.getPermissionsAsync({ accessPrivileges: 'all' });
+    const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
   } catch (error) {
@@ -327,6 +327,35 @@ export async function moveAssetToAlbum(assetId: string, albumName: string): Prom
     return true;
   } catch (error) {
     console.error('Failed to move asset to album:', error);
+    return false;
+  }
+}
+
+/**
+ * Open a photo asset in the device's default gallery app.
+ */
+export async function openPhotoAsset(assetId: string): Promise<boolean> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        console.warn('Media library permission not granted.');
+        return false;
+      }
+    }
+
+    const info = await MediaLibrary.getAssetInfoAsync(assetId);
+    if (!info) {
+      console.warn('Asset not found.');
+      return false;
+    }
+
+    const { Linking } = await import('react-native');
+    await Linking.openURL(info.uri);
+    return true;
+  } catch (error) {
+    console.error('Failed to open photo asset:', error);
     return false;
   }
 }

@@ -12,9 +12,11 @@ import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
 import {
   fetchPhotoAssetsWithPagination,
+  fetchVideoAssetsWithPagination,
   fetchAlbums,
   moveAssetToAlbum,
   openPhotoAsset,
+  openVideoAsset,
 } from '~/lib/mediaLibrary';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Text } from '~/components/nativewindui/Text';
@@ -37,9 +39,13 @@ const pickEndMessage = createMessagePicker(END_MESSAGES);
 
 interface PhotoGalleryProps {
   className?: string;
+  mediaType?: 'photo' | 'video';
 }
 
-export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
+export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
+  className,
+  mediaType = 'photo',
+}) => {
   const isMounted = React.useRef(true);
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -98,8 +104,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     try {
       if (!isMounted.current) return false;
       setLoading(true);
-
-      const result = await fetchPhotoAssetsWithPagination(cursor ?? nextCursorRef.current, 50);
+      const fetchFn =
+        mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination;
+      const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
       const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
         id: asset.id,
         imageUri: asset.uri,
@@ -114,7 +121,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
 
       // Prefetch the following batch in the background
       if (result.hasNextPage) {
-        fetchPhotoAssetsWithPagination(result.endCursor, 50)
+        fetchFn(result.endCursor, 50)
           .then((nextResult) => {
             if (!isMounted.current) return;
             setPrefetchedPhotos(
@@ -123,7 +130,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
             prefetchCursorRef.current = nextResult.endCursor;
           })
           .catch((err) => {
-            console.error('Failed to prefetch photos:', err);
+            console.error('Failed to prefetch assets:', err);
           });
       } else {
         setPrefetchedPhotos([]);
@@ -131,8 +138,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
       }
       return true;
     } catch (error) {
-      console.error('Error loading photos:', error);
-      Alert.alert('Error', 'Failed to load photos from your gallery');
+      console.error('Error loading assets:', error);
+      Alert.alert('Error', 'Failed to load from your gallery');
       return false;
     } finally {
       if (isMounted.current) {
@@ -217,7 +224,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
         nextCursorRef.current = prefetchCursorRef.current;
         // Prefetch the subsequent batch
         if (nextCursorRef.current) {
-          fetchPhotoAssetsWithPagination(nextCursorRef.current, 50)
+          fetchFn(nextCursorRef.current, 50)
             .then((nextResult) => {
               if (!isMounted.current) return;
               setPrefetchedPhotos(
@@ -227,7 +234,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
               setHasMore(nextResult.hasNextPage);
             })
             .catch((err) => {
-              console.error('Failed to prefetch photos:', err);
+              console.error('Failed to prefetch assets:', err);
             });
         } else {
           setHasMore(false);
@@ -340,9 +347,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
   const openCurrentPhoto = async () => {
     const current = photos[currentPhotoIndex];
     if (!current) return;
-    const opened = await openPhotoAsset(current.id);
+    const openFn = mediaType === 'video' ? openVideoAsset : openPhotoAsset;
+    const opened = await openFn(current.id);
     if (!opened) {
-      Alert.alert('Error', 'Failed to open photo');
+      Alert.alert('Error', 'Failed to open');
     }
   };
 
@@ -361,7 +369,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className }) => {
     return (
       <View className={cn('flex-1 items-center justify-center px-8', className)}>
         <Text variant="title3" className="mb-4 text-center">
-          No Photos
+          {mediaType === 'video' ? 'No Videos' : 'No Photos'}
         </Text>
         <Text color="secondary" className="mb-6 text-center">
           Check gallery access.

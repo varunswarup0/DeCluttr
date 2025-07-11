@@ -47,13 +47,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="videos"
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="videocam" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="recycle-bin"
         options={{
           tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,
         }}
       />
       {/**
-       * Extra tabs removed for a leaner experience. Only Home, Scan and Recycle Bin remain.
+       * Extra tabs removed for a leaner experience. Home, Scan, Videos and Recycle Bin remain.
        */}
     </Tabs>
   );

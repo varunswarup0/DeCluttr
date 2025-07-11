@@ -1,7 +1,7 @@
 # Goals
 
 ## Short Term
-- Clarify delete behaviour so users can choose between trash or permanent removal.
+ - Clarify delete behaviour: photos are always permanently removed.
 - Add advanced folder selection including WhatsApp media scanning.
 - Provide multi-select delete and bulk removal by month or album.
 - Improve selection workflow:

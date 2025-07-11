@@ -15,6 +15,7 @@ import {
   fetchVideoAssetsWithPagination,
   fetchAlbums,
   moveAssetToAlbum,
+  deletePhotoAsset,
   openPhotoAsset,
   openVideoAsset,
 } from '~/lib/mediaLibrary';
@@ -25,7 +26,7 @@ import { Button } from '~/components/nativewindui/Button';
 import { Ionicons } from '@expo/vector-icons';
 import { cn } from '~/lib/cn';
 import { px } from '~/lib/pixelPerfect';
-import { useRecycleBinStore, DeletedPhoto } from '~/store/store';
+import { useRecycleBinStore, XP_CONFIG } from '~/store/store';
 import {
   SESSION_MESSAGES,
   END_MESSAGES,
@@ -48,7 +49,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
 
   // Use RecycleBin store
   const {
-    addDeletedPhoto,
+    addXP,
     resetGallery: resetRecycleBinStore,
     isXpLoaded,
     loadZenMode,
@@ -156,17 +157,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isXpLoaded]);
 
-  const handleSwipeLeft = (item: SwipeDeckItem, index: number) => {
-    // Swipe event - user wants to delete the current photo
-    // Add photo to RecycleBin store and assign XP
-    const deletedPhoto: DeletedPhoto = {
-      id: item.id,
-      imageUri: item.imageUri,
-      deletedAt: new Date(),
-      originalIndex: currentPhotoIndex + index,
-    };
-
-    addDeletedPhoto(deletedPhoto);
+  const handleSwipeLeft = async (item: SwipeDeckItem, index: number) => {
+    // Swipe event - user wants to delete the current photo permanently
+    const success = await deletePhotoAsset(item.id);
+    if (!success) {
+      Alert.alert('Error', 'Failed to delete photo');
+      return;
+    }
+    await addXP(XP_CONFIG.DELETE_PHOTO + XP_CONFIG.PERMANENT_DELETE);
     setSwipeFlash('DELETED!');
     setBurstColor('rgb(255,59,48)');
     setShowSwipeHint(false);

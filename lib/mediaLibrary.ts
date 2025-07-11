@@ -463,7 +463,7 @@ export async function fetchAssetsFromAlbumWithPagination(
   albumName: string,
   after?: string,
   first: number = 20,
-  mediaType: MediaLibrary.MediaType = MediaLibrary.MediaType.photo
+  mediaType: MediaLibrary.MediaTypeValue = MediaLibrary.MediaType.photo
 ): Promise<{
   assets: PhotoAsset[];
   hasNextPage: boolean;

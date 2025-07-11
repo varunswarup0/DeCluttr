@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Alert, Dimensions, Pressable } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { CONFETTI_COLORS } from '~/theme/colors';
 import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
@@ -13,6 +14,7 @@ import { BackgroundOptimizer } from './BackgroundOptimizer';
 import {
   fetchPhotoAssetsWithPagination,
   fetchVideoAssetsWithPagination,
+  fetchAssetsFromAlbumWithPagination,
   fetchAlbums,
   moveAssetToAlbum,
   deletePhotoAsset,
@@ -42,9 +44,15 @@ const pickEndMessage = createMessagePicker(END_MESSAGES);
 interface PhotoGalleryProps {
   className?: string;
   mediaType?: 'photo' | 'video';
+  /** Optional album name to limit the gallery */
+  albumName?: string;
 }
 
-export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType = 'photo' }) => {
+export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
+  className,
+  mediaType = 'photo',
+  albumName,
+}) => {
   const isMounted = React.useRef(true);
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -87,10 +95,18 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
 
-  const fetchFn = useMemo(
-    () => (mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination),
-    [mediaType]
-  );
+  const fetchFn = useMemo(() => {
+    if (albumName) {
+      return (cursor?: string, first: number = 20) =>
+        fetchAssetsFromAlbumWithPagination(
+          albumName,
+          cursor,
+          first,
+          mediaType === 'video' ? MediaLibrary.MediaType.video : MediaLibrary.MediaType.photo
+        );
+    }
+    return mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination;
+  }, [albumName, mediaType]);
 
   useEffect(() => {
     const timeout = setTimeout(() => setShowSwipeHint(false), 3000);

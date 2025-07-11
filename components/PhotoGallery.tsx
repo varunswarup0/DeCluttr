@@ -42,10 +42,7 @@ interface PhotoGalleryProps {
   mediaType?: 'photo' | 'video';
 }
 
-export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
-  className,
-  mediaType = 'photo',
-}) => {
+export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType = 'photo' }) => {
   const isMounted = React.useRef(true);
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -100,53 +97,56 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     }
   }, [photos.length]);
 
-  const loadPhotos = React.useCallback(async (cursor?: string): Promise<boolean> => {
-    try {
-      if (!isMounted.current) return false;
-      setLoading(true);
-      const fetchFn =
-        mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination;
-      const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
-      const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
-        id: asset.id,
-        imageUri: asset.uri,
-      }));
-      nextCursorRef.current = result.endCursor;
-      setHasMore(result.hasNextPage);
+  const loadPhotos = React.useCallback(
+    async (cursor?: string): Promise<boolean> => {
+      try {
+        if (!isMounted.current) return false;
+        setLoading(true);
+        const fetchFn =
+          mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination;
+        const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
+        const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
+          id: asset.id,
+          imageUri: asset.uri,
+        }));
+        nextCursorRef.current = result.endCursor;
+        setHasMore(result.hasNextPage);
 
-      if (!isMounted.current) return false;
-      setPhotos(photoItems);
-      // Start swiping from the beginning whenever a new set is loaded
-      setCurrentPhotoIndex(0);
+        if (!isMounted.current) return false;
+        setPhotos(photoItems);
+        // Start swiping from the beginning whenever a new set is loaded
+        setCurrentPhotoIndex(0);
 
-      // Prefetch the following batch in the background
-      if (result.hasNextPage) {
-        fetchFn(result.endCursor, 50)
-          .then((nextResult) => {
-            if (!isMounted.current) return;
-            setPrefetchedPhotos(
-              nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
-            );
-            prefetchCursorRef.current = nextResult.endCursor;
-          })
-          .catch((err) => {
-            console.error('Failed to prefetch assets:', err);
-          });
-      } else {
-        setPrefetchedPhotos([]);
-        prefetchCursorRef.current = undefined;
+        // Prefetch the following batch in the background
+        if (result.hasNextPage) {
+          fetchFn(result.endCursor, 50)
+            .then((nextResult) => {
+              if (!isMounted.current) return;
+              setPrefetchedPhotos(
+                nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
+              );
+              prefetchCursorRef.current = nextResult.endCursor;
+            })
+            .catch((err) => {
+              console.error('Failed to prefetch assets:', err);
+            });
+        } else {
+          setPrefetchedPhotos([]);
+          prefetchCursorRef.current = undefined;
+        }
+        return true;
+      } catch (error) {
+        console.error('Error loading assets:', error);
+        Alert.alert('Error', 'Failed to load from your gallery');
+        return false;
+      } finally {
+        if (isMounted.current) {
+          setLoading(false);
+        }
       }
-      return true;
-    } catch (error) {
-      console.error('Error loading assets:', error);
-      Alert.alert('Error', 'Failed to load from your gallery');
-      return false;
-    } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
-    }
-  }, []);
+    },
+    [mediaType]
+  );
 
   useEffect(() => {
     if (isXpLoaded) {

@@ -8,6 +8,7 @@ import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { COLORS } from '~/theme/colors';
 import { lightImpact } from '~/lib/haptics';
+import { useSwipeAudio } from '~/lib/useSwipeAudio';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -125,6 +126,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     ref
   ) => {
     const { colorScheme } = useColorScheme();
+    const { playTapSound } = useSwipeAudio();
     const scale = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
@@ -145,6 +147,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
             onPress={(event) => {
               if (!props.disabled) {
                 lightImpact();
+                playTapSound();
               }
               props.onPress?.(event);
             }}

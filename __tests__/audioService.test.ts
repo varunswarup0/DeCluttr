@@ -45,7 +45,7 @@ beforeEach(async () => {
 test('initialize loads players with stored volume', async () => {
   memory['decluttr_audio_settings'] = JSON.stringify({ volume: 0.5, enabled: true });
   await audioService.initialize();
-  expect(createAudioPlayer).toHaveBeenCalledTimes(4);
+  expect(createAudioPlayer).toHaveBeenCalledTimes(5);
   const players = (createAudioPlayer as jest.Mock).mock.results.map((r) => r.value as any);
   expect(players[0].volume).toBe(0.5);
   expect(players[1].volume).toBe(0.5);
@@ -62,7 +62,7 @@ test('plays delete and keep sounds when enabled', async () => {
   expect(players[1].seekTo).toHaveBeenCalledWith(0);
   expect(players[1].play).toHaveBeenCalled();
   // voice clips are loaded as well
-  expect(createAudioPlayer).toHaveBeenCalledTimes(4);
+  expect(createAudioPlayer).toHaveBeenCalledTimes(5);
 });
 
 test('setVolume updates players and storage', async () => {
@@ -80,10 +80,10 @@ test('setVolume updates players and storage', async () => {
 test('cleanup removes players and allows reinit', async () => {
   await audioService.initialize();
   await audioService.cleanup();
-  expect(createAudioPlayer).toHaveBeenCalledTimes(4);
+  expect(createAudioPlayer).toHaveBeenCalledTimes(5);
   jest.clearAllMocks();
   await audioService.playDeleteSound();
-  expect(createAudioPlayer).toHaveBeenCalledTimes(4); // reinitializes
+  expect(createAudioPlayer).toHaveBeenCalledTimes(5); // reinitializes
 });
 
 test('playRandomVoice plays one clip when enabled', async () => {

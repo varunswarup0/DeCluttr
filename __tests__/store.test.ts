@@ -35,6 +35,7 @@ describe('RecycleBin store', () => {
       xp: 0,
       isXpLoaded: true,
       onboardingCompleted: false,
+      zenMode: false,
     });
   });
 
@@ -155,6 +156,15 @@ describe('RecycleBin store', () => {
     await store.subtractXP(5);
     expect(useRecycleBinStore.getState().xp).toBe(5);
     await store.subtractXP(20);
+    expect(useRecycleBinStore.getState().xp).toBe(0);
+  });
+
+  it('skips XP changes when zen mode is active', async () => {
+    useRecycleBinStore.setState({ zenMode: true });
+    const store = useRecycleBinStore.getState();
+    await store.addXP(10);
+    expect(useRecycleBinStore.getState().xp).toBe(0);
+    await store.subtractXP(5);
     expect(useRecycleBinStore.getState().xp).toBe(0);
   });
 

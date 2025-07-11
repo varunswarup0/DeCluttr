@@ -455,3 +455,70 @@ export async function fetchAllVideoAssets(batchSize: number = 100): Promise<Phot
     return [];
   }
 }
+
+/**
+ * Fetch assets from a specific album with pagination support.
+ */
+export async function fetchAssetsFromAlbumWithPagination(
+  albumName: string,
+  after?: string,
+  first: number = 20,
+  mediaType: MediaLibrary.MediaType = MediaLibrary.MediaType.photo
+): Promise<{
+  assets: PhotoAsset[];
+  hasNextPage: boolean;
+  endCursor?: string;
+}> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        throw new Error('Media library permission not granted');
+      }
+    }
+
+    const album = await MediaLibrary.getAlbumAsync(albumName);
+    if (!album) {
+      return { assets: [], hasNextPage: false };
+    }
+
+    const result = await MediaLibrary.getAssetsAsync({
+      first,
+      after,
+      album: album.id,
+      mediaType,
+      sortBy: MediaLibrary.SortBy.creationTime,
+    });
+
+    return {
+      assets: result.assets.map((a) => ({ id: a.id, uri: a.uri })),
+      hasNextPage: result.hasNextPage,
+      endCursor: result.endCursor,
+    };
+  } catch (error) {
+    console.error('Error fetching assets from album:', error);
+    return { assets: [], hasNextPage: false };
+  }
+}
+
+/**
+ * Convenience helpers for WhatsApp media folders.
+ */
+export async function fetchWhatsAppPhotos(after?: string, first: number = 20) {
+  return fetchAssetsFromAlbumWithPagination(
+    'WhatsApp Images',
+    after,
+    first,
+    MediaLibrary.MediaType.photo
+  );
+}
+
+export async function fetchWhatsAppVideos(after?: string, first: number = 20) {
+  return fetchAssetsFromAlbumWithPagination(
+    'WhatsApp Video',
+    after,
+    first,
+    MediaLibrary.MediaType.video
+  );
+}

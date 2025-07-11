@@ -8,6 +8,7 @@ import {
   fetchAllPhotoAssets,
   fetchVideoAssetsWithPagination,
   fetchAllVideoAssets,
+  fetchAssetsFromAlbumWithPagination,
   getAssetInfo,
   deletePhotoAssets,
   resetMediaLibraryPermissionCache,
@@ -61,7 +62,15 @@ jest.mock('expo-media-library', () => {
       assets: Array.from({ length: first }, (_, i) => ({ id: `vidB${i}`, uri: `vuriB${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'vcursor2',
+    }))
+    // fetchAssetsFromAlbumWithPagination
+    .mockImplementationOnce(({ after, first }) => ({
+      assets: Array.from({ length: first }, (_, i) => ({ id: `wa${i}`, uri: `wauri${i}` })),
+      hasNextPage: false,
+      endCursor: after ? `${after}-end` : 'wa-end',
     }));
+
+  const getAlbumAsync = jest.fn().mockResolvedValue({ id: 'wa1', title: 'WhatsApp Images' });
 
   return {
     requestPermissionsAsync: jest
@@ -71,6 +80,7 @@ jest.mock('expo-media-library', () => {
       .fn()
       .mockResolvedValue({ status: 'granted', accessPrivileges: 'all' }),
     getAssetsAsync,
+    getAlbumAsync,
     getAssetInfoAsync: jest.fn(),
     deleteAssetsAsync: jest.fn().mockResolvedValue(true),
     MediaType: { photo: 'photo', video: 'video' },
@@ -155,5 +165,16 @@ describe('mediaLibrary', () => {
     expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['2']);
     expect(FileSystem.deleteAsync).toHaveBeenCalledWith('uri2', { idempotent: true });
     expect(success).toBe(false);
+  });
+
+  it('fetches assets from an album', async () => {
+    const result = await fetchAssetsFromAlbumWithPagination(
+      'WhatsApp Images',
+      undefined,
+      1,
+      MediaLibrary.MediaType.photo as any
+    );
+    expect(result.assets).toHaveLength(1);
+    expect(MediaLibrary.getAlbumAsync).toHaveBeenCalledWith('WhatsApp Images');
   });
 });

@@ -90,12 +90,8 @@ describe('mediaLibrary', () => {
     resetMediaLibraryPermissionCache();
     const check = await checkMediaLibraryPermission();
     expect(check).toBe(true);
-    expect(MediaLibrary.requestPermissionsAsync).toHaveBeenCalledWith({
-      accessPrivileges: 'all',
-    });
-    expect(MediaLibrary.getPermissionsAsync).toHaveBeenCalledWith({
-      accessPrivileges: 'all',
-    });
+    expect(MediaLibrary.requestPermissionsAsync).toHaveBeenCalledWith();
+    expect(MediaLibrary.getPermissionsAsync).toHaveBeenCalledWith();
   });
 
   it('fetches photo assets', async () => {

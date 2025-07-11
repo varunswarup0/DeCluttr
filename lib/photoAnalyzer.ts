@@ -54,7 +54,8 @@ export async function analyzePhotos(): Promise<PhotoAnalysisResult> {
       selfies.push(asset);
     }
 
-    const key = `${info.width}x${info.height}_${info.size ?? 0}`;
+    const fileSize = (info as any).size ?? 0;
+    const key = `${info.width}x${info.height}_${fileSize}`;
     if (!dupMap[key]) {
       dupMap[key] = [];
     }
@@ -126,7 +127,8 @@ export async function analyzePhotosWithProgress(
         selfies.push(asset);
       }
 
-      const key = `${info.width}x${info.height}_${info.size ?? 0}`;
+      const fileSize = (info as any).size ?? 0;
+      const key = `${info.width}x${info.height}_${fileSize}`;
       if (!dupMap[key]) {
         dupMap[key] = [];
       }

@@ -169,7 +169,10 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   // Add XP and save to storage
   addXP: async (amount: number) => {
     try {
-      const { xp } = get();
+      const { xp, zenMode } = get();
+      if (zenMode) {
+        return;
+      }
       const newXP = Math.max(0, xp + amount); // Prevent negative XP
       set({ xp: newXP });
 
@@ -184,7 +187,10 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   // Subtract XP and save to storage
   subtractXP: async (amount: number) => {
     try {
-      const { xp } = get();
+      const { xp, zenMode } = get();
+      if (zenMode) {
+        return;
+      }
       const newXP = Math.max(0, xp - amount); // Prevent negative XP
       set({ xp: newXP });
 

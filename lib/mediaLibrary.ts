@@ -363,6 +363,35 @@ export async function openPhotoAsset(assetId: string): Promise<boolean> {
 }
 
 /**
+ * Open a video asset in the device's default gallery app.
+ */
+export async function openVideoAsset(assetId: string): Promise<boolean> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        console.warn('Media library permission not granted.');
+        return false;
+      }
+    }
+
+    const info = await MediaLibrary.getAssetInfoAsync(assetId);
+    if (!info) {
+      console.warn('Asset not found.');
+      return false;
+    }
+
+    const { Linking } = await import('react-native');
+    await Linking.openURL(info.uri);
+    return true;
+  } catch (error) {
+    console.error('Failed to open video asset:', error);
+    return false;
+  }
+}
+
+/**
  * Fetch video assets with pagination support
  */
 export async function fetchVideoAssetsWithPagination(

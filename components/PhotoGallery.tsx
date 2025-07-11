@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Alert, Dimensions, Pressable } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { CONFETTI_COLORS } from '~/theme/colors';
@@ -18,6 +18,7 @@ import {
   deletePhotoAsset,
   openPhotoAsset,
   openVideoAsset,
+  PhotoAsset,
 } from '~/lib/mediaLibrary';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Text } from '~/components/nativewindui/Text';
@@ -86,6 +87,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
 
+  const fetchFn = useMemo(
+    () => (mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination),
+    [mediaType]
+  );
+
   useEffect(() => {
     const timeout = setTimeout(() => setShowSwipeHint(false), 3000);
     return () => clearTimeout(timeout);
@@ -103,8 +109,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
       try {
         if (!isMounted.current) return false;
         setLoading(true);
-        const fetchFn =
-          mediaType === 'video' ? fetchVideoAssetsWithPagination : fetchPhotoAssetsWithPagination;
         const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
         const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
           id: asset.id,
@@ -121,14 +125,16 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
         // Prefetch the following batch in the background
         if (result.hasNextPage) {
           fetchFn(result.endCursor, 50)
-            .then((nextResult) => {
-              if (!isMounted.current) return;
-              setPrefetchedPhotos(
-                nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
-              );
-              prefetchCursorRef.current = nextResult.endCursor;
-            })
-            .catch((err) => {
+            .then(
+              (nextResult: { assets: PhotoAsset[]; hasNextPage: boolean; endCursor?: string }) => {
+                if (!isMounted.current) return;
+                setPrefetchedPhotos(
+                  nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
+                );
+                prefetchCursorRef.current = nextResult.endCursor;
+              }
+            )
+            .catch((err: unknown) => {
               console.error('Failed to prefetch assets:', err);
             });
         } else {
@@ -136,7 +142,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
           prefetchCursorRef.current = undefined;
         }
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error loading assets:', error);
         Alert.alert('Error', 'Failed to load from your gallery');
         return false;
@@ -146,7 +152,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
         }
       }
     },
-    [mediaType]
+    [fetchFn]
   );
 
   useEffect(() => {
@@ -223,15 +229,17 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ className, mediaType
         // Prefetch the subsequent batch
         if (nextCursorRef.current) {
           fetchFn(nextCursorRef.current, 50)
-            .then((nextResult) => {
-              if (!isMounted.current) return;
-              setPrefetchedPhotos(
-                nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
-              );
-              prefetchCursorRef.current = nextResult.endCursor;
-              setHasMore(nextResult.hasNextPage);
-            })
-            .catch((err) => {
+            .then(
+              (nextResult: { assets: PhotoAsset[]; hasNextPage: boolean; endCursor?: string }) => {
+                if (!isMounted.current) return;
+                setPrefetchedPhotos(
+                  nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
+                );
+                prefetchCursorRef.current = nextResult.endCursor;
+                setHasMore(nextResult.hasNextPage);
+              }
+            )
+            .catch((err: unknown) => {
               console.error('Failed to prefetch assets:', err);
             });
         } else {

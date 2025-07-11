@@ -27,9 +27,7 @@ export interface PhotoAsset {
  */
 export async function requestMediaLibraryPermission(): Promise<boolean> {
   try {
-    const response: MediaLibrary.PermissionResponse = await MediaLibrary.requestPermissionsAsync({
-      accessPrivileges: 'all',
-    });
+    const response: MediaLibrary.PermissionResponse = await MediaLibrary.requestPermissionsAsync();
     const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;
@@ -49,9 +47,7 @@ export async function checkMediaLibraryPermission(): Promise<boolean> {
     return permissionGrantedCache;
   }
   try {
-    const response: MediaLibrary.PermissionResponse = await MediaLibrary.getPermissionsAsync({
-      accessPrivileges: 'all',
-    });
+    const response: MediaLibrary.PermissionResponse = await MediaLibrary.getPermissionsAsync();
     const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
     return permissionGrantedCache;

@@ -91,6 +91,6 @@ test('playRandomVoice plays one clip when enabled', async () => {
   await audioService.playRandomVoice();
   await new Promise((r) => setTimeout(r, 350));
   const players = (createAudioPlayer as jest.Mock).mock.results.map((r) => r.value as any);
-  const plays = players.slice(2).map((p: any) => p.play.mock.calls.length);
+  const plays = players.slice(-2).map((p: any) => p.play.mock.calls.length);
   expect(plays[0] + plays[1]).toBe(1);
 });

@@ -36,6 +36,7 @@ const STROKE_WIDTH = px(3);
 const OVERLAY_PADDING = px(6);
 // Expand touch area to make starting swipes easier
 const HIT_SLOP = px(16);
+const TILT_FACTOR = 0.04;
 
 export interface SwipeCardProps {
   imageUri: string;
@@ -57,6 +58,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const scale = useSharedValue(1);
   const zoomScale = useSharedValue(1);
   const rotateZ = useSharedValue(0);
+  const rotateY = useSharedValue(0);
   const dragging = useSharedValue(0);
   const combinedScale = useDerivedValue(() => scale.value * zoomScale.value);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
@@ -78,6 +80,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     onStart: () => {
       if (!disabled) {
         scale.value = withSpring(0.95);
+        rotateY.value = 0;
         dragging.value = 1;
         runOnJS(onTap)();
       }
@@ -87,6 +90,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         translateX.value = event.translationX;
         translateY.value = event.translationY * 0.05; // Reduce vertical movement
         rotateZ.value = event.translationX * 0.001;
+        rotateY.value = event.translationX * TILT_FACTOR;
       }
     },
     onEnd: (event) => {
@@ -94,6 +98,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
       scale.value = withSpring(1);
       rotateZ.value = withSpring(0);
+      rotateY.value = withSpring(0);
       dragging.value = 0;
 
       const velocityX = event.velocityX;
@@ -119,6 +124,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         rotateZ.value = withTiming(-(20 + extraRotation), {
           duration: exitDuration,
         });
+        rotateY.value = withTiming(-10, { duration: exitDuration });
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
@@ -137,6 +143,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         rotateZ.value = withTiming(20 + extraRotation, {
           duration: exitDuration,
         });
+        rotateY.value = withTiming(10, { duration: exitDuration });
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
@@ -148,6 +155,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         translateX.value = withSpring(0, springConfig);
         translateY.value = withSpring(0, springConfig);
         rotateZ.value = withSpring(0, springConfig);
+        rotateY.value = withSpring(0, springConfig);
       }
     },
   });
@@ -157,8 +165,10 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
     return {
       transform: [
+        { perspective: 1000 },
         { translateX: translateX.value },
         { translateY: translateY.value },
+        { rotateY: `${rotateY.value}deg` },
         { rotateZ: `${rotateZ.value}deg` },
         { scale: scale.value * zoomScale.value },
       ],
@@ -215,6 +225,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               translateX={translateX}
               translateY={translateY}
               rotateZ={rotateZ}
+              rotateY={rotateY}
               scale={combinedScale}
               active={dragging}
             />

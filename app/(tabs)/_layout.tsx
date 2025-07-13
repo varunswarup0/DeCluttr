@@ -53,6 +53,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="whatsapp"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="logo-whatsapp" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="recycle-bin"
         options={{
           tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,

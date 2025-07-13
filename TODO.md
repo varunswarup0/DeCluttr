@@ -2,7 +2,7 @@
 
 ## Short Term
  - Clarify delete behaviour: photos are always permanently removed.
-- Add advanced folder selection including WhatsApp media scanning.
+- ~~Add advanced folder selection including WhatsApp media scanning.~~ Done: Albums tab lets you browse any album, including WhatsApp folders.
 - Provide multi-select delete and bulk removal by month or album.
 - Improve selection workflow:
   - Change default swipe actions to navigation.

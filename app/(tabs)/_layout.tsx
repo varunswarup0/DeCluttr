@@ -61,6 +61,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="albums"
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="images" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="recycle-bin"
         options={{
           tabBarIcon: ({ color, size }) => <RecycleBinTabIcon color={color} size={size} />,

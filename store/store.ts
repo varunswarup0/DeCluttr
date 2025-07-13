@@ -23,6 +23,7 @@ const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
 const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
 const ZEN_MODE_STORAGE_KEY = '@decluttr_zen_mode';
+const NAV_MODE_STORAGE_KEY = '@decluttr_navigation_mode';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -37,6 +38,7 @@ export interface RecycleBinState {
   totalDeleted: number;
   onboardingCompleted: boolean;
   zenMode: boolean;
+  navigationMode: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
   permanentlyDelete: (photoId: string) => Promise<boolean>;
@@ -57,6 +59,8 @@ export interface RecycleBinState {
   resetOnboarding: () => Promise<void>;
   loadZenMode: () => Promise<void>;
   setZenMode: (enabled: boolean) => Promise<void>;
+  loadNavigationMode: () => Promise<void>;
+  setNavigationMode: (enabled: boolean) => Promise<void>;
 }
 
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
@@ -64,6 +68,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   totalDeleted: 0,
   onboardingCompleted: false,
   zenMode: false,
+  navigationMode: false,
 
   // Helper to persist deleted photos
   saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
@@ -115,6 +120,28 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     } catch (error) {
       console.error('Failed to save zen mode:', error);
       set({ zenMode: enabled });
+    }
+  },
+
+  loadNavigationMode: async () => {
+    try {
+      const storage = getAsyncStorage();
+      const stored = await storage.getItem(NAV_MODE_STORAGE_KEY);
+      set({ navigationMode: stored === 'true' });
+    } catch (error) {
+      console.error('Failed to load navigation mode:', error);
+      set({ navigationMode: false });
+    }
+  },
+
+  setNavigationMode: async (enabled: boolean) => {
+    try {
+      const storage = getAsyncStorage();
+      await storage.setItem(NAV_MODE_STORAGE_KEY, String(enabled));
+      set({ navigationMode: enabled });
+    } catch (error) {
+      console.error('Failed to save navigation mode:', error);
+      set({ navigationMode: enabled });
     }
   },
 

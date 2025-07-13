@@ -57,7 +57,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   // Use RecycleBin store
-  const { resetGallery: resetRecycleBinStore, loadZenMode } = useRecycleBinStore();
+  const {
+    resetGallery: resetRecycleBinStore,
+    loadZenMode,
+    loadNavigationMode,
+    navigationMode,
+  } = useRecycleBinStore();
 
   useEffect(() => {
     return () => {
@@ -67,7 +72,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   useEffect(() => {
     loadZenMode();
-  }, [loadZenMode]);
+    loadNavigationMode();
+  }, [loadZenMode, loadNavigationMode]);
 
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
   const [prefetchedPhotos, setPrefetchedPhotos] = useState<SwipeDeckItem[]>([]);
@@ -180,6 +186,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   }, []);
 
   const handleSwipeLeft = async (item: SwipeDeckItem, index: number, fast: boolean) => {
+    if (navigationMode) {
+      audioService.playTapSound();
+      setCurrentPhotoIndex((prev) => prev + 1);
+      return;
+    }
     // Swipe event - user wants to delete the current photo permanently
     const success = await deletePhotoAsset(item.id);
     if (!success) {
@@ -222,6 +233,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number, fast: boolean) => {
+    if (navigationMode) {
+      audioService.playTapSound();
+      setCurrentPhotoIndex((prev) => prev + 1);
+      return;
+    }
     // Swipe event - user keeps the current photo
     setSwipeFlash('KEPT!');
     setBurstColor('rgb(52,199,89)');

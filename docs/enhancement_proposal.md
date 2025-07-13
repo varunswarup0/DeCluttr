@@ -8,4 +8,6 @@ Rewards rely only on visual and haptic feedback. Confetti and a stronger vibrati
 
 The UI keeps just the swipe deck, mascot, folder button and progress bar. Swipes glide smoothly with subtle fades, and milestone celebrations add vibrant confetti for a polished feel. Theme folders like `nature` introduce fresh mascot colors and matching sounds, all persisted via the existing store.
 
+A short radial wave now bursts from the center after seven rapid deletes, giving an extra punch without tracking stats. The overlay fades automatically so gameplay never stops.
+
 Implementation touches only a few modules: extra animations live under `assets/mascot/<theme>/`, new sounds go in `assets/sounds/`, and minor logic updates occur in `components/SwipeDeck.tsx` and `store/store.ts` to trigger effects. Zustand persistence and AsyncStorage continue handling settings to avoid new state bugs. The audio service's silent mock approach ensures any missing files fail gracefully.

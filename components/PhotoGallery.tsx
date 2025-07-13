@@ -13,6 +13,7 @@ import { FlockOverlay } from './FlockOverlay';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { GlitchOverlay } from './GlitchOverlay';
+import { WaveOverlay } from './WaveOverlay';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
 import {
   fetchPhotoAssetsWithPagination,
@@ -82,11 +83,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [burstColor, setBurstColor] = useState<string | null>(null);
   const [showFlock, setShowFlock] = useState(false);
   const [showGlitch, setShowGlitch] = useState(false);
+  const [showWave, setShowWave] = useState(false);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
   const GLITCH_STREAK = 5;
+  const WAVE_STREAK = 7;
   const deckRef = React.useRef<SwipeDeckHandle>(null);
   const turboRef = React.useRef<NodeJS.Timeout | null>(null);
   const [turbo, setTurbo] = useState(false);
@@ -189,6 +192,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     consecutiveDeleteRef.current += 1;
     if (consecutiveDeleteRef.current >= 3) {
       setCombo(consecutiveDeleteRef.current);
+    }
+
+    if (consecutiveDeleteRef.current === WAVE_STREAK) {
+      setShowWave(true);
     }
 
     if (consecutiveDeleteRef.current === GLITCH_STREAK) {
@@ -440,6 +447,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 
       {burstColor && <PixelBurst color={burstColor} onDone={() => setBurstColor(null)} />}
+
+      {showWave && <WaveOverlay onDone={() => setShowWave(false)} />}
 
       {showGlitch && <GlitchOverlay onDone={() => setShowGlitch(false)} />}
 

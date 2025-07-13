@@ -14,6 +14,7 @@ import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { GlitchOverlay } from './GlitchOverlay';
 import { WaveOverlay } from './WaveOverlay';
+import { SpeedLinesOverlay } from './SpeedLinesOverlay';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
 import {
   fetchPhotoAssetsWithPagination,
@@ -84,6 +85,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [showFlock, setShowFlock] = useState(false);
   const [showGlitch, setShowGlitch] = useState(false);
   const [showWave, setShowWave] = useState(false);
+  const [speedLinesDir, setSpeedLinesDir] = useState<'left' | 'right' | null>(
+    null
+  );
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   const consecutiveDeleteRef = React.useRef(0);
@@ -176,7 +180,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSwipeLeft = async (item: SwipeDeckItem, index: number) => {
+  const handleSwipeLeft = async (
+    item: SwipeDeckItem,
+    index: number,
+    fast: boolean
+  ) => {
     // Swipe event - user wants to delete the current photo permanently
     const success = await deletePhotoAsset(item.id);
     if (!success) {
@@ -185,6 +193,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     }
     setSwipeFlash('DELETED!');
     setBurstColor('rgb(255,59,48)');
+    if (fast) setSpeedLinesDir('left');
     setShowSwipeHint(false);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
@@ -217,10 +226,15 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     // or a photo is permanently deleted from within the recycle bin screen.
   };
 
-  const handleSwipeRight = (item: SwipeDeckItem, index: number) => {
+  const handleSwipeRight = (
+    item: SwipeDeckItem,
+    index: number,
+    fast: boolean
+  ) => {
     // Swipe event - user keeps the current photo
     setSwipeFlash('KEPT!');
     setBurstColor('rgb(52,199,89)');
+    if (fast) setSpeedLinesDir('right');
     setShowSwipeHint(false);
 
     // Reset streak when a photo is kept
@@ -276,7 +290,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     tapTimesRef.current.push(now);
     if (tapTimesRef.current.length >= 5) {
       if (photos.length > 0) {
-        handleSwipeLeft(photos[0], 0);
+        handleSwipeLeft(photos[0], 0, false);
       }
       tapTimesRef.current = [];
     }
@@ -449,6 +463,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {burstColor && <PixelBurst color={burstColor} onDone={() => setBurstColor(null)} />}
 
       {showWave && <WaveOverlay onDone={() => setShowWave(false)} />}
+
+      {speedLinesDir && (
+        <SpeedLinesOverlay
+          direction={speedLinesDir}
+          onDone={() => setSpeedLinesDir(null)}
+        />
+      )}
 
       {showGlitch && <GlitchOverlay onDone={() => setShowGlitch(false)} />}
 

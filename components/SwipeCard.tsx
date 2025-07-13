@@ -39,8 +39,8 @@ const HIT_SLOP = px(16);
 
 export interface SwipeCardProps {
   imageUri: string;
-  onSwipeLeft?: () => void;
-  onSwipeRight?: () => void;
+  onSwipeLeft?: (fast: boolean) => void;
+  onSwipeRight?: (fast: boolean) => void;
   style?: any;
   disabled?: boolean;
 }
@@ -99,6 +99,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       const velocityX = event.velocityX;
       const shouldSwipeLeft = translateX.value < -SWIPE_THRESHOLD || velocityX < -1000;
       const shouldSwipeRight = translateX.value > SWIPE_THRESHOLD || velocityX > 1000;
+      const fast = Math.abs(velocityX) > 2000;
 
       const velocityFactor = Math.min(Math.abs(velocityX) / 2000, 1);
       const exitDistance = px(screenWidth * (1.5 + velocityFactor));
@@ -121,7 +122,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         // Play delete sound and trigger callback
         runOnJS(playDeleteSound)();
         if (onSwipeLeft) {
-          runOnJS(onSwipeLeft)();
+          runOnJS(onSwipeLeft)(fast);
         }
       } else if (shouldSwipeRight) {
         // Swipe right - keep
@@ -139,7 +140,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         // Play keep sound and trigger callback
         runOnJS(playKeepSound)();
         if (onSwipeRight) {
-          runOnJS(onSwipeRight)();
+          runOnJS(onSwipeRight)(fast);
         }
       } else {
         // Snap back to center

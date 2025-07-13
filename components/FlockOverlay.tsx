@@ -32,31 +32,29 @@ export const FlockOverlay: React.FC<FlockOverlayProps> = ({ onDone }) => {
     );
   }, [progress, onDone]);
 
-  const birds = new Array(BIRD_COUNT).fill(0).map((_, i) => {
+  const Bird = ({ index }: { index: number }) => {
     const style = useAnimatedStyle(() => ({
       position: 'absolute',
-      bottom: i * 10,
+      bottom: index * 10,
       left: -30,
       transform: [
-        {
-          translateX: (progress.value - i * 0.1) * screenWidth,
-        },
-        {
-          translateY: Math.sin(progress.value * 6 + i) * 20,
-        },
+        { translateX: (progress.value - index * 0.1) * screenWidth },
+        { translateY: Math.sin(progress.value * 6 + index) * 20 },
       ],
       opacity: progress.value < 1 ? 1 : 0,
     }));
     return (
-      <Animated.Text key={i} style={[styles.bird, style]}>
+      <Animated.Text key={index} style={[styles.bird, style]}>
         🐦
       </Animated.Text>
     );
-  });
+  };
 
   return (
     <Animated.View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      {birds}
+      {Array.from({ length: BIRD_COUNT }).map((_, i) => (
+        <Bird key={i} index={i} />
+      ))}
     </Animated.View>
   );
 };

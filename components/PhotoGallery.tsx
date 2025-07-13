@@ -9,6 +9,7 @@ import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
 import { PixelBurst } from './PixelBurst';
 import { TurboOverlay } from './TurboOverlay';
+import { FlockOverlay } from './FlockOverlay';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
@@ -78,6 +79,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [showStart, setShowStart] = useState(false);
   const [combo, setCombo] = useState<number | null>(null);
   const [burstColor, setBurstColor] = useState<string | null>(null);
+  const [showFlock, setShowFlock] = useState(false);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   const consecutiveDeleteRef = React.useRef(0);
@@ -186,13 +188,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       setCombo(consecutiveDeleteRef.current);
     }
 
-    // Trigger confetti on long delete streaks
+    // Trigger confetti and bird flock on long delete streaks
     if (consecutiveDeleteRef.current >= STREAK_THRESHOLD) {
       setConfettiKey((k) => k + 1);
+      setShowFlock(true);
       consecutiveDeleteRef.current = 0;
       setCombo(null);
     }
-
 
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
@@ -444,6 +446,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
           origin={{ x: Dimensions.get('window').width / 2, y: 0 }}
         />
       )}
+
+      {showFlock && <FlockOverlay onDone={() => setShowFlock(false)} />}
 
       {combo && <ComboOverlay count={combo} onDone={() => setCombo(null)} />}
 

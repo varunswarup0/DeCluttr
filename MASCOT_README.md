@@ -1,6 +1,6 @@
 # Mascot Design
 
-A tiny bird cheers players whenever they level up. Keep each sprite sheet small and colorful so animations stay snappy on low-end devices.
+A tiny bird cheers players during milestones like long swipe combos. Keep each sprite sheet small and colorful so animations stay snappy on low-end devices.
 
 Sprite frames live in `assets/mascot/<theme>/` with folders for `default`, `amusement`, and `horror`. Swap PNG sequences in these folders and toggle `APP_THEME` to change the look.
 

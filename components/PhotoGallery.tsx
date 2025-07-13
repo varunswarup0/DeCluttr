@@ -3,7 +3,7 @@ import { View, Alert, Dimensions, Pressable } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { CONFETTI_COLORS } from '~/theme/colors';
-import { SwipeDeck, SwipeDeckItem } from './SwipeDeck';
+import { SwipeDeck, SwipeDeckItem, SwipeDeckHandle } from './SwipeDeck';
 // Toast and achievement overlays removed for a cleaner interface
 import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
@@ -94,6 +94,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const deleteCountRef = React.useRef(0);
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
+  const deckRef = React.useRef<SwipeDeckHandle>(null);
+  const turboRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [turbo, setTurbo] = useState(false);
 
   const fetchFn = useMemo(() => {
     if (albumName) {
@@ -376,6 +379,34 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (turboRef.current) {
+        clearInterval(turboRef.current);
+      }
+    };
+  }, []);
+
+  const startTurbo = () => {
+    if (turboRef.current) return;
+    setTurbo(true);
+    turboRef.current = setInterval(() => {
+      if (!deckRef.current) return;
+      deckRef.current.swipeLeft();
+      if (currentPhotoIndex >= photos.length - 1) {
+        stopTurbo();
+      }
+    }, 120);
+  };
+
+  const stopTurbo = () => {
+    if (turboRef.current) {
+      clearInterval(turboRef.current);
+      turboRef.current = null;
+    }
+    setTurbo(false);
+  };
+
   if (loading) {
     return (
       <View className={cn('flex-1 items-center justify-center', className)}>
@@ -411,6 +442,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
       {/* Swipe Deck */}
       <SwipeDeck
+        ref={deckRef}
         data={photos}
         onSwipeLeft={handleSwipeLeft}
         onSwipeRight={handleSwipeRight}
@@ -447,6 +479,15 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         <Button variant="secondary" size="icon" onPress={openCurrentPhoto}>
           <Ionicons name="open-outline" size={px(18)} color="white" />
           <Text className="sr-only">Open</Text>
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onPressIn={startTurbo}
+          onPressOut={stopTurbo}
+          className={turbo ? 'bg-red-500' : ''}>
+          <Ionicons name="speedometer" size={px(18)} color="white" />
+          <Text className="sr-only">Turbo</Text>
         </Button>
         <Button variant="primary" size="icon" onPress={resetGallery} className="bg-red-500">
           <Ionicons name="refresh" size={px(18)} color="white" />

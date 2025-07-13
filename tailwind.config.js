@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
   fontFamily: {
-        sans: ['Inter', 'System', 'sans-serif'],
+        sans: ['Quicksand_400Regular', 'System', 'sans-serif'],
         // Use the Expo font name for Press Start 2P
         arcade: ['"PressStart2P_400Regular"', 'Inter', 'System', 'sans-serif'],
         celeste: ['"VT323"', 'monospace'],

@@ -26,8 +26,8 @@ export interface SwipeDeckItem {
 
 export interface SwipeDeckProps {
   data: SwipeDeckItem[];
-  onSwipeLeft?: (item: SwipeDeckItem, index: number) => void;
-  onSwipeRight?: (item: SwipeDeckItem, index: number) => void;
+  onSwipeLeft?: (item: SwipeDeckItem, index: number, fast: boolean) => void;
+  onSwipeRight?: (item: SwipeDeckItem, index: number, fast: boolean) => void;
   onDeckEmpty?: () => void;
   maxVisibleCards?: number;
   cardSpacing?: number;
@@ -153,9 +153,9 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
     }, [data.length, onDeckEmpty]);
 
     const handleSwipeLeft = useCallback(
-      (item: SwipeDeckItem, index: number) => {
+      (item: SwipeDeckItem, index: number, fast: boolean) => {
         if (inputBlocked) return;
-        onSwipeLeft?.(item, index);
+        onSwipeLeft?.(item, index, fast);
 
         // Animate cards moving up in the stack
         for (let i = 0; i < Math.min(maxVisibleCards - 1, scaleValues.length); i++) {
@@ -178,9 +178,9 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
       ]
     );
     const handleSwipeRight = useCallback(
-      (item: SwipeDeckItem, index: number) => {
+      (item: SwipeDeckItem, index: number, fast: boolean) => {
         if (inputBlocked) return;
-        onSwipeRight?.(item, index);
+        onSwipeRight?.(item, index, fast);
 
         // Animate cards moving up in the stack
         for (let i = 0; i < Math.min(maxVisibleCards - 1, scaleValues.length); i++) {
@@ -236,13 +236,13 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
         swipeLeft: () => {
           const card = getVisibleCards()[0];
           if (card) {
-            handleSwipeLeft(card, card.dataIndex);
+            handleSwipeLeft(card, card.dataIndex, false);
           }
         },
         swipeRight: () => {
           const card = getVisibleCards()[0];
           if (card) {
-            handleSwipeRight(card, card.dataIndex);
+            handleSwipeRight(card, card.dataIndex, false);
           }
         },
       }),
@@ -287,8 +287,12 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
               ]}>
               <SwipeCard
                 imageUri={card.imageUri}
-                onSwipeLeft={() => handleSwipeLeft(card, card.dataIndex)}
-                onSwipeRight={() => handleSwipeRight(card, card.dataIndex)}
+                onSwipeLeft={(fast) =>
+                  handleSwipeLeft(card, card.dataIndex, fast)
+                }
+                onSwipeRight={(fast) =>
+                  handleSwipeRight(card, card.dataIndex, fast)
+                }
                 disabled={!isTopCard || inputBlocked}
                 style={{
                   shadowOpacity: isTopCard ? 0.3 : 0.1,

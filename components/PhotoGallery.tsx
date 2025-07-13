@@ -12,6 +12,7 @@ import { TurboOverlay } from './TurboOverlay';
 import { FlockOverlay } from './FlockOverlay';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
+import { GlitchOverlay } from './GlitchOverlay';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
 import {
   fetchPhotoAssetsWithPagination,
@@ -80,10 +81,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [combo, setCombo] = useState<number | null>(null);
   const [burstColor, setBurstColor] = useState<string | null>(null);
   const [showFlock, setShowFlock] = useState(false);
+  const [showGlitch, setShowGlitch] = useState(false);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
+  const GLITCH_STREAK = 5;
   const deckRef = React.useRef<SwipeDeckHandle>(null);
   const turboRef = React.useRef<NodeJS.Timeout | null>(null);
   const [turbo, setTurbo] = useState(false);
@@ -186,6 +189,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     consecutiveDeleteRef.current += 1;
     if (consecutiveDeleteRef.current >= 3) {
       setCombo(consecutiveDeleteRef.current);
+    }
+
+    if (consecutiveDeleteRef.current === GLITCH_STREAK) {
+      setShowGlitch(true);
     }
 
     // Trigger confetti and bird flock on long delete streaks
@@ -433,6 +440,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 
       {burstColor && <PixelBurst color={burstColor} onDone={() => setBurstColor(null)} />}
+
+      {showGlitch && <GlitchOverlay onDone={() => setShowGlitch(false)} />}
 
       {turbo && <TurboOverlay />}
 

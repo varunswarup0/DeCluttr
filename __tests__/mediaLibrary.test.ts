@@ -13,6 +13,7 @@ import {
   getAssetInfo,
   deletePhotoAssets,
   resetMediaLibraryPermissionCache,
+  deleteAssetsFromMonth,
 } from '../lib/mediaLibrary';
 
 jest.mock('expo-file-system', () => ({
@@ -81,6 +82,18 @@ jest.mock('expo-media-library', () => {
       assets: [{ id: 'del2', uri: 'deluri2' }],
       hasNextPage: false,
       endCursor: 'del-c2',
+    }))
+    // deleteAssetsFromMonth first page
+    .mockImplementationOnce(() => ({
+      assets: [{ id: 'm1', uri: 'muri1' }],
+      hasNextPage: true,
+      endCursor: 'm-c1',
+    }))
+    // deleteAssetsFromMonth second page
+    .mockImplementationOnce(() => ({
+      assets: [{ id: 'm2', uri: 'muri2' }],
+      hasNextPage: false,
+      endCursor: 'm-c2',
     }));
 
   const getAlbumAsync = jest.fn().mockResolvedValue({ id: 'wa1', title: 'WhatsApp Images' });
@@ -202,5 +215,18 @@ describe('mediaLibrary', () => {
     expect(result).toBe(true);
     expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(2);
     expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['del1', 'del2']);
+  });
+
+  it('deletes assets from a month', async () => {
+    (MediaLibrary.getAssetInfoAsync as jest.Mock)
+      .mockResolvedValueOnce({ id: 'm1', uri: 'muri1' })
+      .mockResolvedValueOnce({ id: 'm2', uri: 'muri2' })
+      .mockRejectedValueOnce(new Error('not found'))
+      .mockRejectedValueOnce(new Error('not found'));
+
+    const result = await deleteAssetsFromMonth(2024, 1);
+    expect(result).toBe(true);
+    expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(2);
+    expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['m1', 'm2']);
   });
 });

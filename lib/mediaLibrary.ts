@@ -573,3 +573,53 @@ export async function deleteAllAssetsFromAlbum(
     return false;
   }
 }
+
+/**
+ * Delete all assets from the specified month.
+ * @param year Full year, e.g. 2024
+ * @param month 1-12
+ */
+export async function deleteAssetsFromMonth(
+  year: number,
+  month: number,
+  mediaType: MediaLibrary.MediaTypeValue = MediaLibrary.MediaType.photo
+): Promise<boolean> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        console.warn('Media library permission not granted.');
+        return false;
+      }
+    }
+
+    const start = new Date(year, month - 1, 1).getTime();
+    const end = new Date(year, month, 1).getTime();
+    let after: string | undefined = undefined;
+    const ids: string[] = [];
+    let hasNext = true;
+    while (hasNext) {
+      const result = await MediaLibrary.getAssetsAsync({
+        first: 100,
+        after,
+        createdAfter: start,
+        createdBefore: end,
+        mediaType,
+        sortBy: MediaLibrary.SortBy.creationTime,
+      });
+      ids.push(...result.assets.map((a) => a.id));
+      after = result.endCursor;
+      hasNext = result.hasNextPage;
+    }
+
+    if (ids.length === 0) {
+      return true;
+    }
+
+    return deletePhotoAssets(ids);
+  } catch (error) {
+    console.error('Error deleting assets from month:', error);
+    return false;
+  }
+}

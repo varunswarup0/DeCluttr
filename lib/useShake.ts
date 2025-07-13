@@ -35,7 +35,7 @@ export function useShake(onShake: () => void, threshold = 1.4) {
 
   useEffect(() => {
     Accelerometer.setUpdateInterval(100);
-    const sub = Accelerometer.addListener((data) => {
+    const sub = Accelerometer.addListener((data: AccelerometerMeasurement) => {
       const previous = last.current;
       if (previous && isShake(previous, data, threshold)) {
         const now = Date.now();

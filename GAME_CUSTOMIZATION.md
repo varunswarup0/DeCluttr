@@ -4,7 +4,7 @@ This guide summarizes the key files to modify when you want to personalize the g
 
 ## Fonts and Typography
 
-DeCluttr ships with the classic arcade typeface **"Press Start 2P"** alongside Inter.
+DeCluttr ships with the classic arcade typeface **"Press Start 2P"** alongside Quicksand.
 The fonts are loaded with Expo's font utilities and exposed via Tailwind so you can
 easily reference them in your components.
 
@@ -16,11 +16,12 @@ easily reference them in your components.
 
   ```ts
   import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
+  import { Quicksand_400Regular, Quicksand_700Bold } from '@expo-google-fonts/quicksand';
 
   export function useCustomFonts() {
     const [loaded] = useFonts({
-      Inter_400Regular,
-      Inter_700Bold,
+      Quicksand_400Regular,
+      Quicksand_700Bold,
       PressStart2P_400Regular,
       VT323_400Regular,
       Bungee_400Regular,
@@ -37,7 +38,7 @@ easily reference them in your components.
 
   ```js
   fontFamily: {
-    sans: ['Inter', 'System', 'sans-serif'],
+    sans: ['Quicksand_400Regular', 'System', 'sans-serif'],
     arcade: ['"PressStart2P_400Regular"', 'Inter', 'System', 'sans-serif'],
     celeste: ['"VT323"', 'monospace'],
     funky: ['"Bungee"', 'sans-serif'],

@@ -50,8 +50,8 @@ const fontSizes = {
   caption2: px(11),
 } as const;
 
-// Default to the arcade font so all text uses "Press Start 2P"
-const TextClassContext = React.createContext<string | undefined>('font-arcade');
+// Default to the sans font family (Quicksand)
+const TextClassContext = React.createContext<string | undefined>('font-sans');
 
 function Text({
   className,

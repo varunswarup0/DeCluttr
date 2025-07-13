@@ -8,6 +8,7 @@ import { SwipeDeck, SwipeDeckItem, SwipeDeckHandle } from './SwipeDeck';
 import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
 import { PixelBurst } from './PixelBurst';
+import { TurboOverlay } from './TurboOverlay';
 import { SwipeHint } from './SwipeHint';
 import { RetroStart } from './RetroStart';
 import { BackgroundOptimizer } from './BackgroundOptimizer';
@@ -29,16 +30,10 @@ import { Button } from '~/components/nativewindui/Button';
 import { Ionicons } from '@expo/vector-icons';
 import { cn } from '~/lib/cn';
 import { px } from '~/lib/pixelPerfect';
-import { useRecycleBinStore, XP_CONFIG } from '~/store/store';
-import {
-  SESSION_MESSAGES,
-  END_MESSAGES,
-  SURPRISE_MESSAGES,
-  createMessagePicker,
-} from '~/lib/positiveMessages';
+import { useRecycleBinStore } from '~/store/store';
+import { END_MESSAGES, createMessagePicker } from '~/lib/positiveMessages';
 import { audioService } from '~/lib/audioService';
 
-const pickSessionMessage = createMessagePicker(SESSION_MESSAGES);
 const pickEndMessage = createMessagePicker(END_MESSAGES);
 
 interface PhotoGalleryProps {
@@ -57,12 +52,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   // Use RecycleBin store
-  const {
-    addXP,
-    resetGallery: resetRecycleBinStore,
-    isXpLoaded,
-    loadZenMode,
-  } = useRecycleBinStore();
+  const { resetGallery: resetRecycleBinStore, loadZenMode } = useRecycleBinStore();
 
   useEffect(() => {
     return () => {
@@ -90,8 +80,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [burstColor, setBurstColor] = useState<string | null>(null);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
-  // Track total deletes this session for surprise messages
-  const deleteCountRef = React.useRef(0);
   const consecutiveDeleteRef = React.useRef(0);
   const STREAK_THRESHOLD = 10;
   const deckRef = React.useRef<SwipeDeckHandle>(null);
@@ -175,12 +163,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   );
 
   useEffect(() => {
-    if (isXpLoaded) {
-      loadPhotos();
-    }
+    loadPhotos();
     // Intentionally omit loadPhotos from deps to avoid reloading when the cursor changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isXpLoaded]);
+  }, []);
 
   const handleSwipeLeft = async (item: SwipeDeckItem, index: number) => {
     // Swipe event - user wants to delete the current photo permanently
@@ -189,14 +175,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       Alert.alert('Error', 'Failed to delete photo');
       return;
     }
-    await addXP(XP_CONFIG.DELETE_PHOTO + XP_CONFIG.PERMANENT_DELETE);
     setSwipeFlash('DELETED!');
     setBurstColor('rgb(255,59,48)');
     setShowSwipeHint(false);
     // Play a random voice clip for extra feedback
     audioService.playRandomVoice();
-    // Track streaks and total delete count for surprise messages
-    deleteCountRef.current += 1;
+    // Track streaks
     consecutiveDeleteRef.current += 1;
     if (consecutiveDeleteRef.current >= 3) {
       setCombo(consecutiveDeleteRef.current);
@@ -209,11 +193,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       setCombo(null);
     }
 
-    // Show surprise message roughly every 5 deletes
-    if (deleteCountRef.current % 5 === 0) {
-      const msg = SURPRISE_MESSAGES[Math.floor(Math.random() * SURPRISE_MESSAGES.length)];
-      Alert.alert(msg);
-    }
 
     // Update current photo index for tracking progress
     setCurrentPhotoIndex((prev) => prev + 1);
@@ -264,13 +243,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         } else {
           setHasMore(false);
         }
-        const msg = pickSessionMessage();
-        Alert.alert(msg, 'Keep it up!');
+        // Prefetch successful
       } else {
-        loadPhotos().then(() => {
-          const msg = pickSessionMessage();
-          Alert.alert(msg, 'Keep it up!');
-        });
+        loadPhotos();
       }
     } else {
       const endMsg = pickEndMessage();
@@ -293,14 +268,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   const resetGallery = async () => {
     // First, confirm the action with the user
-    Alert.alert('Reset Gallery', 'Reset progress and XP? This also clears deleted photos.', [
+    Alert.alert('Reset Gallery', 'Reset progress? This also clears deleted photos.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Reset',
         style: 'destructive',
         onPress: async () => {
           try {
-            // Reset the RecycleBin store (clears deletedPhotos and resets XP)
+            // Reset the RecycleBin store
             await resetRecycleBinStore();
 
             // Reset local component state
@@ -456,6 +431,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {swipeFlash && <SwipeFlash label={swipeFlash} onDone={() => setSwipeFlash(null)} />}
 
       {burstColor && <PixelBurst color={burstColor} onDone={() => setBurstColor(null)} />}
+
+      {turbo && <TurboOverlay />}
 
       {/* Confetti burst when deleting */}
       {confettiKey > 0 && (

@@ -16,15 +16,9 @@ export const useStore = create<BearState>((set) => ({
 }));
 
 // XP Constants
-export const XP_CONFIG = {
-  DELETE_PHOTO: 10,
-  RESTORE_PHOTO: -5,
-  PERMANENT_DELETE: 5,
-  CLEAR_ALL: 2, // per photo cleared
-} as const;
+// XP system removed for a leaner gameplay loop
 
 // Storage keys
-const XP_STORAGE_KEY = '@decluttr_xp';
 const ONBOARDING_STORAGE_KEY = '@decluttr_onboarding_completed';
 const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
@@ -41,8 +35,6 @@ export interface DeletedPhoto {
 export interface RecycleBinState {
   deletedPhotos: DeletedPhoto[];
   totalDeleted: number;
-  xp: number;
-  isXpLoaded: boolean;
   onboardingCompleted: boolean;
   zenMode: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
@@ -59,9 +51,6 @@ export interface RecycleBinState {
   loadTotalDeleted: () => Promise<void>;
   saveTotalDeleted: (count: number) => Promise<void>;
   getDeletedPhoto: (photoId: string) => DeletedPhoto | undefined;
-  loadXP: () => Promise<void>;
-  addXP: (amount: number) => Promise<void>;
-  subtractXP: (amount: number) => Promise<void>;
   resetGallery: () => Promise<void>;
   checkOnboardingStatus: () => Promise<boolean>;
   completeOnboarding: () => Promise<void>;
@@ -73,8 +62,6 @@ export interface RecycleBinState {
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   deletedPhotos: [],
   totalDeleted: 0,
-  xp: 0,
-  isXpLoaded: false,
   onboardingCompleted: false,
   zenMode: false,
 
@@ -109,22 +96,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
   },
 
-  // Load XP from AsyncStorage on app startup
-  loadXP: async () => {
-    try {
-      const storage = getAsyncStorage();
-      const storedXP = await storage.getItem(XP_STORAGE_KEY);
-      let xp = storedXP ? parseInt(storedXP, 10) : 0;
-      if (isNaN(xp)) {
-        xp = 0;
-      }
-      set({ xp, isXpLoaded: true });
-    } catch (error) {
-      console.error('Error in loadXP:', error);
-      // If there's an error, just mark as loaded with 0 XP
-      set({ xp: 0, isXpLoaded: true });
-    }
-  },
 
   loadZenMode: async () => {
     try {
@@ -166,41 +137,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
   },
 
-  // Add XP and save to storage
-  addXP: async (amount: number) => {
-    try {
-      const { xp, zenMode } = get();
-      if (zenMode) {
-        return;
-      }
-      const newXP = Math.max(0, xp + amount); // Prevent negative XP
-      set({ xp: newXP });
-
-      // Save to storage using the fallback mechanism if needed
-      const storage = getAsyncStorage();
-      await storage.setItem(XP_STORAGE_KEY, newXP.toString());
-    } catch (error) {
-      console.error('Failed to add XP:', error);
-    }
-  },
-
-  // Subtract XP and save to storage
-  subtractXP: async (amount: number) => {
-    try {
-      const { xp, zenMode } = get();
-      if (zenMode) {
-        return;
-      }
-      const newXP = Math.max(0, xp - amount); // Prevent negative XP
-      set({ xp: newXP });
-
-      // Save to storage using the fallback mechanism if needed
-      const storage = getAsyncStorage();
-      await storage.setItem(XP_STORAGE_KEY, newXP.toString());
-    } catch (error) {
-      console.error('Failed to subtract XP:', error);
-    }
-  },
 
   addDeletedPhoto: (photo: DeletedPhoto) => {
     const { deletedPhotos, totalDeleted } = get();
@@ -212,8 +148,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     set({ deletedPhotos: updated, totalDeleted: newTotal });
     get().saveDeletedPhotos(updated);
     get().saveTotalDeleted(newTotal);
-    // Add XP for deleting a photo
-    get().addXP(XP_CONFIG.DELETE_PHOTO);
   },
 
   restorePhoto: (photoId: string) => {
@@ -224,8 +158,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       const updated = state.deletedPhotos.filter((photo) => photo.id !== photoId);
       set({ deletedPhotos: updated });
       get().saveDeletedPhotos(updated);
-      // Update XP for restoring a photo (negative value deducts XP)
-      get().addXP(XP_CONFIG.RESTORE_PHOTO);
       return photoToRestore;
     }
 
@@ -250,8 +182,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
     set({ deletedPhotos: updated });
     await get().saveDeletedPhotos(updated);
-    // Add XP for permanently deleting a photo
-    await get().addXP(XP_CONFIG.PERMANENT_DELETE);
     return true;
   },
 
@@ -269,8 +199,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
     set({ deletedPhotos: [] });
     await get().saveDeletedPhotos([]);
-    // Add XP for clearing recycle bin (per photo)
-    await get().addXP(XP_CONFIG.CLEAR_ALL * photosCount);
     return true;
   },
 
@@ -312,16 +240,11 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       await get().saveDeletedPhotos([]);
       await get().saveTotalDeleted(0);
 
-      // Reset XP to 0 and mark as loaded
-      set({ xp: 0, isXpLoaded: true });
-
-      // Save the reset XP to storage using fallback mechanism if needed
-      const storage = getAsyncStorage();
-      await storage.setItem(XP_STORAGE_KEY, '0');
+      // XP tracking removed
     } catch (error) {
       console.error('Failed to reset gallery:', error);
       // Make sure the state is reset even if storage fails
-      set({ deletedPhotos: [], totalDeleted: 0, xp: 0, isXpLoaded: true });
+      set({ deletedPhotos: [], totalDeleted: 0 });
     }
   },
 

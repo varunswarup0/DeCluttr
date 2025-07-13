@@ -6,4 +6,4 @@ A new WhatsApp tab lets you review images from the WhatsApp Images album.
 
 Run `npm install` then `npm start` to launch the app. For full media-library access you need a development build via `expo run:android` or `eas build`.
 
-See `docs/README.md` for an outline of the documentation including guides on audio, the mascot, onboarding, XP, and CI.
+See `docs/README.md` for an outline of the documentation including guides on audio, the mascot, onboarding, and CI.

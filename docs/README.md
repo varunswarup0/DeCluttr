@@ -10,7 +10,8 @@ docs/
 ├── zen.md         # distraction-free play
 ├── glitch.md      # short visual effect
 ├── tilt.md        # 3D card tilt effect
-└── speedlines.md  # fast swipe overlay
+├── speedlines.md  # fast swipe overlay
+└── shake.md       # shake-to-turbo mechanic
 ```
 
 Each file is under three short paragraphs for quick reference.

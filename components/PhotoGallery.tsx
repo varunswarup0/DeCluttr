@@ -37,6 +37,7 @@ import { px } from '~/lib/pixelPerfect';
 import { useRecycleBinStore } from '~/store/store';
 import { END_MESSAGES, createMessagePicker } from '~/lib/positiveMessages';
 import { audioService } from '~/lib/audioService';
+import { useShake } from '~/lib/useShake';
 
 const pickEndMessage = createMessagePicker(END_MESSAGES);
 
@@ -85,9 +86,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [showFlock, setShowFlock] = useState(false);
   const [showGlitch, setShowGlitch] = useState(false);
   const [showWave, setShowWave] = useState(false);
-  const [speedLinesDir, setSpeedLinesDir] = useState<'left' | 'right' | null>(
-    null
-  );
+  const [speedLinesDir, setSpeedLinesDir] = useState<'left' | 'right' | null>(null);
   const startShownRef = React.useRef(false);
   const tapTimesRef = React.useRef<number[]>([]);
   const consecutiveDeleteRef = React.useRef(0);
@@ -180,11 +179,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSwipeLeft = async (
-    item: SwipeDeckItem,
-    index: number,
-    fast: boolean
-  ) => {
+  const handleSwipeLeft = async (item: SwipeDeckItem, index: number, fast: boolean) => {
     // Swipe event - user wants to delete the current photo permanently
     const success = await deletePhotoAsset(item.id);
     if (!success) {
@@ -226,11 +221,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     // or a photo is permanently deleted from within the recycle bin screen.
   };
 
-  const handleSwipeRight = (
-    item: SwipeDeckItem,
-    index: number,
-    fast: boolean
-  ) => {
+  const handleSwipeRight = (item: SwipeDeckItem, index: number, fast: boolean) => {
     // Swipe event - user keeps the current photo
     setSwipeFlash('KEPT!');
     setBurstColor('rgb(52,199,89)');
@@ -412,6 +403,11 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     setTurbo(false);
   };
 
+  useShake(() => {
+    startTurbo();
+    setTimeout(stopTurbo, 1500);
+  });
+
   if (loading) {
     return (
       <View className={cn('flex-1 items-center justify-center', className)}>
@@ -465,10 +461,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {showWave && <WaveOverlay onDone={() => setShowWave(false)} />}
 
       {speedLinesDir && (
-        <SpeedLinesOverlay
-          direction={speedLinesDir}
-          onDone={() => setSpeedLinesDir(null)}
-        />
+        <SpeedLinesOverlay direction={speedLinesDir} onDone={() => setSpeedLinesDir(null)} />
       )}
 
       {showGlitch && <GlitchOverlay onDone={() => setShowGlitch(false)} />}

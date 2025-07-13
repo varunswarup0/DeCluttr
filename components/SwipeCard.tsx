@@ -10,6 +10,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  useDerivedValue,
   withSpring,
   withTiming,
   interpolate,
@@ -20,6 +21,7 @@ import Animated, {
 import { useSwipeAudio } from '~/lib/useSwipeAudio';
 import { lightImpact } from '~/lib/haptics';
 import { px } from '~/lib/pixelPerfect';
+import { SwipeTrail } from './SwipeTrail';
 
 const { width: screenWidth } = Dimensions.get('window');
 const CARD_WIDTH = px(screenWidth * 0.7);
@@ -55,6 +57,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const scale = useSharedValue(1);
   const zoomScale = useSharedValue(1);
   const rotateZ = useSharedValue(0);
+  const dragging = useSharedValue(0);
+  const combinedScale = useDerivedValue(() => scale.value * zoomScale.value);
   const { playDeleteSound, playKeepSound } = useSwipeAudio();
   const onTap = () => lightImpact();
 
@@ -74,6 +78,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
     onStart: () => {
       if (!disabled) {
         scale.value = withSpring(0.95);
+        dragging.value = 1;
         runOnJS(onTap)();
       }
     },
@@ -89,6 +94,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
       scale.value = withSpring(1);
       rotateZ.value = withSpring(0);
+      dragging.value = 0;
 
       const velocityX = event.velocityX;
       const shouldSwipeLeft = translateX.value < -SWIPE_THRESHOLD || velocityX < -1000;
@@ -203,6 +209,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               animatedStyle,
               style,
             ]}>
+            <SwipeTrail
+              imageUri={imageUri}
+              translateX={translateX}
+              translateY={translateY}
+              rotateZ={rotateZ}
+              scale={combinedScale}
+              active={dragging}
+            />
             <Animated.Image
               entering={FadeIn.duration(200)}
               source={{ uri: imageUri }}

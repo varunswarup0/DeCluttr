@@ -9,6 +9,7 @@ import {
   fetchVideoAssetsWithPagination,
   fetchAllVideoAssets,
   fetchAssetsFromAlbumWithPagination,
+  deleteAllAssetsFromAlbum,
   getAssetInfo,
   deletePhotoAssets,
   resetMediaLibraryPermissionCache,
@@ -68,6 +69,18 @@ jest.mock('expo-media-library', () => {
       assets: Array.from({ length: first }, (_, i) => ({ id: `wa${i}`, uri: `wauri${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'wa-end',
+    }))
+    // deleteAllAssetsFromAlbum first page
+    .mockImplementationOnce(() => ({
+      assets: [{ id: 'del1', uri: 'deluri1' }],
+      hasNextPage: true,
+      endCursor: 'del-c1',
+    }))
+    // deleteAllAssetsFromAlbum second page
+    .mockImplementationOnce(() => ({
+      assets: [{ id: 'del2', uri: 'deluri2' }],
+      hasNextPage: false,
+      endCursor: 'del-c2',
     }));
 
   const getAlbumAsync = jest.fn().mockResolvedValue({ id: 'wa1', title: 'WhatsApp Images' });
@@ -176,5 +189,18 @@ describe('mediaLibrary', () => {
     );
     expect(result.assets).toHaveLength(1);
     expect(MediaLibrary.getAlbumAsync).toHaveBeenCalledWith('WhatsApp Images');
+  });
+
+  it('deletes all assets from an album', async () => {
+    (MediaLibrary.getAssetInfoAsync as jest.Mock)
+      .mockResolvedValueOnce({ id: 'del1', uri: 'deluri1' }) // asset1 before
+      .mockResolvedValueOnce({ id: 'del2', uri: 'deluri2' }) // asset2 before
+      .mockRejectedValueOnce(new Error('not found')) // asset1 after
+      .mockRejectedValueOnce(new Error('not found')); // asset2 after
+
+    const result = await deleteAllAssetsFromAlbum('Test');
+    expect(result).toBe(true);
+    expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(2);
+    expect(MediaLibrary.deleteAssetsAsync).toHaveBeenCalledWith(['del1', 'del2']);
   });
 });

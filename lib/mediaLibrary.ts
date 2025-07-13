@@ -522,3 +522,54 @@ export async function fetchWhatsAppVideos(after?: string, first: number = 20) {
     MediaLibrary.MediaType.video
   );
 }
+
+/**
+ * Delete all assets from the specified album.
+ * Useful for bulk cleanup operations.
+ */
+export async function deleteAllAssetsFromAlbum(
+  albumName: string,
+  mediaType: MediaLibrary.MediaTypeValue = MediaLibrary.MediaType.photo
+): Promise<boolean> {
+  try {
+    const hasPermission = await checkMediaLibraryPermission();
+    if (!hasPermission) {
+      const granted = await requestMediaLibraryPermission();
+      if (!granted) {
+        console.warn('Media library permission not granted.');
+        return false;
+      }
+    }
+
+    const album = await MediaLibrary.getAlbumAsync(albumName);
+    if (!album) {
+      // nothing to delete
+      return true;
+    }
+
+    let after: string | undefined = undefined;
+    const ids: string[] = [];
+    let hasNext = true;
+    while (hasNext) {
+      const result = await MediaLibrary.getAssetsAsync({
+        first: 100,
+        after,
+        album: album.id,
+        mediaType,
+        sortBy: MediaLibrary.SortBy.creationTime,
+      });
+      ids.push(...result.assets.map((a) => a.id));
+      after = result.endCursor;
+      hasNext = result.hasNextPage;
+    }
+
+    if (ids.length === 0) {
+      return true;
+    }
+
+    return deletePhotoAssets(ids);
+  } catch (error) {
+    console.error('Error deleting assets from album:', error);
+    return false;
+  }
+}

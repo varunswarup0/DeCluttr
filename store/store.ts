@@ -68,7 +68,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   totalDeleted: 0,
   onboardingCompleted: false,
   zenMode: false,
-  navigationMode: false,
+  navigationMode: true,
 
   // Helper to persist deleted photos
   saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
@@ -127,10 +127,10 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     try {
       const storage = getAsyncStorage();
       const stored = await storage.getItem(NAV_MODE_STORAGE_KEY);
-      set({ navigationMode: stored === 'true' });
+      set({ navigationMode: stored !== null ? stored === 'true' : true });
     } catch (error) {
       console.error('Failed to load navigation mode:', error);
-      set({ navigationMode: false });
+      set({ navigationMode: true });
     }
   },
 

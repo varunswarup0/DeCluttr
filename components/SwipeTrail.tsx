@@ -136,22 +136,26 @@ export const SwipeTrail: React.FC<SwipeTrailProps> = ({
 
   return (
     <>
+      {/* pointerEvents isn't typed for Animated.Image but works at runtime */}
       <Animated.Image
         source={{ uri: imageUri }}
         style={style3}
         resizeMode="cover"
+        // @ts-expect-error pointerEvents not in ImageProps
         pointerEvents="none"
       />
       <Animated.Image
         source={{ uri: imageUri }}
         style={style2}
         resizeMode="cover"
+        // @ts-expect-error pointerEvents not in ImageProps
         pointerEvents="none"
       />
       <Animated.Image
         source={{ uri: imageUri }}
         style={style1}
         resizeMode="cover"
+        // @ts-expect-error pointerEvents not in ImageProps
         pointerEvents="none"
       />
     </>

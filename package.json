@@ -51,6 +51,7 @@
     "expo-media-library": "^17.1.6",
     "expo-navigation-bar": "~4.2.4",
     "expo-router": "~5.0.3",
+    "expo-sensors": "~14.1.4",
     "expo-status-bar": "~2.2.3",
     "expo-store-review": "~8.1.5",
     "expo-system-ui": "~5.0.6",

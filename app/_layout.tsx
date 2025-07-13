@@ -101,6 +101,7 @@ export default function RootLayout() {
                   options={{ headerShown: false, gestureEnabled: false }}
                 />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="album/[name]" options={{ headerShown: false }} />
               </Stack>
             </NavThemeProvider>
           </ActionSheetProvider>

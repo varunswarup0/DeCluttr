@@ -1,6 +1,11 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
 
 export const TurboOverlay: React.FC = () => {

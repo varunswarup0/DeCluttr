@@ -287,12 +287,8 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
               ]}>
               <SwipeCard
                 imageUri={card.imageUri}
-                onSwipeLeft={(fast) =>
-                  handleSwipeLeft(card, card.dataIndex, fast)
-                }
-                onSwipeRight={(fast) =>
-                  handleSwipeRight(card, card.dataIndex, fast)
-                }
+                onSwipeLeft={(fast) => handleSwipeLeft(card, card.dataIndex, fast)}
+                onSwipeRight={(fast) => handleSwipeRight(card, card.dataIndex, fast)}
                 disabled={!isTopCard || inputBlocked}
                 style={{
                   shadowOpacity: isTopCard ? 0.3 : 0.1,

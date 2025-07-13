@@ -96,7 +96,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
   },
 
-
   loadZenMode: async () => {
     try {
       const storage = getAsyncStorage();
@@ -136,7 +135,6 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
       console.error('Failed to load deleted photos:', error);
     }
   },
-
 
   addDeletedPhoto: (photo: DeletedPhoto) => {
     const { deletedPhotos, totalDeleted } = get();

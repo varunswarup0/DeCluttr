@@ -21,18 +21,12 @@ export const GlitchOverlay: React.FC<GlitchOverlayProps> = ({ onDone }) => {
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 60 });
     offset.value = withRepeat(
-      withSequence(
-        withTiming(-4, { duration: 40 }),
-        withTiming(4, { duration: 40 })
-      ),
+      withSequence(withTiming(-4, { duration: 40 }), withTiming(4, { duration: 40 })),
       5,
       true
     );
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.02, { duration: 60 }),
-        withTiming(1, { duration: 60 })
-      ),
+      withSequence(withTiming(1.02, { duration: 60 }), withTiming(1, { duration: 60 })),
       5,
       true
     );
@@ -51,10 +45,7 @@ export const GlitchOverlay: React.FC<GlitchOverlayProps> = ({ onDone }) => {
   }));
 
   return (
-    <Animated.View
-      pointerEvents="none"
-      style={[StyleSheet.absoluteFill, styles.overlay, style]}
-    />
+    <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.overlay, style]} />
   );
 };
 

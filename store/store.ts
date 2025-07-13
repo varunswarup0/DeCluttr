@@ -42,6 +42,8 @@ export interface RecycleBinState {
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
   permanentlyDelete: (photoId: string) => Promise<boolean>;
+  permanentlyDeleteMany: (photoIds: string[]) => Promise<boolean>;
+  restorePhotos: (photoIds: string[]) => DeletedPhoto[];
   clearRecycleBin: () => Promise<boolean>;
   /**
    * Permanently remove photos that have been in the recycle bin for more than
@@ -189,6 +191,20 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     return null;
   },
 
+  restorePhotos: (photoIds: string[]) => {
+    const restored: DeletedPhoto[] = [];
+    const remaining = get().deletedPhotos.filter((p) => {
+      if (photoIds.includes(p.id)) {
+        restored.push(p);
+        return false;
+      }
+      return true;
+    });
+    set({ deletedPhotos: remaining });
+    get().saveDeletedPhotos(remaining);
+    return restored;
+  },
+
   permanentlyDelete: async (photoId: string): Promise<boolean> => {
     const photo = get().deletedPhotos.find((p) => p.id === photoId);
     if (!photo) {
@@ -205,6 +221,24 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
 
     const updated = get().deletedPhotos.filter((p) => p.id !== photoId);
+    set({ deletedPhotos: updated });
+    await get().saveDeletedPhotos(updated);
+    return true;
+  },
+
+  permanentlyDeleteMany: async (photoIds: string[]): Promise<boolean> => {
+    const existing = get().deletedPhotos.filter((p) => photoIds.includes(p.id));
+    if (existing.length === 0) {
+      return true;
+    }
+    const success = await deletePhotoAssets(existing.map((p) => p.id)).catch((err) => {
+      console.error('Failed to delete photo assets:', err);
+      return false;
+    });
+    if (!success) {
+      return false;
+    }
+    const updated = get().deletedPhotos.filter((p) => !photoIds.includes(p.id));
     set({ deletedPhotos: updated });
     await get().saveDeletedPhotos(updated);
     return true;

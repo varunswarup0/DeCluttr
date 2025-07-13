@@ -1,5 +1,13 @@
 import { Stack } from 'expo-router';
-import { View, ScrollView, Image, Dimensions, Alert, TouchableOpacity } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  Dimensions,
+  Alert,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { useState, useEffect } from 'react';
 
 import { Container } from '~/components/Container';
@@ -17,9 +25,19 @@ interface RecycleBinItemProps {
   photo: DeletedPhoto;
   onRestore: () => void;
   onPermanentDelete: () => void;
+  selectionMode?: boolean;
+  selected?: boolean;
+  onSelectToggle?: () => void;
 }
 
-const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPermanentDelete }) => {
+const RecycleBinItem: React.FC<RecycleBinItemProps> = ({
+  photo,
+  onRestore,
+  onPermanentDelete,
+  selectionMode = false,
+  selected = false,
+  onSelectToggle,
+}) => {
   const [imageError, setImageError] = useState(false);
 
   const handlePermanentDelete = () => {
@@ -30,7 +48,8 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
   };
 
   return (
-    <View
+    <Pressable
+      onPress={selectionMode ? onSelectToggle : undefined}
       className="overflow-hidden rounded-xl border border-border bg-card"
       style={{ width: ITEM_WIDTH }}>
       {/* Photo Preview */}
@@ -53,6 +72,15 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
             <Text color="secondary" variant="caption2">
               Image not available
             </Text>
+          </View>
+        )}
+        {selectionMode && (
+          <View className="absolute right-1 top-1">
+            <MaterialCommunityIcons
+              name={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+              size={24}
+              color="white"
+            />
           </View>
         )}
 
@@ -89,17 +117,43 @@ const RecycleBinItem: React.FC<RecycleBinItemProps> = ({ photo, onRestore, onPer
           </Button>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
 export default function RecycleBin() {
-  const { deletedPhotos, restorePhoto, permanentlyDelete, clearRecycleBin, purgeExpiredPhotos } =
-    useRecycleBinStore();
+  const {
+    deletedPhotos,
+    restorePhoto,
+    permanentlyDelete,
+    permanentlyDeleteMany,
+    clearRecycleBin,
+    purgeExpiredPhotos,
+  } = useRecycleBinStore();
 
   useEffect(() => {
     purgeExpiredPhotos();
   }, [purgeExpiredPhotos]);
+
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelectionMode = () => {
+    setSelectionMode((m) => !m);
+    setSelectedIds(new Set());
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const handleRestore = (photoId: string) => {
     const restoredPhoto = restorePhoto(photoId);
@@ -115,6 +169,27 @@ export default function RecycleBin() {
     } else {
       Alert.alert('Error', 'Failed to delete photo. Please try again.');
     }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    const success = await permanentlyDeleteMany(ids);
+    if (success) {
+      Alert.alert('Photos Deleted', `${ids.length} deleted.`);
+      setSelectedIds(new Set());
+    } else {
+      Alert.alert('Error', 'Failed to delete selected photos.');
+    }
+  };
+
+  const handleRestoreSelected = () => {
+    if (selectedIds.size === 0) return;
+    for (const id of Array.from(selectedIds)) {
+      restorePhoto(id);
+    }
+    Alert.alert('Photos Restored', `${selectedIds.size} restored.`);
+    setSelectedIds(new Set());
   };
 
   const handleClearAll = () => {
@@ -142,14 +217,16 @@ export default function RecycleBin() {
       <Stack.Screen
         options={{
           title: 'Recycle Bin',
-          headerRight:
-            deletedPhotos.length > 0
-              ? () => (
-                  <TouchableOpacity onPress={handleClearAll}>
-                    <Text className="font-medium text-red-600">Clear All</Text>
-                  </TouchableOpacity>
-                )
-              : undefined,
+          headerRight: () =>
+            deletedPhotos.length > 0 && !selectionMode ? (
+              <TouchableOpacity onPress={handleClearAll}>
+                <Text className="font-medium text-red-600">Clear All</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={toggleSelectionMode}>
+                <Text className="font-medium">{selectionMode ? 'Cancel' : 'Select'}</Text>
+              </TouchableOpacity>
+            ),
         }}
       />
       <Container>
@@ -194,10 +271,33 @@ export default function RecycleBin() {
                     photo={photo}
                     onRestore={() => handleRestore(photo.id)}
                     onPermanentDelete={() => handlePermanentDelete(photo.id)}
+                    selectionMode={selectionMode}
+                    selected={selectedIds.has(photo.id)}
+                    onSelectToggle={() => toggleSelect(photo.id)}
                   />
                 ))}
               </View>
             </ScrollView>
+          </View>
+        )}
+        {selectionMode && (
+          <View className="absolute bottom-0 left-0 right-0 flex-row justify-around border-t border-border bg-background p-4">
+            <Button
+              variant="primary"
+              size="sm"
+              onPress={handleRestoreSelected}
+              disabled={selectedIds.size === 0}
+              className="mr-2 flex-1 bg-blue-500">
+              <Text className="text-center text-white">Restore</Text>
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onPress={handleDeleteSelected}
+              disabled={selectedIds.size === 0}
+              className="flex-1 bg-red-500">
+              <Text className="text-center text-white">Delete</Text>
+            </Button>
           </View>
         )}
       </Container>

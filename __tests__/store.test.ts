@@ -35,6 +35,7 @@ describe('RecycleBin store', () => {
       onboardingCompleted: false,
       zenMode: false,
     });
+    jest.clearAllMocks();
   });
 
   it('adds and restores photos', async () => {
@@ -59,6 +60,16 @@ describe('RecycleBin store', () => {
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(1);
     await expect(clearRecycleBin()).resolves.toBe(true);
     expect(mediaLibrary.deletePhotoAssets).toHaveBeenCalledWith(['2']);
+    expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
+  });
+
+  it('permanently deletes multiple photos', async () => {
+    const { addDeletedPhoto, permanentlyDeleteMany } = useRecycleBinStore.getState();
+    addDeletedPhoto(createPhoto('a'));
+    addDeletedPhoto(createPhoto('b'));
+    await expect(permanentlyDeleteMany(['a', 'b'])).resolves.toBe(true);
+    const calls = (mediaLibrary.deletePhotoAssets as jest.Mock).mock.calls;
+    expect(new Set(calls[calls.length - 1][0])).toEqual(new Set(['a', 'b']));
     expect(useRecycleBinStore.getState().deletedPhotos).toHaveLength(0);
   });
 

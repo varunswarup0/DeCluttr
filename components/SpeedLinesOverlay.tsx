@@ -15,10 +15,7 @@ interface SpeedLinesOverlayProps {
 const LINE_COUNT = 5;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export const SpeedLinesOverlay: React.FC<SpeedLinesOverlayProps> = ({
-  direction,
-  onDone,
-}) => {
+export const SpeedLinesOverlay: React.FC<SpeedLinesOverlayProps> = ({ direction, onDone }) => {
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -30,18 +27,14 @@ export const SpeedLinesOverlay: React.FC<SpeedLinesOverlayProps> = ({
   const containerStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX:
-          (direction === 'left' ? -1 : 1) * progress.value * SCREEN_WIDTH,
+        translateX: (direction === 'left' ? -1 : 1) * progress.value * SCREEN_WIDTH,
       },
     ],
     opacity: 1 - progress.value,
   }));
 
   return (
-    <Animated.View
-      pointerEvents="none"
-      style={[StyleSheet.absoluteFill, containerStyle]}
-    >
+    <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, containerStyle]}>
       {Array.from({ length: LINE_COUNT }).map((_, i) => (
         <View
           key={i}

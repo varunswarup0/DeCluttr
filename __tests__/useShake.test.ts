@@ -1,3 +1,5 @@
+import { deltaMagnitude, isShake } from '../lib/useShake';
+
 jest.mock(
   'expo-sensors',
   () => ({
@@ -8,8 +10,6 @@ jest.mock(
   }),
   { virtual: true }
 );
-
-import { deltaMagnitude, isShake } from '../lib/useShake';
 
 test('deltaMagnitude computes distance', () => {
   const a = { x: 0, y: 0, z: 0 };

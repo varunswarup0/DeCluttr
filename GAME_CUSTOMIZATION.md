@@ -60,9 +60,6 @@ in `lib/useCustomFonts.ts` and update the `fontFamily` entries in
 - Navigation theme values live in `theme/index.ts`.
 - Switch between `default`, `amusement`, and `horror` by editing `APP_THEME` in `theme/colors.ts`. Each theme provides unique confetti colors and gradients.
 
-## XP Values
-- Edit `XP_CONFIG` in `store/store.ts` to tweak XP rewards and penalties.
-
 ## Positive Messages
 - Modify phrases in `lib/positiveMessages.ts` to change the short encouragement banners.
 

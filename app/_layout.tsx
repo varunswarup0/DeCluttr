@@ -30,26 +30,17 @@ export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const fontsLoaded = useCustomFonts();
-  const {
-    loadXP,
-    loadDeletedPhotos,
-    loadTotalDeleted,
-    isXpLoaded,
-    checkOnboardingStatus,
-    loadZenMode,
-  } = useRecycleBinStore();
+  const { loadDeletedPhotos, loadTotalDeleted, checkOnboardingStatus, loadZenMode } =
+    useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
 
-  // Load XP from AsyncStorage on app startup
+  // Load persisted data on startup
   useEffect(() => {
-    if (!isXpLoaded) {
-      loadXP();
-      loadDeletedPhotos();
-      loadTotalDeleted();
-      loadZenMode();
-    }
-  }, [loadXP, loadDeletedPhotos, loadTotalDeleted, loadZenMode, isXpLoaded]);
+    loadDeletedPhotos();
+    loadTotalDeleted();
+    loadZenMode();
+  }, [loadDeletedPhotos, loadTotalDeleted, loadZenMode]);
 
   // Check onboarding status only once on startup to avoid
   // repeated AsyncStorage reads when navigating between screens
@@ -72,14 +63,14 @@ export default function RootLayout() {
 
   // Start background music once fonts and storage are ready
   useEffect(() => {
-    if (fontsLoaded && isXpLoaded) {
+    if (fontsLoaded) {
       backgroundMusicService.play();
       audioService.initialize().catch(() => {});
     }
     return () => {
       backgroundMusicService.stop();
     };
-  }, [fontsLoaded, isXpLoaded]);
+  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;

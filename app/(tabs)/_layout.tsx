@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useRecycleBinStore } from '~/store/store';
 import { AudioToggle } from '~/components/AudioToggle';
 import { ZenToggle } from '~/components/ZenToggle';
+import { NavigationToggle } from '~/components/NavigationToggle';
 
 function RecycleBinTabIcon({ color, size }: { color: string; size: number }) {
   const { deletedPhotos } = useRecycleBinStore();
@@ -26,6 +27,7 @@ export default function TabLayout() {
         headerTitle: '',
         headerRight: () => (
           <View className="mr-1 flex-row items-center gap-2">
+            <NavigationToggle />
             <ZenToggle />
             <AudioToggle />
           </View>

@@ -1,0 +1,28 @@
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
+index 1b7048a..3aca925 100644
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
+@@ -29,7 +29,7 @@ tasks.withType<KotlinCompile> {
+ }
+ 
+ group = "expo.modules"
+-version "1.0"
++version = "1.0"
+ 
+ tasks.withType<Test>().configureEach {
+   testLogging {
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
+index 5b8457a..c5a768c 100644
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
+@@ -26,8 +26,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
+     project.logger.quiet("")
+     project.logger.quiet("Using expo modules")
+ 
+-    val (prebuiltProjects, projects) = config.allProjects.partition { project ->
+-      project.usePublication
++    val (prebuiltProjects, projects) = config.allProjects.partition { pkg ->
++      pkg.usePublication
+     }
+ 
+     project.withSubprojects(projects) { subproject ->

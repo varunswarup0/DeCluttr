@@ -14,7 +14,7 @@ import { px } from '~/lib/pixelPerfect';
 const screens = [
   {
     title: 'Declutter Photos',
-    subtitle: 'Swipe left to delete, right to keep.',
+    subtitle: 'Swipe left to delete forever, right to keep.',
     image: <View style={{ height: px(180) }} />,
     backgroundColor: '#025CBD',
   },

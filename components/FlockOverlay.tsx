@@ -8,7 +8,6 @@ import Animated, {
   withDelay,
   Easing,
 } from 'react-native-reanimated';
-import { Text } from '~/components/nativewindui/Text';
 
 interface FlockOverlayProps {
   onDone?: () => void;

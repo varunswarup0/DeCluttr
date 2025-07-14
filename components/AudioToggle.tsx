@@ -10,7 +10,10 @@ export const AudioToggle: React.FC = () => {
   if (!isLoaded) return null;
 
   return (
-    <Pressable onPress={toggleAudio} className="p-1">
+    <Pressable
+      onPress={toggleAudio}
+      accessibilityLabel={settings.enabled ? 'Mute audio' : 'Unmute audio'}
+      className="p-1">
       <Ionicons
         name={settings.enabled ? 'volume-high' : 'volume-mute'}
         size={px(16)}

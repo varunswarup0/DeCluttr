@@ -3,3 +3,11 @@ if (typeof global !== 'undefined') {
   // See https://react.dev/warnings/react-test-renderer for details
   (global as any).IS_REACT_ACT_ENVIRONMENT = true;
 }
+
+// Silence Alert dialogs in tests
+try {
+  const { Alert } = require('react-native');
+  if (Alert && Alert.alert) {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  }
+} catch {}

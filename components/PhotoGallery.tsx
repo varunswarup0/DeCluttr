@@ -102,6 +102,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const deckRef = React.useRef<SwipeDeckHandle>(null);
   const turboRef = React.useRef<NodeJS.Timeout | null>(null);
   const [turbo, setTurbo] = useState(false);
+  const loadIdRef = React.useRef(0);
+  const loadingRef = React.useRef(false);
 
   const fetchFn = useMemo(() => {
     if (albumName) {
@@ -130,10 +132,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   const loadPhotos = React.useCallback(
     async (cursor?: string): Promise<boolean> => {
+      if (loadingRef.current) return false;
+      loadingRef.current = true;
+      const loadId = ++loadIdRef.current;
       try {
         if (!isMounted.current) return false;
         setLoading(true);
         const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
+        if (loadId !== loadIdRef.current) return false;
         const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
           id: asset.id,
           imageUri: asset.uri,
@@ -141,7 +147,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         nextCursorRef.current = result.endCursor;
         setHasMore(result.hasNextPage);
 
-        if (!isMounted.current) return false;
+        if (!isMounted.current || loadId !== loadIdRef.current) return false;
         setPhotos(photoItems);
         // Start swiping from the beginning whenever a new set is loaded
         setCurrentPhotoIndex(0);
@@ -151,7 +157,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
           fetchFn(result.endCursor, 50)
             .then(
               (nextResult: { assets: PhotoAsset[]; hasNextPage: boolean; endCursor?: string }) => {
-                if (!isMounted.current) return;
+                if (!isMounted.current || loadId !== loadIdRef.current) return;
                 setPrefetchedPhotos(
                   nextResult.assets.map((asset) => ({ id: asset.id, imageUri: asset.uri }))
                 );
@@ -171,9 +177,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         Alert.alert('Error', 'Failed to load from your gallery');
         return false;
       } finally {
-        if (isMounted.current) {
+        if (isMounted.current && loadId === loadIdRef.current) {
           setLoading(false);
         }
+        loadingRef.current = false;
       }
     },
     [fetchFn]
@@ -314,6 +321,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
           try {
             // Reset the RecycleBin store
             await resetRecycleBinStore();
+
+            // Invalidate ongoing loads
+            loadIdRef.current++;
+            loadingRef.current = false;
 
             // Reset local component state
             setConfettiKey(0);

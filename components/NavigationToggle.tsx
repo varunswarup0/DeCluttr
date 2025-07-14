@@ -12,7 +12,10 @@ export const NavigationToggle: React.FC = () => {
   };
 
   return (
-    <Pressable onPress={toggle} className="p-1">
+    <Pressable
+      onPress={toggle}
+      accessibilityLabel={navigationMode ? 'Switch to delete mode' : 'Switch to navigation mode'}
+      className="p-1">
       <Ionicons
         name={navigationMode ? 'swap-horizontal' : 'trash'}
         size={px(16)}

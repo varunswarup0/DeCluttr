@@ -1,4 +1,5 @@
 # DeCluttr
+[![CI](https://github.com/varunswarup0/DeCluttr/actions/workflows/test.yml/badge.svg)](https://github.com/varunswarup0/DeCluttr/actions/workflows/test.yml)
 
 A minimal photo clean-up game for Android built with Expo React Native. A small bird mascot celebrates your progress as you swipe photos left or right. Long delete streaks unleash a playful flock animation for extra flair.
 You can also move a photo into any album using the folder button.

@@ -64,6 +64,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     loadZenMode,
     loadNavigationMode,
     navigationMode,
+    loadDeleteWarningShown,
+    setDeleteWarningShown,
+    deleteWarningShown,
   } = useRecycleBinStore();
 
   useEffect(() => {
@@ -75,7 +78,23 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   useEffect(() => {
     loadZenMode();
     loadNavigationMode();
-  }, [loadZenMode, loadNavigationMode]);
+    loadDeleteWarningShown();
+  }, [loadZenMode, loadNavigationMode, loadDeleteWarningShown]);
+
+  useEffect(() => {
+    if (deleteWarningShown === false) {
+      Alert.alert(
+        'Permanent Deletion',
+        'Swiping left removes photos from your device immediately. There is no system trash.',
+        [
+          {
+            text: 'Got it',
+            onPress: () => setDeleteWarningShown(true),
+          },
+        ]
+      );
+    }
+  }, [deleteWarningShown, setDeleteWarningShown]);
 
   const [photos, setPhotos] = useState<SwipeDeckItem[]>([]);
   const [prefetchedPhotos, setPrefetchedPhotos] = useState<SwipeDeckItem[]>([]);

@@ -11,6 +11,7 @@ const DELETED_PHOTOS_STORAGE_KEY = '@decluttr_deleted_photos';
 const TOTAL_DELETED_STORAGE_KEY = '@decluttr_total_deleted';
 const ZEN_MODE_STORAGE_KEY = '@decluttr_zen_mode';
 const NAV_MODE_STORAGE_KEY = '@decluttr_navigation_mode';
+const DELETE_WARNING_KEY = '@decluttr_delete_warning_shown';
 
 // RecycleBin types
 export interface DeletedPhoto {
@@ -26,6 +27,7 @@ export interface RecycleBinState {
   onboardingCompleted: boolean;
   zenMode: boolean;
   navigationMode: boolean;
+  deleteWarningShown: boolean;
   addDeletedPhoto: (photo: DeletedPhoto) => void;
   restorePhoto: (photoId: string) => DeletedPhoto | null;
   permanentlyDelete: (photoId: string) => Promise<boolean>;
@@ -50,6 +52,8 @@ export interface RecycleBinState {
   setZenMode: (enabled: boolean) => Promise<void>;
   loadNavigationMode: () => Promise<void>;
   setNavigationMode: (enabled: boolean) => Promise<void>;
+  loadDeleteWarningShown: () => Promise<void>;
+  setDeleteWarningShown: (shown: boolean) => Promise<void>;
 }
 
 export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
@@ -58,6 +62,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   onboardingCompleted: false,
   zenMode: false,
   navigationMode: true,
+  deleteWarningShown: true,
 
   // Helper to persist deleted photos
   saveDeletedPhotos: async (photos: DeletedPhoto[]) => {
@@ -131,6 +136,28 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     } catch (error) {
       console.error('Failed to save navigation mode:', error);
       set({ navigationMode: enabled });
+    }
+  },
+
+  loadDeleteWarningShown: async () => {
+    try {
+      const storage = getAsyncStorage();
+      const stored = await storage.getItem(DELETE_WARNING_KEY);
+      set({ deleteWarningShown: stored === 'true' });
+    } catch (error) {
+      console.error('Failed to load delete warning flag:', error);
+      set({ deleteWarningShown: true });
+    }
+  },
+
+  setDeleteWarningShown: async (shown: boolean) => {
+    try {
+      const storage = getAsyncStorage();
+      await storage.setItem(DELETE_WARNING_KEY, String(shown));
+      set({ deleteWarningShown: shown });
+    } catch (error) {
+      console.error('Failed to save delete warning flag:', error);
+      set({ deleteWarningShown: shown });
     }
   },
 

@@ -4,6 +4,7 @@ import * as MediaLibrary from 'expo-media-library';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { CONFETTI_COLORS } from '~/theme/colors';
 import { SwipeDeck, SwipeDeckItem, SwipeDeckHandle } from './SwipeDeck';
+import { MultiSelectBar } from './MultiSelectBar';
 // Toast and achievement overlays removed for a cleaner interface
 import { ComboOverlay } from './ComboOverlay';
 import { SwipeFlash } from './SwipeFlash';
@@ -23,6 +24,7 @@ import {
   fetchAlbums,
   moveAssetToAlbum,
   deletePhotoAsset,
+  deletePhotoAssets,
   openPhotoAsset,
   openVideoAsset,
   PhotoAsset,
@@ -104,6 +106,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [turbo, setTurbo] = useState(false);
   const loadIdRef = React.useRef(0);
   const loadingRef = React.useRef(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const fetchFn = useMemo(() => {
     if (albumName) {
@@ -193,7 +197,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   }, []);
 
   const handleSwipeLeft = async (item: SwipeDeckItem, index: number, fast: boolean) => {
-    if (navigationMode) {
+    if (navigationMode || selectionMode) {
       audioService.playTapSound();
       setCurrentPhotoIndex((prev) => prev + 1);
       return;
@@ -240,7 +244,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   };
 
   const handleSwipeRight = (item: SwipeDeckItem, index: number, fast: boolean) => {
-    if (navigationMode) {
+    if (navigationMode || selectionMode) {
       audioService.playTapSound();
       setCurrentPhotoIndex((prev) => prev + 1);
       return;
@@ -402,6 +406,50 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     }
   };
 
+  const toggleSelectCurrent = () => {
+    const current = photos[currentPhotoIndex];
+    if (!current) return;
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(current.id)) {
+        next.delete(current.id);
+      } else {
+        next.add(current.id);
+      }
+      setSelectionMode(next.size > 0);
+      return next;
+    });
+  };
+
+  const cancelSelection = () => {
+    setSelectedIds(new Set());
+    setSelectionMode(false);
+  };
+
+  const deleteSelected = () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) {
+      cancelSelection();
+      return;
+    }
+    Alert.alert('Delete Photos', `Delete ${ids.length} selected photos?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          const success = await deletePhotoAssets(ids);
+          if (success) {
+            setPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+            cancelSelection();
+          } else {
+            Alert.alert('Error', 'Failed to delete selected photos');
+          }
+        },
+      },
+    ]);
+  };
+
   useEffect(() => {
     return () => {
       if (turboRef.current) {
@@ -474,6 +522,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         data={photos}
         onSwipeLeft={handleSwipeLeft}
         onSwipeRight={handleSwipeRight}
+        onCardLongPress={toggleSelectCurrent}
+        selectedIds={selectedIds}
         onDeckEmpty={handleDeckEmpty}
         maxVisibleCards={3}
         cardSpacing={px(12)}
@@ -509,6 +559,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       {showFlock && <FlockOverlay onDone={() => setShowFlock(false)} />}
 
       {combo && <ComboOverlay count={combo} onDone={() => setCombo(null)} />}
+
+      {selectionMode && (
+        <MultiSelectBar
+          count={selectedIds.size}
+          onCancel={cancelSelection}
+          onDelete={deleteSelected}
+        />
+      )}
 
       {/* Action Buttons */}
       <View className="mt-6 flex-row gap-4">

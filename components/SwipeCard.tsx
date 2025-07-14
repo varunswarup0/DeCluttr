@@ -42,6 +42,10 @@ export interface SwipeCardProps {
   imageUri: string;
   onSwipeLeft?: (fast: boolean) => void;
   onSwipeRight?: (fast: boolean) => void;
+  /** Called when a long press is detected */
+  onLongPress?: () => void;
+  /** Highlight the card as selected */
+  selected?: boolean;
   style?: any;
   disabled?: boolean;
 }
@@ -50,6 +54,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   imageUri,
   onSwipeLeft,
   onSwipeRight,
+  onLongPress,
+  selected = false,
   style,
   disabled = false,
 }) => {
@@ -67,6 +73,9 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const handleLongPress = ({ nativeEvent }: { nativeEvent: { state: number } }) => {
     if (nativeEvent.state === GestureState.ACTIVE) {
       zoomScale.value = withTiming(1.5);
+      if (onLongPress) {
+        runOnJS(onLongPress)();
+      }
     } else if (
       nativeEvent.state === GestureState.END ||
       nativeEvent.state === GestureState.CANCELLED ||
@@ -239,6 +248,32 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
               }}
               resizeMode="cover"
             />
+
+            {selected && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: BORDER_RADIUS,
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View className="rounded-full bg-white" style={{ padding: OVERLAY_PADDING }}>
+                  <View
+                    className="items-center justify-center"
+                    style={{ height: ICON_SIZE, width: ICON_SIZE }}>
+                    <View
+                      className="rotate-45 border-b-2 border-r-2 border-green-500"
+                      style={{ height: ICON_SIZE * 0.55, width: ICON_SIZE * 0.28 }}
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
 
             <Animated.View
               style={[

@@ -29,6 +29,10 @@ export interface SwipeDeckProps {
   onSwipeLeft?: (item: SwipeDeckItem, index: number, fast: boolean) => void;
   onSwipeRight?: (item: SwipeDeckItem, index: number, fast: boolean) => void;
   onDeckEmpty?: () => void;
+  /** Called when a card is long pressed */
+  onCardLongPress?: (item: SwipeDeckItem, index: number) => void;
+  /** Set of selected card ids for highlighting */
+  selectedIds?: Set<string>;
   maxVisibleCards?: number;
   cardSpacing?: number;
   className?: string;
@@ -46,6 +50,8 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
       onSwipeLeft,
       onSwipeRight,
       onDeckEmpty,
+      onCardLongPress,
+      selectedIds,
       maxVisibleCards = 3,
       cardSpacing = px(8),
       className,
@@ -289,6 +295,8 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
                 imageUri={card.imageUri}
                 onSwipeLeft={(fast) => handleSwipeLeft(card, card.dataIndex, fast)}
                 onSwipeRight={(fast) => handleSwipeRight(card, card.dataIndex, fast)}
+                onLongPress={() => onCardLongPress?.(card, card.dataIndex)}
+                selected={selectedIds?.has(card.id)}
                 disabled={!isTopCard || inputBlocked}
                 style={{
                   shadowOpacity: isTopCard ? 0.3 : 0.1,

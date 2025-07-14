@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import { Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Container } from '~/components/Container';
 import { Text } from '~/components/nativewindui/Text';
 import { deleteAssetsFromMonth } from '~/lib/mediaLibrary';

@@ -5,6 +5,8 @@ import { jest } from '@jest/globals';
 
 import { useAudioSettings } from '../lib/useAudioSettings';
 
+jest.mock('react-native', () => ({ Alert: { alert: jest.fn() } }));
+
 const memory: Record<string, string> = {};
 jest.mock('../lib/asyncStorageWrapper', () => ({
   getAsyncStorage: () => ({
@@ -38,4 +40,18 @@ test('loads defaults and toggles', async () => {
   const { getAsyncStorage } = await import('../lib/asyncStorageWrapper');
   const storage = getAsyncStorage();
   expect(await storage.getItem('decluttr_audio_settings')).toContain('false');
+});
+
+test('clamps loaded volume to valid range', async () => {
+  memory['decluttr_audio_settings'] = JSON.stringify({ volume: 1.5 });
+  let hook: ReturnType<typeof useAudioSettings>;
+  function Test() {
+    hook = useAudioSettings();
+    return null;
+  }
+  await act(async () => {
+    create(<Test />);
+  });
+  await act(async () => {});
+  expect(hook!.settings.volume).toBe(1);
 });

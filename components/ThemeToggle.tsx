@@ -14,7 +14,10 @@ export function ThemeToggle() {
         className="items-center justify-center"
         key={`toggle-${colorScheme}`}
         entering={ZoomInRotate}>
-        <Pressable onPress={toggleColorScheme} className="opacity-80">
+        <Pressable
+          onPress={toggleColorScheme}
+          accessibilityLabel="Toggle theme"
+          className="opacity-80">
           {colorScheme === 'dark'
             ? ({ pressed }) => (
                 <View className={cn('px-0.5', pressed && 'opacity-50')}>

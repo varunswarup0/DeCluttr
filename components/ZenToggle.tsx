@@ -12,7 +12,7 @@ export const ZenToggle: React.FC = () => {
   };
 
   return (
-    <Pressable onPress={toggle} className="p-1">
+    <Pressable onPress={toggle} accessibilityLabel="Toggle zen mode" className="p-1">
       <Ionicons
         name={zenMode ? 'eye-off' : 'eye'}
         size={px(16)}

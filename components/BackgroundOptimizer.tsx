@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withTiming,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { GameTile } from './GameTile';
@@ -16,6 +17,9 @@ export const BackgroundOptimizer: React.FC = () => {
 
   useEffect(() => {
     progress.value = withRepeat(withTiming(100, { duration: 1200 }), -1, false);
+    return () => {
+      cancelAnimation(progress);
+    };
   }, [progress]);
 
   const style = useAnimatedStyle(() => ({

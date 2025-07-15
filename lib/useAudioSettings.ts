@@ -47,27 +47,32 @@ export const useAudioSettings = () => {
 
     loadSettings();
   }, []);
-  // Save settings to AsyncStorage
-  const saveSettings = async (newSettings: Partial<AudioSettings>) => {
+  const persist = async (s: AudioSettings) => {
     try {
-      const updatedSettings = { ...settings, ...newSettings };
-      setSettings(updatedSettings);
-
       const storage = getAsyncStorage();
-      await storage.setItem(AUDIO_SETTINGS_KEY, JSON.stringify(updatedSettings));
+      await storage.setItem(AUDIO_SETTINGS_KEY, JSON.stringify(s));
     } catch (error) {
       console.warn('Failed to save audio settings:', error);
       Alert.alert('Error', 'Failed to save audio settings');
     }
   };
 
+  // Save settings to AsyncStorage
+  const saveSettings = (updateFn: (cur: AudioSettings) => AudioSettings) => {
+    setSettings((prev) => {
+      const updated = updateFn(prev);
+      void persist(updated);
+      return updated;
+    });
+  };
+
   const toggleAudio = () => {
-    saveSettings({ enabled: !settings.enabled });
+    saveSettings((prev) => ({ ...prev, enabled: !prev.enabled }));
   };
 
   const setVolume = (volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
-    saveSettings({ volume: clampedVolume });
+    saveSettings((prev) => ({ ...prev, volume: clampedVolume }));
   };
 
   return {

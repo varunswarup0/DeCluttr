@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   withRepeat,
   withTiming,
+  cancelAnimation,
 } from 'react-native-reanimated';
 
 export const RetroOverlay: React.FC = () => {
@@ -13,6 +14,9 @@ export const RetroOverlay: React.FC = () => {
 
   useEffect(() => {
     offset.value = withRepeat(withTiming(-4, { duration: 800 }), -1, true);
+    return () => {
+      cancelAnimation(offset);
+    };
   }, [offset]);
 
   const animatedStyle = useAnimatedStyle(() => ({

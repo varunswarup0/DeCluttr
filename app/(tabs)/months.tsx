@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Container } from '~/components/Container';
 import { Text } from '~/components/nativewindui/Text';
@@ -27,7 +27,7 @@ const generateMonths = (count: number = 12): Month[] => {
 
 export default function Months() {
   const [busy, setBusy] = useState(false);
-  const months = generateMonths(12);
+  const months = useMemo(() => generateMonths(12), []);
 
   const handleDelete = async (m: Month) => {
     Alert.alert('Delete Month', `Remove all photos from ${m.label}?`, [

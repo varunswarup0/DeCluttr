@@ -28,72 +28,84 @@ jest.mock('expo-media-library', () => {
       assets: Array.from({ length: first }, (_, i) => ({ id: `id0${i}`, uri: `uri0${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'cursor0',
+      totalCount: first,
     }))
     // fetchPhotoAssetsWithPagination test
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `id1${i}`, uri: `uri1${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'cursor1',
+      totalCount: first,
     }))
     // fetchAllPhotoAssets first page
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `id2${i}`, uri: `uri2${i}` })),
       hasNextPage: true,
       endCursor: after ? `${after}-end` : 'cursor2',
+      totalCount: first * 2,
     }))
     // fetchAllPhotoAssets second page
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `id3${i}`, uri: `uri3${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'cursor3',
+      totalCount: first * 2,
     }))
     // fetchVideoAssetsWithPagination
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `vid${i}`, uri: `vuri${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'vcursor0',
+      totalCount: first,
     }))
     // fetchAllVideoAssets first page
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `vidA${i}`, uri: `vuriA${i}` })),
       hasNextPage: true,
       endCursor: after ? `${after}-end` : 'vcursor1',
+      totalCount: first * 2,
     }))
     // fetchAllVideoAssets second page
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `vidB${i}`, uri: `vuriB${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'vcursor2',
+      totalCount: first * 2,
     }))
     // fetchAssetsFromAlbumWithPagination
     .mockImplementationOnce(({ after, first }) => ({
       assets: Array.from({ length: first }, (_, i) => ({ id: `wa${i}`, uri: `wauri${i}` })),
       hasNextPage: false,
       endCursor: after ? `${after}-end` : 'wa-end',
+      totalCount: first,
     }))
     // deleteAllAssetsFromAlbum first page
     .mockImplementationOnce(() => ({
       assets: [{ id: 'del1', uri: 'deluri1' }],
       hasNextPage: true,
       endCursor: 'del-c1',
+      totalCount: 2,
     }))
     // deleteAllAssetsFromAlbum second page
     .mockImplementationOnce(() => ({
       assets: [{ id: 'del2', uri: 'deluri2' }],
       hasNextPage: false,
       endCursor: 'del-c2',
+      totalCount: 2,
     }))
     // deleteAssetsFromMonth first page
     .mockImplementationOnce(() => ({
       assets: [{ id: 'm1', uri: 'muri1' }],
       hasNextPage: true,
       endCursor: 'm-c1',
+      totalCount: 2,
     }))
     // deleteAssetsFromMonth second page
     .mockImplementationOnce(() => ({
       assets: [{ id: 'm2', uri: 'muri2' }],
       hasNextPage: false,
       endCursor: 'm-c2',
+      totalCount: 2,
     }));
 
   const getAlbumAsync = jest.fn().mockResolvedValue({ id: 'wa1', title: 'WhatsApp Images' });
@@ -140,6 +152,7 @@ describe('mediaLibrary', () => {
     const result = await fetchPhotoAssetsWithPagination('start', 1);
     expect(result.assets).toHaveLength(1);
     expect(result.endCursor).toBe('start-end');
+    expect(result.totalCount).toBe(1);
   });
 
   it('fetches all photo assets across pages', async () => {
@@ -153,6 +166,7 @@ describe('mediaLibrary', () => {
     const result = await fetchVideoAssetsWithPagination('start', 1);
     expect(result.assets).toHaveLength(1);
     expect(result.endCursor).toBe('start-end');
+    expect(result.totalCount).toBe(1);
     expect(MediaLibrary.getAssetsAsync).toHaveBeenCalledTimes(1);
   });
 
@@ -201,6 +215,7 @@ describe('mediaLibrary', () => {
       MediaLibrary.MediaType.photo as any
     );
     expect(result.assets).toHaveLength(1);
+    expect(result.totalCount).toBe(1);
     expect(MediaLibrary.getAlbumAsync).toHaveBeenCalledWith('WhatsApp Images');
   });
 

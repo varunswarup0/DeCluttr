@@ -7,6 +7,7 @@ import * as media from '../lib/mediaLibrary';
 
 jest.mock('../lib/mediaLibrary', () => ({
   fetchAllPhotoAssets: jest.fn(),
+  fetchPhotoAssetsWithPagination: jest.fn(),
   getAssetInfo: jest.fn(),
 }));
 
@@ -82,10 +83,19 @@ describe('photoAnalyzer', () => {
   });
 
   it('reports progress during analysis', async () => {
-    (media.fetchAllPhotoAssets as jest.Mock).mockResolvedValue([
-      { id: '1', uri: 'u1' },
-      { id: '2', uri: 'u2' },
-    ]);
+    (media.fetchPhotoAssetsWithPagination as jest.Mock)
+      .mockResolvedValueOnce({
+        assets: [{ id: '1', uri: 'u1' }],
+        hasNextPage: true,
+        endCursor: 'c1',
+        totalCount: 2,
+      })
+      .mockResolvedValueOnce({
+        assets: [{ id: '2', uri: 'u2' }],
+        hasNextPage: false,
+        endCursor: 'c2',
+        totalCount: 2,
+      });
     (media.getAssetInfo as jest.Mock).mockResolvedValue({
       id: '1',
       uri: 'u1',

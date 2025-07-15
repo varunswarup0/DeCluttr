@@ -17,4 +17,4 @@
 - Share images without captions or as documents.
 - Compress or resize photos and offer basic editing tools.
 - AI-based sorting into categories like selfies or pets.
-\n- [ ] Optimize memory usage when analyzing large photo libraries
+- [ ] Optimize memory usage when analyzing large photo libraries

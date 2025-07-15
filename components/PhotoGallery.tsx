@@ -469,6 +469,17 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     ]);
   };
 
+  const currentIndexRef = React.useRef(0);
+  const photosRef = React.useRef<SwipeDeckItem[]>([]);
+
+  useEffect(() => {
+    currentIndexRef.current = currentPhotoIndex;
+  }, [currentPhotoIndex]);
+
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
+
   useEffect(() => {
     return () => {
       if (turboRef.current) {
@@ -477,30 +488,32 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     };
   }, []);
 
-  const startTurbo = () => {
-    if (turboRef.current) return;
-    setTurbo(true);
-    turboRef.current = setInterval(() => {
-      if (!deckRef.current) return;
-      deckRef.current.swipeLeft();
-      if (currentPhotoIndex >= photos.length - 1) {
-        stopTurbo();
-      }
-    }, 120);
-  };
-
-  const stopTurbo = () => {
+  const stopTurbo = React.useCallback(() => {
     if (turboRef.current) {
       clearInterval(turboRef.current);
       turboRef.current = null;
     }
     setTurbo(false);
-  };
+  }, []);
 
-  useShake(() => {
+  const startTurbo = React.useCallback(() => {
+    if (turboRef.current) return;
+    setTurbo(true);
+    turboRef.current = setInterval(() => {
+      if (!deckRef.current) return;
+      deckRef.current.swipeLeft();
+      if (currentIndexRef.current >= photosRef.current.length - 1) {
+        stopTurbo();
+      }
+    }, 120);
+  }, [stopTurbo]);
+
+  const handleShake = React.useCallback(() => {
     startTurbo();
     setTimeout(stopTurbo, 1500);
-  });
+  }, [startTurbo, stopTurbo]);
+
+  useShake(handleShake);
 
   if (loading) {
     return (

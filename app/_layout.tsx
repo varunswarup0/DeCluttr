@@ -1,5 +1,4 @@
 import '../global.css';
-import 'expo-dev-client';
 import { useEffect } from 'react';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 
@@ -20,6 +19,9 @@ import { backgroundMusicService } from '~/lib/backgroundMusic';
 import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
 import { RetroOverlay } from '~/components/RetroOverlay';
+if (__DEV__) {
+  require('expo-dev-client');
+}
 
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);

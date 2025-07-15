@@ -34,20 +34,31 @@ export function useShake(onShake: () => void, threshold = 1.4) {
   const lastTime = useRef(0);
 
   useEffect(() => {
-    Accelerometer.setUpdateInterval(100);
-    const sub = Accelerometer.addListener((data: AccelerometerMeasurement) => {
-      const previous = last.current;
-      if (previous && isShake(previous, data, threshold)) {
-        const now = Date.now();
-        if (now - lastTime.current > 500) {
-          lastTime.current = now;
-          onShake();
-        }
+    let sub: { remove(): void } | null = null;
+    const setup = async () => {
+      const available = await Accelerometer.isAvailableAsync();
+      if (!available) {
+        console.warn('Accelerometer not available');
+        return;
       }
-      last.current = data;
-    });
+      Accelerometer.setUpdateInterval(100);
+      sub = Accelerometer.addListener((data: AccelerometerMeasurement) => {
+        const previous = last.current;
+        if (previous && isShake(previous, data, threshold)) {
+          const now = Date.now();
+          if (now - lastTime.current > 500) {
+            lastTime.current = now;
+            onShake();
+          }
+        }
+        last.current = data;
+      });
+    };
+    setup();
     return () => {
-      sub.remove();
+      if (sub) {
+        sub.remove();
+      }
     };
   }, [onShake, threshold]);
 }

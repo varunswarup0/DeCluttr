@@ -9,6 +9,6 @@ Photos deleted in the main gallery or recycle bin are removed from the device
 immediately. There is no separate trash folder beyond the in-app recycle bin,
 so use caution when swiping!
 
-Run `npm install` then `npm start` to launch the app. For full media-library access you need a development build via `expo run:android` or `eas build`.
+Run `npm install` then `npm start` to launch the app. For full media-library access you need a development build via `npx expo run:android` or `eas build`. The legacy global `expo` CLI can fail on Node 17 and above.
 
 See `docs/README.md` for an outline of the documentation including guides on audio, the mascot, onboarding, and CI.

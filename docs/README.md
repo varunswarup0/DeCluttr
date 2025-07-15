@@ -6,6 +6,7 @@ docs/
 ├── mascot.md      # mascot assets
 ├── onboarding.md  # onboarding flow
 ├── ci.md          # CI setup
+├── android.md     # emulator troubleshooting
 ├── video.md       # handling video assets
 ├── zen.md         # distraction-free play
 ├── glitch.md      # short visual effect

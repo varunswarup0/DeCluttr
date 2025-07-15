@@ -6,7 +6,7 @@ if (typeof global !== 'undefined') {
 
 // Silence Alert dialogs in tests
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Alert } = require('react-native');
   if (Alert && Alert.alert) {
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});

@@ -363,6 +363,7 @@ export async function openPhotoAsset(assetId: string): Promise<boolean> {
       return false;
     }
 
+    // TODO: Investigate intermittent failures when opening assets via Linking.openURL
     const { Linking } = await import('react-native');
     await Linking.openURL(info.uri);
     return true;

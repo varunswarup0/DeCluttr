@@ -278,9 +278,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
   purgeExpiredPhotos: async () => {
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const now = Date.now();
-    const expired = get().deletedPhotos.filter(
-      (p) => now - new Date(p.deletedAt).getTime() > THIRTY_DAYS_MS
-    );
+    const expired = get().deletedPhotos.filter((p) => now - p.deletedAt.getTime() > THIRTY_DAYS_MS);
 
     if (expired.length === 0) {
       return;
@@ -295,7 +293,7 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
     }
 
     const updated = get().deletedPhotos.filter(
-      (p) => now - new Date(p.deletedAt).getTime() <= THIRTY_DAYS_MS
+      (p) => now - p.deletedAt.getTime() <= THIRTY_DAYS_MS
     );
     set({ deletedPhotos: updated });
     await get().saveDeletedPhotos(updated);

@@ -21,6 +21,13 @@ export interface PhotoAsset {
   uri: string;
 }
 
+export interface PaginatedAssets {
+  assets: PhotoAsset[];
+  hasNextPage: boolean;
+  endCursor?: string;
+  totalCount: number;
+}
+
 /**
  * Request permission to access the device's media library
  * @returns Promise<boolean> - true if permission is granted, false otherwise
@@ -91,16 +98,12 @@ export async function fetchPhotoAssets(first: number = 1000): Promise<PhotoAsset
  * Fetch photo assets with pagination support
  * @param after - Cursor for pagination (optional)
  * @param first - Number of assets to fetch per page (default: 20)
- * @returns Promise<{assets: PhotoAsset[], hasNextPage: boolean, endCursor?: string}>
+ * @returns Promise<PaginatedAssets>
  */
 export async function fetchPhotoAssetsWithPagination(
   after?: string,
   first: number = 20
-): Promise<{
-  assets: PhotoAsset[];
-  hasNextPage: boolean;
-  endCursor?: string;
-}> {
+): Promise<PaginatedAssets> {
   try {
     // First check if permission is granted
     const hasPermission = await checkMediaLibraryPermission();
@@ -123,12 +126,14 @@ export async function fetchPhotoAssetsWithPagination(
       assets: result.assets.map((asset) => ({ id: asset.id, uri: asset.uri })),
       hasNextPage: result.hasNextPage,
       endCursor: result.endCursor,
+      totalCount: result.totalCount ?? result.assets.length,
     };
   } catch (error) {
     console.error('Error fetching photo assets with pagination:', error);
     return {
       assets: [],
       hasNextPage: false,
+      totalCount: 0,
     };
   }
 }
@@ -393,11 +398,7 @@ export async function openVideoAsset(assetId: string): Promise<boolean> {
 export async function fetchVideoAssetsWithPagination(
   after?: string,
   first: number = 20
-): Promise<{
-  assets: PhotoAsset[];
-  hasNextPage: boolean;
-  endCursor?: string;
-}> {
+): Promise<PaginatedAssets> {
   try {
     const hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {
@@ -416,12 +417,14 @@ export async function fetchVideoAssetsWithPagination(
       assets: result.assets.map((asset) => ({ id: asset.id, uri: asset.uri })),
       hasNextPage: result.hasNextPage,
       endCursor: result.endCursor,
+      totalCount: result.totalCount ?? result.assets.length,
     };
   } catch (error) {
     console.error('Error fetching video assets with pagination:', error);
     return {
       assets: [],
       hasNextPage: false,
+      totalCount: 0,
     };
   }
 }
@@ -464,11 +467,7 @@ export async function fetchAssetsFromAlbumWithPagination(
   after?: string,
   first: number = 20,
   mediaType: MediaLibrary.MediaTypeValue = MediaLibrary.MediaType.photo
-): Promise<{
-  assets: PhotoAsset[];
-  hasNextPage: boolean;
-  endCursor?: string;
-}> {
+): Promise<PaginatedAssets> {
   try {
     const hasPermission = await checkMediaLibraryPermission();
     if (!hasPermission) {
@@ -480,7 +479,7 @@ export async function fetchAssetsFromAlbumWithPagination(
 
     const album = await MediaLibrary.getAlbumAsync(albumName);
     if (!album) {
-      return { assets: [], hasNextPage: false };
+      return { assets: [], hasNextPage: false, totalCount: 0 };
     }
 
     const result = await MediaLibrary.getAssetsAsync({
@@ -495,10 +494,11 @@ export async function fetchAssetsFromAlbumWithPagination(
       assets: result.assets.map((a) => ({ id: a.id, uri: a.uri })),
       hasNextPage: result.hasNextPage,
       endCursor: result.endCursor,
+      totalCount: result.totalCount ?? result.assets.length,
     };
   } catch (error) {
     console.error('Error fetching assets from album:', error);
-    return { assets: [], hasNextPage: false };
+    return { assets: [], hasNextPage: false, totalCount: 0 };
   }
 }
 

@@ -1,4 +1,9 @@
-import { fetchAllPhotoAssets, getAssetInfo, PhotoAsset } from './mediaLibrary';
+import {
+  fetchAllPhotoAssets,
+  fetchPhotoAssetsWithPagination,
+  getAssetInfo,
+  PhotoAsset,
+} from './mediaLibrary';
 
 export type Orientation = 'portrait' | 'landscape' | 'square';
 
@@ -88,8 +93,10 @@ export async function analyzePhotosWithProgress(
   onProgress?: (processed: number, total: number) => void,
   batchSize: number = 20
 ): Promise<PhotoAnalysisResult> {
-  const assets = await fetchAllPhotoAssets(batchSize);
-  const total = assets.length;
+  let cursor: string | undefined = undefined;
+  let hasNext = true;
+  let processed = 0;
+  let total = 0;
   const byOrientation: Record<Orientation, PhotoAsset[]> = {
     portrait: [],
     landscape: [],
@@ -104,8 +111,10 @@ export async function analyzePhotosWithProgress(
   const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
   const now = Date.now();
 
-  for (let i = 0; i < assets.length; i += batchSize) {
-    const batch = assets.slice(i, i + batchSize);
+  while (hasNext) {
+    const page = await fetchPhotoAssetsWithPagination(cursor, batchSize);
+    const batch = page.assets;
+    if (total === 0) total = page.totalCount;
     const infos = await Promise.all(batch.map((a) => getAssetInfo(a.id)));
     infos.forEach((info, idx) => {
       if (!info) return;
@@ -135,7 +144,11 @@ export async function analyzePhotosWithProgress(
       dupMap[key].push(asset);
     });
 
-    onProgress?.(Math.min(i + batch.length, total), total);
+    processed += batch.length;
+    onProgress?.(Math.min(processed, total), total);
+
+    cursor = page.endCursor;
+    hasNext = page.hasNextPage;
   }
 
   const duplicates: PhotoAsset[][] = [];

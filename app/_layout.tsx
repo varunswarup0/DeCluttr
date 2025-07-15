@@ -20,7 +20,7 @@ import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
 import { RetroOverlay } from '~/components/RetroOverlay';
 if (__DEV__) {
-  require('expo-dev-client');
+  void import('expo-dev-client');
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {

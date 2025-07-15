@@ -471,6 +471,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   const currentIndexRef = React.useRef(0);
   const photosRef = React.useRef<SwipeDeckItem[]>([]);
+  const turboTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     currentIndexRef.current = currentPhotoIndex;
@@ -485,6 +486,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       if (turboRef.current) {
         clearInterval(turboRef.current);
       }
+      if (turboTimeoutRef.current) {
+        clearTimeout(turboTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -493,11 +497,19 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       clearInterval(turboRef.current);
       turboRef.current = null;
     }
+    if (turboTimeoutRef.current) {
+      clearTimeout(turboTimeoutRef.current);
+      turboTimeoutRef.current = null;
+    }
     setTurbo(false);
   }, []);
 
   const startTurbo = React.useCallback(() => {
     if (turboRef.current) return;
+    if (turboTimeoutRef.current) {
+      clearTimeout(turboTimeoutRef.current);
+      turboTimeoutRef.current = null;
+    }
     setTurbo(true);
     turboRef.current = setInterval(() => {
       if (!deckRef.current) return;
@@ -510,7 +522,10 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   const handleShake = React.useCallback(() => {
     startTurbo();
-    setTimeout(stopTurbo, 1500);
+    if (turboTimeoutRef.current) {
+      clearTimeout(turboTimeoutRef.current);
+    }
+    turboTimeoutRef.current = setTimeout(stopTurbo, 1500);
   }, [startTurbo, stopTurbo]);
 
   useShake(handleShake);

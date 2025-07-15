@@ -77,6 +77,7 @@ export default function RootLayout() {
     }
     return () => {
       backgroundMusicService.stop();
+      audioService.cleanup().catch(() => {});
     };
   }, [fontsLoaded]);
 

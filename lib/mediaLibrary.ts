@@ -240,27 +240,36 @@ export async function deletePhotoAssets(assetIds: string[]): Promise<boolean> {
 
     const validIds = validAssets.map((a) => a.id);
     const result = await MediaLibrary.deleteAssetsAsync(validIds);
-    let success = result === undefined ? true : result;
+    let allRemoved = result === undefined ? true : result;
 
-    if (success) {
-      // Verify deletion because some platforms return void
-      for (const asset of validAssets) {
+    // Verify deletion because some platforms return void
+    for (const asset of validAssets) {
+      let exists = true;
+      try {
+        await MediaLibrary.getAssetInfoAsync(asset.id);
+      } catch {
+        exists = false;
+      }
+      if (exists) {
+        allRemoved = false;
+        console.warn(`Asset ${asset.id} still exists after deletion attempt.`);
         try {
-          await MediaLibrary.getAssetInfoAsync(asset.id);
-          // Asset still exists
-          success = false;
-          console.warn(`Asset ${asset.id} still exists after deletion attempt.`);
+          const FS = await loadFileSystem();
+          await FS.deleteAsync(asset.uri, { idempotent: true });
+          // Check again
           try {
-            const FS = await loadFileSystem();
-            await FS.deleteAsync(asset.uri, { idempotent: true });
-          } catch (fsError) {
-            console.warn('Fallback file removal failed:', fsError);
+            await MediaLibrary.getAssetInfoAsync(asset.id);
+            console.warn(`Asset ${asset.id} still exists after fallback.`);
+          } catch {
+            // removed successfully
           }
-        } catch {
-          // Asset no longer exists
+        } catch (fsError) {
+          console.warn('Fallback file removal failed:', fsError);
         }
       }
     }
+
+    const success = allRemoved;
 
     if (success) {
       console.log(`Deleted ${validIds.length} photo asset(s).`);

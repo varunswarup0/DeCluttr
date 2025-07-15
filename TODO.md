@@ -18,3 +18,5 @@
 - Compress or resize photos and offer basic editing tools.
 - AI-based sorting into categories like selfies or pets.
 - [ ] Optimize memory usage when analyzing large photo libraries
+- [ ] Update Jest configuration to remove `ts-jest` deprecation warnings
+- [ ] Replace `react-test-renderer` usage in tests to avoid deprecation notices

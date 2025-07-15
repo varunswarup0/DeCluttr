@@ -7,6 +7,7 @@ import Animated, {
   withRepeat,
   withSequence,
   runOnJS,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { px } from '~/lib/pixelPerfect';
 
@@ -32,7 +33,11 @@ export const SwipeHint: React.FC<SwipeHintProps> = ({ onDone }) => {
         }
       });
     }, 2500);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimation(shift);
+      cancelAnimation(opacity);
+    };
   }, [onDone, opacity, shift]);
 
   const containerStyle = useAnimatedStyle(() => ({

@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   withRepeat,
   withTiming,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { Text } from '~/components/nativewindui/Text';
 
@@ -13,6 +14,9 @@ export const TurboOverlay: React.FC = () => {
 
   useEffect(() => {
     scale.value = withRepeat(withTiming(1.1, { duration: 200 }), -1, true);
+    return () => {
+      cancelAnimation(scale);
+    };
   }, [scale]);
 
   const style = useAnimatedStyle(() => ({

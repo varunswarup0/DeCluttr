@@ -8,6 +8,8 @@ docs/
 ├── ci.md          # CI setup
 ├── android.md     # emulator troubleshooting
 ├── video.md       # handling video assets
+├── gameplay.md    # swipe mechanics and feedback
+├── architecture.md # module overview
 ├── zen.md         # distraction-free play
 ├── glitch.md      # short visual effect
 ├── tilt.md        # 3D card tilt effect

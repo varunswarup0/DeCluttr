@@ -7,6 +7,7 @@ docs/
 ├── onboarding.md  # onboarding flow
 ├── ci.md          # CI setup
 ├── android.md     # emulator troubleshooting
+├── aab.md         # convert bundles to APKs
 ├── video.md       # handling video assets
 ├── gameplay.md    # swipe mechanics and feedback
 ├── architecture.md # module overview

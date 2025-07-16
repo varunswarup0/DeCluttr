@@ -14,11 +14,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
-import { useCustomFonts } from '~/lib/useCustomFonts';
-import { backgroundMusicService } from '~/lib/backgroundMusic';
-import { audioService } from '~/lib/audioService';
+// import { useCustomFonts } from '~/lib/useCustomFonts';
+// import { backgroundMusicService } from '~/lib/backgroundMusic';
+// import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
-import { RetroOverlay } from '~/components/RetroOverlay';
+// import { RetroOverlay } from '~/components/RetroOverlay';
 if (__DEV__) {
   void import('expo-dev-client');
 }
@@ -31,7 +31,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
-  const fontsLoaded = useCustomFonts();
+  // const fontsLoaded = useCustomFonts();
   const {
     loadDeletedPhotos,
     loadTotalDeleted,
@@ -70,20 +70,20 @@ export default function RootLayout() {
   }, [checkOnboardingStatus, router]);
 
   // Start background music once fonts and storage are ready
-  useEffect(() => {
-    if (fontsLoaded) {
-      backgroundMusicService.play();
-      audioService.initialize().catch(() => {});
-    }
-    return () => {
-      backgroundMusicService.stop();
-      audioService.cleanup().catch(() => {});
-    };
-  }, [fontsLoaded]);
+  // useEffect(() => {
+  //   if (fontsLoaded) {
+  //     backgroundMusicService.play();
+  //     audioService.initialize().catch(() => {});
+  //   }
+  //   return () => {
+  //     backgroundMusicService.stop();
+  //     audioService.cleanup().catch(() => {});
+  //   };
+  // }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   return (
     <>
@@ -109,7 +109,7 @@ export default function RootLayout() {
       </GestureHandlerRootView>
 
       {/* </ExampleProvider> */}
-      <RetroOverlay />
+      {/* <RetroOverlay /> */}
     </>
   );
 }

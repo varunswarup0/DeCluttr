@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import Onboarding from 'react-native-onboarding-swiper';
@@ -33,16 +33,9 @@ const screens = [
 ];
 
 export default function OnboardingScreen() {
-  const { completeOnboarding, onboardingCompleted } = useRecycleBinStore();
+  const { completeOnboarding } = useRecycleBinStore();
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
-
-  // Check if onboarding is already completed
-  useEffect(() => {
-    if (onboardingCompleted) {
-      router.replace('/(tabs)');
-    }
-  }, [onboardingCompleted, router]);
   // Function to handle onboarding completion
   const handleDone = async () => {
     await completeOnboarding();

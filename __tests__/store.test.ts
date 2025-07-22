@@ -149,4 +149,14 @@ describe('RecycleBin store', () => {
     const completed = await store.checkOnboardingStatus();
     expect(completed).toBe(true);
   });
+
+  it('uses in-memory onboarding flag to avoid storage read', async () => {
+    const store = useRecycleBinStore.getState();
+    useRecycleBinStore.setState({ onboardingCompleted: true });
+    const { getAsyncStorage } = await import('../lib/asyncStorageWrapper');
+    const storage = getAsyncStorage();
+    await storage.setItem('@decluttr_onboarding_completed', 'false');
+    const completed = await store.checkOnboardingStatus();
+    expect(completed).toBe(true);
+  });
 });

@@ -321,6 +321,11 @@ export const useRecycleBinStore = create<RecycleBinState>((set, get) => ({
 
   checkOnboardingStatus: async () => {
     try {
+      // If we already have the flag in memory, prefer it to avoid extra storage
+      // reads during navigation
+      if (get().onboardingCompleted) {
+        return true;
+      }
       const storage = getAsyncStorage();
       const completed = await storage.getItem(ONBOARDING_STORAGE_KEY);
       const isCompleted = completed === 'true';

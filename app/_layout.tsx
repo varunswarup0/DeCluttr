@@ -14,7 +14,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
-// import { useCustomFonts } from '~/lib/useCustomFonts';
+import { useCustomFonts } from '~/lib/useCustomFonts';
 // import { backgroundMusicService } from '~/lib/backgroundMusic';
 // import { audioService } from '~/lib/audioService';
 import { NAV_THEME } from '~/theme';
@@ -31,7 +31,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
-  // const fontsLoaded = useCustomFonts();
+  const fontsLoaded = useCustomFonts();
   const {
     loadDeletedPhotos,
     loadTotalDeleted,
@@ -81,9 +81,9 @@ export default function RootLayout() {
   //   };
   // }, [fontsLoaded]);
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <>

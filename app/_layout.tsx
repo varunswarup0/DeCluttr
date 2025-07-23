@@ -11,6 +11,8 @@ import { ErrorFallback } from '~/components/ErrorFallback';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AppState } from 'react-native';
+import { resetMediaLibraryPermissionCache } from '~/lib/mediaLibrary';
 
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { useRecycleBinStore } from '~/store/store';
@@ -80,6 +82,15 @@ export default function RootLayout() {
   //     audioService.cleanup().catch(() => {});
   //   };
   // }, [fontsLoaded]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        resetMediaLibraryPermissionCache();
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   if (!fontsLoaded) {
     return null;

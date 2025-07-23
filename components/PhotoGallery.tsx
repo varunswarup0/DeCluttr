@@ -121,7 +121,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const GLITCH_STREAK = 5;
   const WAVE_STREAK = 7;
   const deckRef = React.useRef<SwipeDeckHandle>(null);
-  const turboRef = React.useRef<NodeJS.Timeout | null>(null);
+  const turboRef = React.useRef<number | null>(null);
   const [turbo, setTurbo] = useState(false);
   const loadIdRef = React.useRef(0);
   const loadingRef = React.useRef(false);
@@ -483,8 +483,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   useEffect(() => {
     return () => {
-      if (turboRef.current) {
-        clearInterval(turboRef.current);
+      if (turboRef.current !== null) {
+        cancelAnimationFrame(turboRef.current);
       }
       if (turboTimeoutRef.current) {
         clearTimeout(turboTimeoutRef.current);
@@ -493,8 +493,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   }, []);
 
   const stopTurbo = React.useCallback(() => {
-    if (turboRef.current) {
-      clearInterval(turboRef.current);
+    if (turboRef.current !== null) {
+      cancelAnimationFrame(turboRef.current);
       turboRef.current = null;
     }
     if (turboTimeoutRef.current) {
@@ -511,13 +511,21 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       turboTimeoutRef.current = null;
     }
     setTurbo(true);
-    turboRef.current = setInterval(() => {
+    let last = Date.now();
+    const run = () => {
       if (!deckRef.current) return;
-      deckRef.current.swipeLeft();
-      if (currentIndexRef.current >= photosRef.current.length - 1) {
-        stopTurbo();
+      const now = Date.now();
+      if (now - last > 150) {
+        deckRef.current.swipeLeft();
+        last = now;
+        if (currentIndexRef.current >= photosRef.current.length - 1) {
+          stopTurbo();
+          return;
+        }
       }
-    }, 120);
+      turboRef.current = requestAnimationFrame(run);
+    };
+    turboRef.current = requestAnimationFrame(run);
   }, [stopTurbo]);
 
   const handleShake = React.useCallback(() => {

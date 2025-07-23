@@ -11,6 +11,7 @@ export class AudioService {
   private playing = false;
   private isInitialized = false;
   private initializing: Promise<void> | null = null;
+  private settingsCache: { enabled: boolean; volume: number } | null = null;
 
   private constructor() {}
 
@@ -108,21 +109,29 @@ export class AudioService {
    * Get audio settings from AsyncStorage
    */
   private async getAudioSettings(): Promise<{ enabled: boolean; volume: number }> {
+    if (this.settingsCache) {
+      return this.settingsCache;
+    }
     try {
       const storage = getAsyncStorage();
       const stored = await storage.getItem('decluttr_audio_settings');
       if (stored) {
         try {
           const settings = JSON.parse(stored);
-          return { enabled: settings.enabled ?? true, volume: settings.volume ?? 0.8 };
+          this.settingsCache = {
+            enabled: settings.enabled ?? true,
+            volume: settings.volume ?? 0.8,
+          };
+          return this.settingsCache;
         } catch {
-          // fall through to default if JSON is invalid
+          // ignore parse error
         }
       }
     } catch (error) {
       console.warn('Failed to load audio settings:', error);
     }
-    return { enabled: true, volume: 0.8 };
+    this.settingsCache = { enabled: true, volume: 0.8 };
+    return this.settingsCache;
   }
 
   private enqueue(job: () => Promise<void>): void {
@@ -244,6 +253,7 @@ export class AudioService {
       this.playing = false;
 
       this.isInitialized = false;
+      this.settingsCache = null;
       console.log('Audio service cleaned up');
     } catch (error) {
       console.warn('Failed to cleanup audio service:', error);
@@ -270,15 +280,10 @@ export class AudioService {
       this.voicePlayers.forEach((p) => (p.volume = clampedVolume));
 
       // Save volume setting to AsyncStorage
-      const currentSettings = await this.getAudioSettings();
       const storage = getAsyncStorage();
-      await storage.setItem(
-        'decluttr_audio_settings',
-        JSON.stringify({
-          ...currentSettings,
-          volume: clampedVolume,
-        })
-      );
+      this.settingsCache = await this.getAudioSettings();
+      this.settingsCache.volume = clampedVolume;
+      await storage.setItem('decluttr_audio_settings', JSON.stringify(this.settingsCache));
     } catch (error) {
       console.warn('Failed to set volume:', error);
     }
@@ -289,15 +294,10 @@ export class AudioService {
    */
   public async setEnabled(enabled: boolean): Promise<void> {
     try {
-      const currentSettings = await this.getAudioSettings();
       const storage = getAsyncStorage();
-      await storage.setItem(
-        'decluttr_audio_settings',
-        JSON.stringify({
-          ...currentSettings,
-          enabled,
-        })
-      );
+      this.settingsCache = await this.getAudioSettings();
+      this.settingsCache.enabled = enabled;
+      await storage.setItem('decluttr_audio_settings', JSON.stringify(this.settingsCache));
     } catch (error) {
       console.warn('Failed to set audio enabled state:', error);
     }

@@ -6,7 +6,6 @@ import {
 import * as media from '../lib/mediaLibrary';
 
 jest.mock('../lib/mediaLibrary', () => ({
-  fetchAllPhotoAssets: jest.fn(),
   fetchPhotoAssetsWithPagination: jest.fn(),
   getAssetInfo: jest.fn(),
 }));
@@ -17,12 +16,17 @@ describe('photoAnalyzer', () => {
   });
 
   it('categorizes orientation and finds duplicates', async () => {
-    (media.fetchAllPhotoAssets as jest.Mock).mockResolvedValue([
-      { id: '1', uri: 'u1' },
-      { id: '2', uri: 'u2' },
-      { id: '3', uri: 'u3' },
-      { id: '4', uri: 'u4' },
-    ]);
+    (media.fetchPhotoAssetsWithPagination as jest.Mock).mockResolvedValueOnce({
+      assets: [
+        { id: '1', uri: 'u1' },
+        { id: '2', uri: 'u2' },
+        { id: '3', uri: 'u3' },
+        { id: '4', uri: 'u4' },
+      ],
+      hasNextPage: false,
+      endCursor: undefined,
+      totalCount: 4,
+    });
     (media.getAssetInfo as jest.Mock).mockImplementation((id: string) => {
       switch (id) {
         case '1':
@@ -116,11 +120,16 @@ describe('photoAnalyzer', () => {
   });
 
   it('suggests deletion candidates', async () => {
-    (media.fetchAllPhotoAssets as jest.Mock).mockResolvedValue([
-      { id: '1', uri: 'u1' },
-      { id: '2', uri: 'u2' },
-      { id: '3', uri: 'u3' },
-    ]);
+    (media.fetchPhotoAssetsWithPagination as jest.Mock).mockResolvedValueOnce({
+      assets: [
+        { id: '1', uri: 'u1' },
+        { id: '2', uri: 'u2' },
+        { id: '3', uri: 'u3' },
+      ],
+      hasNextPage: false,
+      endCursor: undefined,
+      totalCount: 3,
+    });
 
     (media.getAssetInfo as jest.Mock).mockImplementation((id: string) => {
       switch (id) {

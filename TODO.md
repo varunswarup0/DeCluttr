@@ -18,7 +18,7 @@
 - Share images without captions or as documents.
 - Compress or resize photos and offer basic editing tools.
 - AI-based sorting into categories like selfies or pets.
-- [ ] Optimize memory usage when analyzing large photo libraries
+- ~~Optimize memory usage when analyzing large photo libraries~~ Implemented batched scanning
 - [ ] Update Jest configuration to remove `ts-jest` deprecation warnings
 - [ ] Replace `react-test-renderer` usage in tests to avoid deprecation notices
 - [ ] Investigate using the React Native Jest preset for cleaner imports in tests

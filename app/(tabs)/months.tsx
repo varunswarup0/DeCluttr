@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useState, useMemo } from 'react';
 import { Alert, TouchableOpacity, ScrollView } from 'react-native';
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { Text } from '~/components/nativewindui/Text';
 import { deleteAssetsFromMonth } from '~/lib/mediaLibrary';
 
@@ -51,7 +51,7 @@ export default function Months() {
   return (
     <>
       <Stack.Screen options={{ title: 'Months' }} />
-      <Container>
+      <Screen>
         <ScrollView className="flex-1 py-4" contentContainerStyle={{ paddingBottom: 40 }}>
           {months.map((m) => (
             <TouchableOpacity
@@ -63,7 +63,7 @@ export default function Months() {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </Container>
+      </Screen>
     </>
   );
 }

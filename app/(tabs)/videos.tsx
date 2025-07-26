@@ -1,14 +1,14 @@
 import { Stack } from 'expo-router';
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { PhotoGallery } from '~/components/PhotoGallery';
 
 export default function Videos() {
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <Container>
+      <Stack.Screen options={{ title: 'Videos' }} />
+      <Screen>
         <PhotoGallery mediaType="video" />
-      </Container>
+      </Screen>
     </>
   );
 }

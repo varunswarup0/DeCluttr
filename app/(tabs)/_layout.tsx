@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
+import { AppHeader } from '~/components/AppHeader';
 import { useRecycleBinStore } from '~/store/store';
 import { AudioToggle } from '~/components/AudioToggle';
 import { ZenToggle } from '~/components/ZenToggle';
@@ -23,7 +24,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
+        header: (props) => <AppHeader {...props} />,
         headerTitle: '',
         headerRight: () => (
           <View className="mr-1 flex-row items-center gap-2">

@@ -1,14 +1,14 @@
 import { Stack } from 'expo-router';
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { PhotoGallery } from '~/components/PhotoGallery';
 
 export default function WhatsAppPhotos() {
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <Container>
+      <Stack.Screen options={{ title: 'WhatsApp' }} />
+      <Screen>
         <PhotoGallery albumName="WhatsApp Images" />
-      </Container>
+      </Screen>
     </>
   );
 }

@@ -9,6 +9,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { Text } from '~/components/nativewindui/Text';
 import { lightImpact } from '~/lib/haptics';
 import { px } from '~/lib/pixelPerfect';
+import { Screen } from '~/components/Screen';
 
 // Screen images
 const screens = [
@@ -98,7 +99,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <Screen style={styles.container}>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
       <Onboarding
         pages={screens}
@@ -113,7 +114,7 @@ export default function OnboardingScreen() {
         NextButtonComponent={NextButton}
         bottomBarHighlight={false}
       />
-    </View>
+    </Screen>
   );
 }
 

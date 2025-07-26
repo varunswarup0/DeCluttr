@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { PhotoGallery } from '~/components/PhotoGallery';
 import { TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,9 +37,9 @@ export default function AlbumGallery() {
           ),
         }}
       />
-      <Container>
+      <Screen>
         <PhotoGallery albumName={albumName} />
-      </Container>
+      </Screen>
     </>
   );
 }

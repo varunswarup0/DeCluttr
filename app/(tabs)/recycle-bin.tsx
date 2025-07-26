@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useState, useEffect } from 'react';
 
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { Text } from '~/components/nativewindui/Text';
 import { Button } from '~/components/nativewindui/Button';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -229,7 +229,7 @@ export default function RecycleBin() {
             ),
         }}
       />
-      <Container>
+      <Screen>
         {deletedPhotos.length === 0 ? (
           /* Empty State */
           <View className="flex-1 items-center justify-center px-8">
@@ -300,7 +300,7 @@ export default function RecycleBin() {
             </Button>
           </View>
         )}
-      </Container>
+      </Screen>
     </>
   );
 }

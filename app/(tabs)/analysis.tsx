@@ -10,6 +10,7 @@ import {
 } from '~/lib/photoAnalyzer';
 import { ProgressIndicator } from '~/components/nativewindui/ProgressIndicator';
 import { useRecycleBinStore } from '~/store/store';
+import { Screen } from '~/components/Screen';
 
 export default function AnalysisScreen() {
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,8 @@ export default function AnalysisScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Scan' }} />
-      <View className="flex-1 items-center justify-center p-4">
+      <Screen>
+        <View className="flex-1 items-center justify-center p-4">
         {result ? (
           <View className="mb-6 items-center">
             <Text variant="title3" className="mb-4">
@@ -82,7 +84,8 @@ export default function AnalysisScreen() {
             <Text>Quick Clean</Text>
           </Button>
         )}
-      </View>
+        </View>
+      </Screen>
     </>
   );
 }

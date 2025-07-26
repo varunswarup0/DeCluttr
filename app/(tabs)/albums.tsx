@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Container } from '~/components/Container';
+import { Screen } from '~/components/Screen';
 import { Text } from '~/components/nativewindui/Text';
 import { fetchAlbums, MediaAlbum } from '~/lib/mediaLibrary';
 
@@ -25,7 +25,7 @@ export default function Albums() {
   return (
     <>
       <Stack.Screen options={{ title: 'Albums' }} />
-      <Container>
+      <Screen>
         <ScrollView className="flex-1 py-4" contentContainerStyle={{ paddingBottom: 40 }}>
           {albums.map((album) => (
             <TouchableOpacity
@@ -41,7 +41,7 @@ export default function Albums() {
             </View>
           )}
         </ScrollView>
-      </Container>
+      </Screen>
     </>
   );
 }

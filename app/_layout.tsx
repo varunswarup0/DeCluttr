@@ -8,10 +8,12 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { ErrorFallback } from '~/components/ErrorFallback';
+import { AppHeader } from '~/components/AppHeader';
 import { StatusBar } from 'expo-status-bar';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppState } from 'react-native';
+import { useBackHandler } from '~/lib/useBackHandler';
 import { resetMediaLibraryPermissionCache } from '~/lib/mediaLibrary';
 
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
@@ -43,6 +45,7 @@ export default function RootLayout() {
   } = useRecycleBinStore();
   const segments = useSegments();
   const router = useRouter();
+  useBackHandler();
 
   // Load persisted data on startup
   useEffect(() => {
@@ -127,4 +130,5 @@ export default function RootLayout() {
 
 const SCREEN_OPTIONS = {
   animation: 'default',
+  header: (props: any) => <AppHeader {...props} />, // custom header
 } as const;

@@ -42,6 +42,7 @@ import { audioService } from '~/lib/audioService';
 import { useShake } from '~/lib/useShake';
 
 const pickEndMessage = createMessagePicker(END_MESSAGES);
+const BATCH_SIZE = 20;
 
 interface PhotoGalleryProps {
   className?: string;
@@ -161,7 +162,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       try {
         if (!isMounted.current) return false;
         setLoading(true);
-        const result = await fetchFn(cursor ?? nextCursorRef.current, 50);
+        const result = await fetchFn(cursor ?? nextCursorRef.current, BATCH_SIZE);
         if (loadId !== loadIdRef.current) return false;
         const photoItems: SwipeDeckItem[] = result.assets.map((asset) => ({
           id: asset.id,
@@ -177,7 +178,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
         // Prefetch the following batch in the background
         if (result.hasNextPage) {
-          fetchFn(result.endCursor, 50)
+          fetchFn(result.endCursor, BATCH_SIZE)
             .then(
               (nextResult: { assets: PhotoAsset[]; hasNextPage: boolean; endCursor?: string }) => {
                 if (!isMounted.current || loadId !== loadIdRef.current) return;
@@ -293,7 +294,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         nextCursorRef.current = prefetchCursorRef.current;
         // Prefetch the subsequent batch
         if (nextCursorRef.current) {
-          fetchFn(nextCursorRef.current, 50)
+          fetchFn(nextCursorRef.current, BATCH_SIZE)
             .then(
               (nextResult: { assets: PhotoAsset[]; hasNextPage: boolean; endCursor?: string }) => {
                 if (!isMounted.current) return;

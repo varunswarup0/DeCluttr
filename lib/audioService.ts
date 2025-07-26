@@ -135,6 +135,10 @@ export class AudioService {
   }
 
   private enqueue(job: () => Promise<void>): void {
+    // Prevent unbounded growth if sounds are triggered rapidly
+    if (this.queue.length > 10) {
+      return;
+    }
     this.queue.push(job);
     if (!this.playing) {
       this.processQueue();

@@ -50,10 +50,8 @@ export async function requestMediaLibraryPermission(): Promise<boolean> {
  * @returns Promise<boolean> - true if permission is granted, false otherwise
  */
 export async function checkMediaLibraryPermission(): Promise<boolean> {
-  if (permissionGrantedCache !== null) {
-    return permissionGrantedCache;
-  }
   try {
+    // Always query the OS so revocations are detected immediately
     const response: MediaLibrary.PermissionResponse = await MediaLibrary.getPermissionsAsync();
     const { status, accessPrivileges } = response;
     permissionGrantedCache = status === 'granted' && accessPrivileges === 'all';
@@ -363,10 +361,14 @@ export async function openPhotoAsset(assetId: string): Promise<boolean> {
       return false;
     }
 
-    // TODO: Investigate intermittent failures when opening assets via Linking.openURL
     const { Linking } = await import('react-native');
-    await Linking.openURL(info.uri);
-    return true;
+    // Ensure the URI can be opened. Some Android versions fail silently.
+    if (await Linking.canOpenURL(info.uri)) {
+      await Linking.openURL(info.uri);
+      return true;
+    }
+    console.warn('Cannot open media URI:', info.uri);
+    return false;
   } catch (error) {
     console.error('Failed to open photo asset:', error);
     return false;
@@ -394,8 +396,12 @@ export async function openVideoAsset(assetId: string): Promise<boolean> {
     }
 
     const { Linking } = await import('react-native');
-    await Linking.openURL(info.uri);
-    return true;
+    if (await Linking.canOpenURL(info.uri)) {
+      await Linking.openURL(info.uri);
+      return true;
+    }
+    console.warn('Cannot open media URI:', info.uri);
+    return false;
   } catch (error) {
     console.error('Failed to open video asset:', error);
     return false;

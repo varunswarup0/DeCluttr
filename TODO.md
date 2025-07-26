@@ -9,7 +9,7 @@
   - Optionally move the image strip to the bottom.
   - ~~Button to open the current photo in the system gallery.~~ Added open button in `PhotoGallery`.
 - ~~Add video review support.~~ Videos tab uses `PhotoGallery` with `mediaType="video"`.
-- [ ] Investigate occasional failures opening assets via `Linking.openURL`
+- ~~Investigate occasional failures opening assets via `Linking.openURL`~~
 
 ## Long Term
 - ~~Mark images as favourites or move/copy them to another album.~~ Done: photos can now be moved to any album via the new folder button.

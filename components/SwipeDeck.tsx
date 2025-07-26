@@ -74,24 +74,28 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
       };
     }, []);
 
-    // Create animation values for each card position in the stack - fixed approach
-    const scale0 = useSharedValue(1);
-    const scale1 = useSharedValue(0.95);
-    const scale2 = useSharedValue(0.9);
-    const translateY0 = useSharedValue(0);
-    const translateY1 = useSharedValue(px(8));
-    const translateY2 = useSharedValue(px(16));
-    const opacity0 = useSharedValue(1);
-    const opacity1 = useSharedValue(0.9);
-    const opacity2 = useSharedValue(0.8);
-    const scaleValues = useMemo(() => [scale0, scale1, scale2], [scale0, scale1, scale2]);
+    // Create animation values for each card position in the stack
+    const visibleCountRef = React.useRef(maxVisibleCards);
+    const scaleValues = useMemo(
+      () =>
+        Array.from({ length: visibleCountRef.current }, (_, i) =>
+          useSharedValue(1 - i * 0.05)
+        ),
+      []
+    );
     const translateYValues = useMemo(
-      () => [translateY0, translateY1, translateY2],
-      [translateY0, translateY1, translateY2]
+      () =>
+        Array.from({ length: visibleCountRef.current }, () =>
+          useSharedValue(0)
+        ),
+      []
     );
     const opacityValues = useMemo(
-      () => [opacity0, opacity1, opacity2],
-      [opacity0, opacity1, opacity2]
+      () =>
+        Array.from({ length: visibleCountRef.current }, (_, i) =>
+          useSharedValue(1 - i * 0.1)
+        ),
+      []
     );
 
     // Reset the deck when a new data array is provided
@@ -120,22 +124,19 @@ export const SwipeDeck = forwardRef<SwipeDeckHandle, SwipeDeckProps>(
     }, [data.length, onDeckEmpty]);
 
     // Create animated styles for each card position
-    const animatedStyle0 = useAnimatedStyle(() => ({
-      transform: [{ scale: scale0.value }, { translateY: translateY0.value }],
-      opacity: opacity0.value,
-    }));
-
-    const animatedStyle1 = useAnimatedStyle(() => ({
-      transform: [{ scale: scale1.value }, { translateY: translateY1.value }],
-      opacity: opacity1.value,
-    }));
-
-    const animatedStyle2 = useAnimatedStyle(() => ({
-      transform: [{ scale: scale2.value }, { translateY: translateY2.value }],
-      opacity: opacity2.value,
-    }));
-
-    const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2];
+    const animatedStyles = useMemo(
+      () =>
+        scaleValues.map((_, i) =>
+          useAnimatedStyle(() => ({
+            transform: [
+              { scale: scaleValues[i].value },
+              { translateY: translateYValues[i].value },
+            ],
+            opacity: opacityValues[i].value,
+          }))
+        ),
+      [scaleValues, translateYValues, opacityValues]
+    );
     const advanceIndex = useCallback(() => {
       setInputBlocked(true);
       if (blockTimeoutRef.current) {

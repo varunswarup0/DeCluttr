@@ -29,26 +29,13 @@ export const SwipeTrail: React.FC<SwipeTrailProps> = ({
   scale,
   active,
 }) => {
-  const x1 = useSharedValue(0);
-  const y1 = useSharedValue(0);
-  const r1 = useSharedValue(0);
-  const r1y = useSharedValue(0);
-  const s1 = useSharedValue(1);
-  const o1 = useSharedValue(0);
-
-  const x2 = useSharedValue(0);
-  const y2 = useSharedValue(0);
-  const r2 = useSharedValue(0);
-  const r2y = useSharedValue(0);
-  const s2 = useSharedValue(1);
-  const o2 = useSharedValue(0);
-
-  const x3 = useSharedValue(0);
-  const y3 = useSharedValue(0);
-  const r3 = useSharedValue(0);
-  const r3y = useSharedValue(0);
-  const s3 = useSharedValue(1);
-  const o3 = useSharedValue(0);
+  // Single trailing layer for better performance
+  const trailX = useSharedValue(0);
+  const trailY = useSharedValue(0);
+  const trailRZ = useSharedValue(0);
+  const trailRY = useSharedValue(0);
+  const trailScale = useSharedValue(1);
+  const trailOpacity = useSharedValue(0);
 
   useAnimatedReaction(
     () => ({
@@ -60,105 +47,41 @@ export const SwipeTrail: React.FC<SwipeTrailProps> = ({
       a: active.value,
     }),
     (curr) => {
-      x1.value = withTiming(curr.x, { duration: 50 });
-      y1.value = withTiming(curr.y, { duration: 50 });
-      r1.value = withTiming(curr.r, { duration: 50 });
-      r1y.value = withTiming(curr.ry, { duration: 50 });
-      s1.value = withTiming(curr.s, { duration: 50 });
-      o1.value = withTiming(curr.a ? 0.15 : 0, { duration: 100 });
-
-      x2.value = withTiming(curr.x, { duration: 100 });
-      y2.value = withTiming(curr.y, { duration: 100 });
-      r2.value = withTiming(curr.r, { duration: 100 });
-      r2y.value = withTiming(curr.ry, { duration: 100 });
-      s2.value = withTiming(curr.s, { duration: 100 });
-      o2.value = withTiming(curr.a ? 0.1 : 0, { duration: 100 });
-
-      x3.value = withTiming(curr.x, { duration: 150 });
-      y3.value = withTiming(curr.y, { duration: 150 });
-      r3.value = withTiming(curr.r, { duration: 150 });
-      r3y.value = withTiming(curr.ry, { duration: 150 });
-      s3.value = withTiming(curr.s, { duration: 150 });
-      o3.value = withTiming(curr.a ? 0.05 : 0, { duration: 100 });
+      trailX.value = withTiming(curr.x, { duration: 100 });
+      trailY.value = withTiming(curr.y, { duration: 100 });
+      trailRZ.value = withTiming(curr.r, { duration: 100 });
+      trailRY.value = withTiming(curr.ry, { duration: 100 });
+      trailScale.value = withTiming(curr.s, { duration: 100 });
+      trailOpacity.value = withTiming(curr.a ? 0.1 : 0, { duration: 100 });
     }
   );
 
-  const style1 = useAnimatedStyle(() => ({
+  const style = useAnimatedStyle(() => ({
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     borderRadius: BORDER_RADIUS,
-    opacity: o1.value,
+    opacity: trailOpacity.value,
     transform: [
-      { translateX: x1.value },
-      { translateY: y1.value },
-      { rotateZ: `${r1.value}deg` },
-      { rotateY: `${r1y.value}deg` },
-      { scale: s1.value },
-    ],
-  }));
-
-  const style2 = useAnimatedStyle(() => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: BORDER_RADIUS,
-    opacity: o2.value,
-    transform: [
-      { translateX: x2.value },
-      { translateY: y2.value },
-      { rotateZ: `${r2.value}deg` },
-      { rotateY: `${r2y.value}deg` },
-      { scale: s2.value },
-    ],
-  }));
-
-  const style3 = useAnimatedStyle(() => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: BORDER_RADIUS,
-    opacity: o3.value,
-    transform: [
-      { translateX: x3.value },
-      { translateY: y3.value },
-      { rotateZ: `${r3.value}deg` },
-      { rotateY: `${r3y.value}deg` },
-      { scale: s3.value },
+      { translateX: trailX.value },
+      { translateY: trailY.value },
+      { rotateZ: `${trailRZ.value}deg` },
+      { rotateY: `${trailRY.value}deg` },
+      { scale: trailScale.value },
     ],
   }));
 
   return (
-    <>
-      {/* pointerEvents isn't typed for Animated.Image but works at runtime */}
-      <Animated.Image
-        source={{ uri: imageUri }}
-        style={style3}
-        resizeMode="cover"
-        // @ts-expect-error pointerEvents not in ImageProps
-        pointerEvents="none"
-      />
-      <Animated.Image
-        source={{ uri: imageUri }}
-        style={style2}
-        resizeMode="cover"
-        // @ts-expect-error pointerEvents not in ImageProps
-        pointerEvents="none"
-      />
-      <Animated.Image
-        source={{ uri: imageUri }}
-        style={style1}
-        resizeMode="cover"
-        // @ts-expect-error pointerEvents not in ImageProps
-        pointerEvents="none"
-      />
-    </>
+    // pointerEvents isn't typed for Animated.Image but works at runtime
+    <Animated.Image
+      source={{ uri: imageUri }}
+      style={style}
+      resizeMode="cover"
+      // @ts-expect-error pointerEvents not in ImageProps
+      pointerEvents="none"
+    />
   );
 };
 
